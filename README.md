@@ -6,6 +6,11 @@ However, most existing image viewers do not have this feature. Therefore, I want
 
 This project is still under construction, advice, bug report and development are welcome :smiley:.
 
+### Current screenshot
+<p align="center">
+  <img src="https://c1.staticflickr.com/1/975/40897859985_9fa4f67558_b.jpg">
+</p>
+
 ### Prerequisites
 
 - Ubuntu
