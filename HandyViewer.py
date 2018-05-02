@@ -31,6 +31,46 @@ class HandyScene(QGraphicsScene):
         else: # normal
             self.parent.qlabel_info_mouse_pos.setStyleSheet('QLabel {color : black; }')
 
+# https://stackoverflow.com/questions/16105349/remove-scroll-functionality-on-mouse-wheel-qgraphics-view
+class HandyView(QGraphicsView):
+    def __init__(self, scene, parent=None):
+        super(HandyView, self).__init__(scene, parent)
+        self.parent = parent
+        self.setDragMode(QGraphicsView.ScrollHandDrag)
+        # self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        # self.qsetHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+        self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
+        self.setMouseTracking(True)
+        self.zoom = 1
+        self.rotvals = (0, -90, -180, -270)
+        self.rotate = 0
+
+    def wheelEvent(self, event):
+        moose = event.angleDelta().y() / 120
+        if moose > 0:
+            self.zoom_in()
+        elif moose < 0:
+            self.zoom_out()
+
+    def zoom_in(self):
+        self.zoom *= 1.05
+        self.parent.qlabel_info_zoom_ration.setText('\n# Zoom ration:\t{:.1f}'.format(self.zoom))
+        self.set_transform()
+
+    def zoom_out(self):
+        self.zoom /= 1.05
+        self.parent.qlabel_info_zoom_ration.setText('\n# Zoom ration:\t{:.1f}'.format(self.zoom))
+        self.set_transform()
+
+    def set_zoom(self, ratio):
+        self.zoom = ratio
+        self.parent.qlabel_info_zoom_ration.setText('\n# Zoom ration:\t{:.1f}'.format(self.zoom))
+        self.set_transform()
+
+    def set_transform(self):
+        self.setTransform(QTransform().scale(self.zoom, self.zoom).rotate(self.rotate))
+
 
 class Canvas(QWidget):
     def __init__(self, parent=None):
@@ -59,11 +99,8 @@ class Canvas(QWidget):
             main_layout = QGridLayout(self)
             # QgraphicsView - QGraphicsScene - QPixmap
             self.qscene = HandyScene(self)
-            self.qview = QGraphicsView(self.qscene, self)
-            self.qview.setDragMode(QGraphicsView.ScrollHandDrag)
-            self.qview.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-            self.qview.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-            self.qview.setMouseTracking(True)
+            self.qview = HandyView(self.qscene, self)
+
             main_layout.addWidget(self.qview, 0, 0, 30, 5)
             # bottom QLabel, show image path
             self.qlabel_img_path = QLabel(self)
@@ -86,9 +123,6 @@ class Canvas(QWidget):
             self.info_group.setLayout(infor_group_layout)
             main_layout.addWidget(self.info_group, 15, 5, 15, 1)
 
-            self.rotvals = (0, -90, -180, -270)
-            self.rotate = 0
-            self.zoom = 1
             self.qview_bg_color = 'white'
 
             self.get_img_list()
@@ -114,16 +148,11 @@ class Canvas(QWidget):
         # get current pos
         self.dirpos = self.imgfiles.index(self.img_name)
 
-    def wheelEvent(self, event):
-        moose = event.angleDelta().y()/120
-        if moose > 0:
-            self.zoom_in()
-        elif moose < 0:
-            self.zoom_out()
-
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_F9:
             self.toggle_bg_color()
+        elif event.key() == QtCore.Qt.Key_R:
+            self.qview.set_zoom(1)
         elif event.key() == QtCore.Qt.Key_Space:
             self.dir_browse(1)
         elif event.key() == QtCore.Qt.Key_Backspace:
@@ -133,26 +162,24 @@ class Canvas(QWidget):
         self.qscene.clear()
         self.qimg = QPixmap(self.key)
         self.qscene.addPixmap(self.qimg)
-
-        self.qlabel_img_path.setText('{:d} / {:d}, {}'.\
-            format(self.dirpos, len(self.imgfiles), self.key))
+        self.imgw, self.imgh = self.qimg.width(), self.qimg.height()
+        # put image always in the center of a QGraphicsView
+        self.qscene.setSceneRect(0, 0, self.imgw, self.imgh)
+        self.qlabel_img_path.setText('{}\n{:3d} / {:3d}'.\
+            format(self.key, self.dirpos + 1, len(self.imgfiles)))
         # update information panel
         self.path, self.img_name = os.path.split(self.key)
-        self.qlabel_info_img_name.setText('# Image name:\n    {}'.format(self.img_name))
-        self.imgw, self.imgh = self.qimg.width(), self.qimg.height()
+        self.qlabel_info_img_name.setText('# Image name:\n   {}'.format(self.img_name))
+
         self.qlabel_info_wh.setText('\n# Image size:\n\tHeight:\t{:d}\n\tWeight:\t{:d}'\
             .format(self.imgh, self.imgw))
         with Image.open(self.key) as lazy_img:
             self.qlabel_info_color_type.setText('\n# Color type:\t{}'.format(lazy_img.mode))
-        self.qlabel_info_zoom_ration.setText('\n# Zoom ration:\t{:.1f}'.format(self.zoom))
 
         if init:
             if self.imgw < 500:
-                self.zoom = 500 // self.imgw
-                self.resize(self.imgw * self.zoom + 2, self.imgh * self.zoom + 2) # resize view
-            else:
-                self.resize(self.imgw + 2, self.imgh + 2)
-        self.qview.setTransform(QTransform().scale(self.zoom, self.zoom).rotate(self.rotate))
+                self.qview.set_zoom(500 // self.imgw)
+        self.qview.set_transform()
 
     def dir_browse(self, direc):
         if len(self.imgfiles) > 1:
@@ -164,21 +191,6 @@ class Canvas(QWidget):
             self.key = os.path.join(self.path, self.imgfiles[self.dirpos])
 
             self.show_image()
-
-    def zoom_in(self):
-        self.zoom *= 1.05
-        self.qlabel_info_zoom_ration.setText('\n# Zoom ration:\t{:.1f}'.format(self.zoom))
-        self.qview.setTransform(QTransform().scale(self.zoom, self.zoom).rotate(self.rotate))
-
-    def zoom_out(self):
-        self.zoom /= 1.05
-        self.qlabel_info_zoom_ration.setText('\n# Zoom ration:\t{:.1f}'.format(self.zoom))
-        self.qview.setTransform(QTransform().scale(self.zoom, self.zoom).rotate(self.rotate))
-
-    def zoom_reset(self):
-        self.zoom = 1
-        self.qlabel_info_zoom_ration.setText('\n# Zoom ration:\t{:.1f}'.format(self.zoom))
-        self.qview.setTransform(QTransform().scale(self.zoom, self.zoom).rotate(self.rotate))
 
     def toggle_bg_color(self):
         if self.qview_bg_color == 'white':
@@ -268,7 +280,6 @@ class MainWindow(QMainWindow):
         # add to View menu bar
         self.view_menu.addAction(dock_tool.toggleViewAction())
         self.view_menu.addAction(dock_info.toggleViewAction())
-
 
     ##################################
     # Slots
