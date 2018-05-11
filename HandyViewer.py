@@ -4,7 +4,7 @@ import re
 from PIL import Image
 
 from PyQt5 import QtCore
-from PyQt5.QtGui import QPixmap, QTransform
+from PyQt5.QtGui import QPixmap, QTransform, QColor, QImage
 from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene
 from PyQt5.QtWidgets import QWidget, QGridLayout, QVBoxLayout, QGroupBox, QLabel, QToolBar
 from PyQt5.QtWidgets import QDockWidget, QFileDialog
@@ -30,6 +30,11 @@ class HandyScene(QGraphicsScene):
             self.parent.qlabel_info_mouse_pos.setStyleSheet('QLabel {color : red; }')
         else: # normal
             self.parent.qlabel_info_mouse_pos.setStyleSheet('QLabel {color : black; }')
+            # show rgb values
+            c = self.parent.qimg.pixel(x_pos, y_pos)
+            c_rgb = QColor(c).getRgb()  # 8bit RGBA: (255, 23, 0, 255)
+            self.parent.qlabel_info_mouse_rgb_value.setText('RGB: ({:3d}, {:3d}, {:3d})'.format(\
+                c_rgb[0], c_rgb[1], c_rgb[2]))
 
 # https://stackoverflow.com/questions/16105349/remove-scroll-functionality-on-mouse-wheel-qgraphics-view
 class HandyView(QGraphicsView):
@@ -109,14 +114,21 @@ class Canvas(QWidget):
             self.info_group = QGroupBox('Information Panel')
             self.qlabel_info_img_name = QLabel(self)  # image name
             self.qlabel_info_mouse_pos = QLabel(self)
+            self.qlabel_info_mouse_rgb_value = QLabel(self)
             self.qlabel_info_wh = QLabel(self) # image width and height
             self.qlabel_info_color_type = QLabel(self)  # image color type
             self.qlabel_info_zoom_ration = QLabel(self) # zoom ratio
+            self.qlabel_info_mouse_pos.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+            self.qlabel_info_mouse_rgb_value.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+            self.qlabel_info_wh.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+            self.qlabel_info_color_type.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+            self.qlabel_info_zoom_ration.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
             # real-time mouse position(relate to original images)
             infor_group_layout = QVBoxLayout()
             infor_group_layout.setAlignment(QtCore.Qt.AlignTop)
             infor_group_layout.addWidget(self.qlabel_info_img_name)
             infor_group_layout.addWidget(self.qlabel_info_mouse_pos)
+            infor_group_layout.addWidget(self.qlabel_info_mouse_rgb_value)
             infor_group_layout.addWidget(self.qlabel_info_wh)
             infor_group_layout.addWidget(self.qlabel_info_color_type)
             infor_group_layout.addWidget(self.qlabel_info_zoom_ration)
@@ -160,16 +172,17 @@ class Canvas(QWidget):
 
     def show_image(self, init=False):
         self.qscene.clear()
-        self.qimg = QPixmap(self.key)
-        self.qscene.addPixmap(self.qimg)
-        self.imgw, self.imgh = self.qimg.width(), self.qimg.height()
+        self.qimg = QImage(self.key)
+        self.qpixmap = QPixmap.fromImage(self.qimg)
+        self.qscene.addPixmap(self.qpixmap)
+        self.imgw, self.imgh = self.qpixmap.width(), self.qpixmap.height()
         # put image always in the center of a QGraphicsView
         self.qscene.setSceneRect(0, 0, self.imgw, self.imgh)
         self.qlabel_img_path.setText('{}\n{:3d} / {:3d}'.\
             format(self.key, self.dirpos + 1, len(self.imgfiles)))
         # update information panel
         self.path, self.img_name = os.path.split(self.key)
-        self.qlabel_info_img_name.setText('# Image name:\n   {}'.format(self.img_name))
+        # self.qlabel_info_img_name.setText('# Image name:\n   {}'.format(self.img_name))
 
         self.qlabel_info_wh.setText('\n# Image size:\n\tHeight:\t{:d}\n\tWeight:\t{:d}'\
             .format(self.imgh, self.imgw))
