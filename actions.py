@@ -62,5 +62,15 @@ def compare(parent):
         parent,
         'Compare',
         icon_name='compare',
-        shortcut='Ctrl+C',
+        shortcut='F6',
         slot=parent.refresh_img_list)
+
+
+def history(parent):
+    """history."""
+    return new_action(
+        parent,
+        'History',
+        icon_name='history',
+        # shortcut='Ctrl+C',
+        slot=parent.open_history)

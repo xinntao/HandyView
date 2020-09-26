@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QGraphicsView,
                              QGraphicsScene)
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QVBoxLayout, QGroupBox,
                              QLabel, QToolBar)
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QInputDialog
 
 import actions as actions
 
@@ -160,29 +160,55 @@ class Canvas(QWidget):
             sys.exit(1)
 
     def get_img_list(self):
-        # get image list
-        self.path, self.img_name = os.path.split(self.key)
-        self.imgfiles = []
-        if self.path == '':
-            self.path = './'
-        for img_path in sorted(glob.glob(os.path.join(self.path, '*'))):
-            img_name = os.path.split(img_path)[1]
-            base, ext = os.path.splitext(img_name)
-            if ext in FORMATS:
-                self.imgfiles.append(img_name)
-        # natural sort
-        self.imgfiles.sort(key=lambda s: [
-            int(t) if t.isdigit() else t.lower() for t in re.split('(\d+)', s)
-        ])
-        # get current pos
-        try:
-            self.dirpos = self.imgfiles.index(self.img_name)
-        except ValueError:
-            # self.img_name may not in self.imgfiles after refreshing
-            self.dirpos = 0
-        self.key = self.key.replace('\\', '/')
-        self.qlabel_img_path.setText(
-            f'{self.key}\n{self.dirpos + 1:3d} / {len(self.imgfiles):3d}')
+        if os.path.isdir(self.key):
+            self.key = sorted(glob.glob(os.path.join(self.key, '*')))[0]
+
+        if self.key.endswith(FORMATS):
+            # get image list
+            self.path, self.img_name = os.path.split(self.key)
+            self.imgfiles = []
+            if self.path == '':
+                self.path = './'
+            for img_path in sorted(glob.glob(os.path.join(self.path, '*'))):
+                img_name = os.path.split(img_path)[1]
+                base, ext = os.path.splitext(img_name)
+                if ext in FORMATS:
+                    self.imgfiles.append(img_name)
+            # natural sort
+            self.imgfiles.sort(key=lambda s: [
+                int(t) if t.isdigit() else t.lower()
+                for t in re.split('(\d+)', s)
+            ])
+            # get current pos
+            try:
+                self.dirpos = self.imgfiles.index(self.img_name)
+            except ValueError:
+                # self.img_name may not in self.imgfiles after refreshing
+                self.dirpos = 0
+            # update information
+            self.key = self.key.replace('\\', '/')
+            self.qlabel_img_path.setText(
+                f'{self.key}\n{self.dirpos + 1:3d} / {len(self.imgfiles):3d}')
+
+            # save open file history
+            try:
+                with open('history.txt', 'r') as f:
+                    lines = f.readlines()
+                    lines = [line.strip() for line in lines]
+                    if len(lines) == 5:
+                        del lines[-1]
+            except Exception:
+                lines = []
+            # add the new records to the first line
+            if self.key not in ['icon.png', './icon.png'] and (self.key
+                                                               not in lines):
+                lines.insert(0, self.key)
+            with open('history.txt', 'w') as f:
+                for line in lines:
+                    f.write(f'{line}\n')
+        else:
+            raise ValueError('Wrong key!')
+            exit(-1)
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_F9:
@@ -275,6 +301,7 @@ class MainWindow(QMainWindow):
         file_menu = menubar.addMenu('&File')
         file_menu.addAction(actions.open(self))
         file_menu.addAction(actions.refresh(self))
+        file_menu.addAction(actions.history(self))
 
         # Edit
         edit_menu = menubar.addMenu('&Edit')
@@ -298,6 +325,7 @@ class MainWindow(QMainWindow):
         self.toolbar.addAction(actions.open(self))
         self.toolbar.addAction(actions.refresh(self))
         self.toolbar.addAction(actions.compare(self))
+        self.toolbar.addAction(actions.history(self))
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolbar)
 
     def init_statusbar(self):
@@ -336,13 +364,23 @@ class MainWindow(QMainWindow):
 
     def open_file_dialog(self):
         key = QFileDialog.getOpenFileName(self, 'Select an image', '.')[0]
-        if key.endswith(FORMATS):
-            self.canvas.key = key
+        self.canvas.key = key
         self.canvas.get_img_list()
         self.canvas.show_image(init=True)
 
     def refresh_img_list(self):
         self.canvas.get_img_list()
+
+    def open_history(self):
+        with open('history.txt', 'r') as f:
+            lines = f.readlines()
+            lines = [line.strip() for line in lines]
+        key, ok = QInputDialog().getItem(self, 'Open File History', 'History:',
+                                         lines, 0, True)
+        if ok:
+            self.canvas.key = key
+            self.canvas.get_img_list()
+            self.canvas.show_image(init=True)
 
 
 if __name__ == '__main__':
