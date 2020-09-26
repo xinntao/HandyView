@@ -363,10 +363,17 @@ class MainWindow(QMainWindow):
     ##################################
 
     def open_file_dialog(self):
-        key = QFileDialog.getOpenFileName(self, 'Select an image', '.')[0]
-        self.canvas.key = key
-        self.canvas.get_img_list()
-        self.canvas.show_image(init=True)
+        try:
+            with open('history.txt', 'r') as f:
+                history = f.readlines()[0]
+                history = history.strip()
+        except Exception:
+            history = '.'
+        key, ok = QFileDialog.getOpenFileName(self, 'Select an image', history)
+        if ok:
+            self.canvas.key = key
+            self.canvas.get_img_list()
+            self.canvas.show_image(init=True)
 
     def refresh_img_list(self):
         self.canvas.get_img_list()
