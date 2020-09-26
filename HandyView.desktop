@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=HandyView
+Exec=/mnt/3TB/Projects/HandyView/HandyView.py %f
+Type=Application
+Terminal=false
+Icon=/mnt/3TB/Projects/HandyView/icon.png

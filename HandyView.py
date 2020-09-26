@@ -1,16 +1,18 @@
-#!/usr/bin/env python3
-import os, sys, glob
+import os
+import sys
+import glob
 import re
 from PIL import Image
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap, QTransform, QColor, QImage, QIcon
-from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene
-from PyQt5.QtWidgets import QWidget, QGridLayout, QVBoxLayout, QGroupBox, QLabel, QToolBar
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QGraphicsView,
+                             QGraphicsScene)
+from PyQt5.QtWidgets import (QWidget, QGridLayout, QVBoxLayout, QGroupBox,
+                             QLabel, QToolBar)
 from PyQt5.QtWidgets import QDockWidget, QFileDialog
 
 import actions as actions
-from PyQt5.QtGui import QIcon
 
 
 class HandyScene(QGraphicsScene):
@@ -96,8 +98,7 @@ class Canvas(QWidget):
         try:
             self.key = sys.argv[1]
         except IndexError:
-            print(
-                '\nHandyViewer \nUsage[from terminal]: HandyViewer img_path\n')
+            print('\nHandyView \nUsage[from terminal]: HandyView img_path\n')
             sys.exit(1)
 
         self.formats = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG',
@@ -110,8 +111,6 @@ class Canvas(QWidget):
 
         if self.key.endswith(self.formats):
 
-            # GUI
-            parent.setWindowTitle('HandyViewer')
             # layout
             main_layout = QGridLayout(self)
             # QgraphicsView - QGraphicsScene - QPixmap
@@ -245,20 +244,16 @@ class Canvas(QWidget):
             self.qscene.setBackgroundBrush(QtCore.Qt.white)
 
 
-##################################
-# QMainWindow
-##################################
-
-
 class MainWindow(QMainWindow):
+    """The main window."""
 
     def __init__(self):
         super(MainWindow, self).__init__()
 
-        self.init_UI()
+        self.init_ui()
 
-    def init_UI(self):
-        self.setWindowTitle('HandyViewer')
+    def init_ui(self):
+        self.setWindowTitle('HandyView')
 
         self.init_menubar()
         self.init_toolbar()
@@ -298,7 +293,7 @@ class MainWindow(QMainWindow):
     def init_toolbar(self):
         self.toolbar = QToolBar(self)
         self.toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.toolbar.addAction(actions.open_tool(self))
+        self.toolbar.addAction(actions.open(self))
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolbar)
 
     def init_central_window(self):
@@ -343,8 +338,10 @@ if __name__ == '__main__':
     if platform.system() == 'Windows':
         # set the icon in the task bar
         import ctypes
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('appid')
-    print('Welcom to HandyViewer.')
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+            'HandyView')
+    print('Welcom to HandyView.')
+
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon('icon.png'))
     main = MainWindow()

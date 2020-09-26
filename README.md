@@ -1,4 +1,14 @@
-# :yum: HandyViewer
+# :yum: HandyView
+
+## Reference
+
+- [Qt5 doc](https://doc.qt.io/qt-5/)
+- [PyQt5 doc](https://doc.qt.io/qtforpython/api.html)
+
+- [Key name](https://doc.qt.io/archives/qtjambi-4.5.2_01/com/trolltech/qt/core/Qt.Key.html)
+
+- menubar
+- toolbar
 
 I want to **switch among images with a fixed zoomed ration** to compare image details more conveniently, especially in super-resolution (SR).
 
@@ -21,12 +31,12 @@ This project is still under construction, advice, bug report and development are
 
 1. Clone this repo `git clone git@github.com:xinntao/HandyViewer.git`
 1. How to double clike to open an image
-    1. modify the HandyViewer.desktop file - *Exec & Icon*
+    1. modify the HandyView.desktop file - *Exec & Icon*
     1. copy the .desktop file to `/usr/share/applications`
-1. How to change the default image viewer 
+1. How to change the default image viewer
     1. Right clike an image
     1. Go to `Properties` -> `Open With`
-    1. Choose *HandyViewer*
+    1. Choose *HandyView*
 
 ## Features
 

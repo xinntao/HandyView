@@ -11,11 +11,19 @@ def new_action(parent,
                shortcut=None,
                slot=None,
                checkable=False):
-    """Factory producing differnet actions."""
+    """Factory producing differnet actions.
+
+    Args:
+        parent (class): Parent class.
+        text (str): Shown text.
+        icon_name (str): Icon name in the path. Default: None.
+        shortcut (str): Keyboard shortcut. Default: None.
+        slot (func): Slot function. Default: None.
+        checkable (bool): Default: False.
+    """
     action = QAction(text, parent)
     if icon_name:
-        action.setIcon(
-            QIcon(osp.join(ROOT_DIR, 'icons/{}.png'.format(icon_name))))
+        action.setIcon(QIcon(osp.join(ROOT_DIR, f'icons/{icon_name}.png')))
     if shortcut:
         action.setShortcut(shortcut)
     # trigger
@@ -25,40 +33,14 @@ def new_action(parent,
     return action
 
 
-##################################
-# MenuBar
-##################################
+# Actions for Menu bar and Tool bar
 
 
 def open(parent):
-    # open an image. Also update image list.
-    return new_action(parent, 'Open...', icon_name='open', shortcut='Ctrl+O', \
+    """Show system open file dialog to open file."""
+    return new_action(
+        parent,
+        'Open',
+        icon_name='open',
+        shortcut='Ctrl+O',
         slot=parent.open_file_dialog)
-
-
-def open_tool(parent):
-    # open an image. Also update image list.
-    return new_action(parent, 'Open...', icon_name='open', shortcut='Ctrl+O', \
-        slot=parent.open_file_dialog)
-
-
-def new(parent):
-    # open an image. Also update image list.
-    return new_action(parent, 'New', icon_name='open', shortcut='Ctrl+N', \
-        slot=print_slot)
-
-
-def resize(parent):
-    # open an image. Also update image list.
-    return new_action(parent, 'Resize', icon_name='open', shortcut=None, \
-        slot=print_slot)
-
-
-def crop(parent):
-    # open an image. Also update image list.
-    return new_action(parent, 'Crop', icon_name='new_w', shortcut=None, \
-        slot=print_slot)
-
-
-def print_slot():
-    print('slot')
