@@ -44,3 +44,23 @@ def open(parent):
         icon_name='open',
         shortcut='Ctrl+O',
         slot=parent.open_file_dialog)
+
+
+def refresh(parent):
+    """Refresh the image list."""
+    return new_action(
+        parent,
+        'Refresh',
+        icon_name='refresh',
+        shortcut='F5',
+        slot=parent.refresh_img_list)
+
+
+def compare(parent):
+    """Compare."""
+    return new_action(
+        parent,
+        'Compare',
+        icon_name='compare',
+        shortcut='Ctrl+C',
+        slot=parent.refresh_img_list)

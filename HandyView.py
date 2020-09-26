@@ -10,9 +10,12 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QGraphicsView,
                              QGraphicsScene)
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QVBoxLayout, QGroupBox,
                              QLabel, QToolBar)
-from PyQt5.QtWidgets import QDockWidget, QFileDialog
+from PyQt5.QtWidgets import QFileDialog
 
 import actions as actions
+
+FORMATS = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM',
+           '.bmp', '.BMP', '.gif', '.GIF', 'tiff')
 
 
 class HandyScene(QGraphicsScene):
@@ -22,37 +25,35 @@ class HandyScene(QGraphicsScene):
         self.parent = parent
 
     def mouseMoveEvent(self, event):
-        # show mouse position on the original image
-        # zoom will not influence
+        """Show mouse position on the original image.
+        Zooming will not influence the position."""
         x_pos = event.scenePos().x()
         y_pos = event.scenePos().y()
         self.parent.qlabel_info_mouse_pos.setText(
             ('Cursor position: (ignore zoom) \n'
-            "\tx (width):\t{:.1f}\n\ty (height):\t{:.1f}".format(\
-            x_pos, y_pos)))
-        # if out of image, the text will be red
-        if x_pos < 0 or y_pos < 0 or x_pos > self.parent.imgw or y_pos > self.parent.imgh:
+             f"  x (width):\t{x_pos:.1f}\n  y (height):\t{y_pos:.1f}"))
+        # if the curse is out of image, the text will be red
+        if (x_pos < 0 or y_pos < 0 or x_pos > self.parent.imgw
+                or y_pos > self.parent.imgh):
             self.parent.qlabel_info_mouse_pos.setStyleSheet(
-                'QLabel {color : red; }')
-        else:  # normal
+                'QLabel {color : red;}')
+        else:
             self.parent.qlabel_info_mouse_pos.setStyleSheet(
-                'QLabel {color : black; }')
-            # show rgb values
-            c = self.parent.qimg.pixel(int(x_pos), int(y_pos))
-            c_rgb = QColor(c).getRgb()  # 8bit RGBA: (255, 23, 0, 255)
-            self.parent.qlabel_info_mouse_rgb_value.setText('RGB: ({:3d}, {:3d}, {:3d})'.format(\
-                c_rgb[0], c_rgb[1], c_rgb[2]))
+                'QLabel {color : black;}')
+            # show RGB value
+            pixel = self.parent.qimg.pixel(int(x_pos), int(y_pos))
+            rgba = QColor(pixel).getRgb()  # 8 bit RGBA
+            self.parent.qlabel_info_mouse_rgb_value.setText(
+                f'\nRGBA: ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, '
+                f'{rgba[3]:3d})')
 
 
-# https://stackoverflow.com/questions/16105349/remove-scroll-functionality-on-mouse-wheel-qgraphics-view
 class HandyView(QGraphicsView):
 
     def __init__(self, scene, parent=None):
         super(HandyView, self).__init__(scene, parent)
         self.parent = parent
         self.setDragMode(QGraphicsView.ScrollHandDrag)
-        # self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        # self.qsetHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
         self.setMouseTracking(True)
@@ -70,19 +71,19 @@ class HandyView(QGraphicsView):
     def zoom_in(self):
         self.zoom *= 1.05
         self.parent.qlabel_info_zoom_ration.setText(
-            '\n# Zoom ration:\t{:.1f}'.format(self.zoom))
+            f'\nZoom ration:\t{self.zoom:.1f}')
         self.set_transform()
 
     def zoom_out(self):
         self.zoom /= 1.05
         self.parent.qlabel_info_zoom_ration.setText(
-            '\n# Zoom ration:\t{:.1f}'.format(self.zoom))
+            f'\nZoom ration:\t{self.zoom:.1f}')
         self.set_transform()
 
     def set_zoom(self, ratio):
         self.zoom = ratio
         self.parent.qlabel_info_zoom_ration.setText(
-            '\n# Zoom ration:\t{:.1f}'.format(self.zoom))
+            f'\nZoom ration:\t{self.zoom:.1f}')
         self.set_transform()
 
     def set_transform(self):
@@ -91,44 +92,44 @@ class HandyView(QGraphicsView):
 
 
 class Canvas(QWidget):
+    """The main canvas to show the image, information panel."""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super(Canvas, self).__init__()
-
         try:
             self.key = sys.argv[1]
         except IndexError:
-            print('\nHandyView \nUsage[from terminal]: HandyView img_path\n')
-            sys.exit(1)
-
-        self.formats = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG',
-                        '.ppm', '.PPM', '.bmp', '.BMP', '.gif', '.GIF', 'tiff')
+            self.key = 'icon.png'  # show the icon image
         try:
             open(self.key, 'r')
         except IOError:
-            print('There was an error opening {}'.format(self.key))
+            print(f'There was an error opening {self.key}')
             sys.exit(1)
 
-        if self.key.endswith(self.formats):
-
+        if self.key.endswith(FORMATS):
             # layout
             main_layout = QGridLayout(self)
-            # QgraphicsView - QGraphicsScene - QPixmap
+            # QGraphicsView - QGraphicsScene - QPixmap
             self.qscene = HandyScene(self)
             self.qview = HandyView(self.qscene, self)
 
-            main_layout.addWidget(self.qview, 0, 0, 30, 5)
+            # top QLable, image info
+            self.qlabel_img_info = QLabel(self)
+            main_layout.addWidget(self.qlabel_img_info, 0, 0, 1, 5)
+            # main view
+            main_layout.addWidget(self.qview, 1, 0, 30, 5)
             # bottom QLabel, show image path
             self.qlabel_img_path = QLabel(self)
-            main_layout.addWidget(self.qlabel_img_path, 30, 0, 1, 5)
+            main_layout.addWidget(self.qlabel_img_path, 31, 0, 1, 5)
+
             # information panel; multiple QLabels, using setText to update
             self.info_group = QGroupBox('Information Panel')
-            self.qlabel_info_img_name = QLabel(self)  # image name
             self.qlabel_info_mouse_pos = QLabel(self)
             self.qlabel_info_mouse_rgb_value = QLabel(self)
             self.qlabel_info_wh = QLabel(self)  # image width and height
             self.qlabel_info_color_type = QLabel(self)  # image color type
             self.qlabel_info_zoom_ration = QLabel(self)  # zoom ratio
+
             self.qlabel_info_mouse_pos.setTextInteractionFlags(
                 QtCore.Qt.TextSelectableByMouse)
             self.qlabel_info_mouse_rgb_value.setTextInteractionFlags(
@@ -142,7 +143,6 @@ class Canvas(QWidget):
             # real-time mouse position(relate to original images)
             infor_group_layout = QVBoxLayout()
             infor_group_layout.setAlignment(QtCore.Qt.AlignTop)
-            infor_group_layout.addWidget(self.qlabel_info_img_name)
             infor_group_layout.addWidget(self.qlabel_info_mouse_pos)
             infor_group_layout.addWidget(self.qlabel_info_mouse_rgb_value)
             infor_group_layout.addWidget(self.qlabel_info_wh)
@@ -165,20 +165,26 @@ class Canvas(QWidget):
         self.imgfiles = []
         if self.path == '':
             self.path = './'
-        for img_path in glob.glob(self.path + '/*'):
-            _, img_name = os.path.split(img_path)
+        for img_path in sorted(glob.glob(os.path.join(self.path, '*'))):
+            img_name = os.path.split(img_path)[1]
             base, ext = os.path.splitext(img_name)
-            if ext in self.formats:
+            if ext in FORMATS:
                 self.imgfiles.append(img_name)
         # natural sort
         self.imgfiles.sort(key=lambda s: [
             int(t) if t.isdigit() else t.lower() for t in re.split('(\d+)', s)
         ])
         # get current pos
-        self.dirpos = self.imgfiles.index(self.img_name)
+        try:
+            self.dirpos = self.imgfiles.index(self.img_name)
+        except ValueError:
+            # self.img_name may not in self.imgfiles after refreshing
+            self.dirpos = 0
+        self.key = self.key.replace('\\', '/')
+        self.qlabel_img_path.setText(
+            f'{self.key}\n{self.dirpos + 1:3d} / {len(self.imgfiles):3d}')
 
     def keyPressEvent(self, event):
-        # should be the focus problem
         if event.key() == QtCore.Qt.Key_F9:
             self.toggle_bg_color()
         elif event.key() == QtCore.Qt.Key_R:
@@ -189,11 +195,11 @@ class Canvas(QWidget):
             self.dir_browse(-1)
 
     def keyReleaseEvent(self, event):
+        # there is key focus problem, so we use KeyReleaseEvent
         if event.key() == QtCore.Qt.Key_Right:
             self.dir_browse(1)
         elif event.key() == QtCore.Qt.Key_Left:
             self.dir_browse(-1)
-
         elif event.key() == QtCore.Qt.Key_Up:
             self.qview.zoom_in()
         elif event.key() == QtCore.Qt.Key_Down:
@@ -207,17 +213,18 @@ class Canvas(QWidget):
         self.imgw, self.imgh = self.qpixmap.width(), self.qpixmap.height()
         # put image always in the center of a QGraphicsView
         self.qscene.setSceneRect(0, 0, self.imgw, self.imgh)
-        self.qlabel_img_path.setText('{}\n{:3d} / {:3d}'.\
-            format(self.key, self.dirpos + 1, len(self.imgfiles)))
+        self.key = self.key.replace('\\', '/')
+        self.qlabel_img_path.setText(
+            f'{self.key}\n{self.dirpos + 1:3d} / {len(self.imgfiles):3d}')
         # update information panel
         self.path, self.img_name = os.path.split(self.key)
-        # self.qlabel_info_img_name.setText('# Image name:\n   {}'.format(self.img_name))
 
-        self.qlabel_info_wh.setText('\n# Image size:\n\tHeight:\t{:d}\n\tWeight:\t{:d}'\
-            .format(self.imgh, self.imgw))
+        self.qlabel_info_wh.setText(
+            f'\nImage size:\n  Height:\t{self.imgh:d}\n  Width:\t{self.imgw:d}'
+        )
         with Image.open(self.key) as lazy_img:
-            self.qlabel_info_color_type.setText('\n# Color type:\t{}'.format(
-                lazy_img.mode))
+            self.qlabel_info_color_type.setText(
+                f'\nColor type:\t{lazy_img.mode}')
 
         if init:
             if self.imgw < 500:
@@ -236,6 +243,7 @@ class Canvas(QWidget):
             self.show_image()
 
     def toggle_bg_color(self):
+        """Toggle background color."""
         if self.qview_bg_color == 'white':
             self.qview_bg_color = 'gray'
             self.qscene.setBackgroundBrush(QtCore.Qt.gray)
@@ -249,12 +257,10 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-
         self.init_ui()
 
     def init_ui(self):
         self.setWindowTitle('HandyView')
-
         self.init_menubar()
         self.init_toolbar()
         self.init_statusbar()
@@ -268,18 +274,17 @@ class MainWindow(QMainWindow):
         # File
         file_menu = menubar.addMenu('&File')
         file_menu.addAction(actions.open(self))
-        file_menu.addAction(actions.new(self))
+        file_menu.addAction(actions.refresh(self))
 
         # Edit
         edit_menu = menubar.addMenu('&Edit')
-        edit_menu.addAction(actions.resize(self))
-        edit_menu.addAction(actions.crop(self))
 
         # Draw
         draw_menu = menubar.addMenu('&Draw')
 
         # Compare
         compare_menu = menubar.addMenu('&Compare')
+        compare_menu.addAction(actions.compare(self))
 
         # View
         self.view_menu = menubar.addMenu('&View')
@@ -287,19 +292,22 @@ class MainWindow(QMainWindow):
         # Help
         help_menu = menubar.addMenu('&Help')
 
-    def init_statusbar(self):
-        self.statusBar().showMessage('Ready')
-
     def init_toolbar(self):
         self.toolbar = QToolBar(self)
         self.toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.toolbar.addAction(actions.open(self))
+        self.toolbar.addAction(actions.refresh(self))
+        self.toolbar.addAction(actions.compare(self))
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolbar)
+
+    def init_statusbar(self):
+        self.statusBar().showMessage('Ready')
 
     def init_central_window(self):
         self.canvas = Canvas(self)
         self.setCentralWidget(self.canvas)
 
+    """
     def add_dock_window(self):
         # Tools
         dock_tool = QDockWidget('Tools', self)
@@ -320,6 +328,7 @@ class MainWindow(QMainWindow):
         # add to View menu bar
         self.view_menu.addAction(dock_tool.toggleViewAction())
         self.view_menu.addAction(dock_info.toggleViewAction())
+    """
 
     ##################################
     # Slots
@@ -327,10 +336,13 @@ class MainWindow(QMainWindow):
 
     def open_file_dialog(self):
         key = QFileDialog.getOpenFileName(self, 'Select an image', '.')[0]
-        if key.endswith(self.canvas.formats):
+        if key.endswith(FORMATS):
             self.canvas.key = key
         self.canvas.get_img_list()
         self.canvas.show_image(init=True)
+
+    def refresh_img_list(self):
+        self.canvas.get_img_list()
 
 
 if __name__ == '__main__':
