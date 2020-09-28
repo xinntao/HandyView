@@ -63,10 +63,19 @@ class HandyView(QGraphicsView):
 
     def wheelEvent(self, event):
         moose = event.angleDelta().y() / 120
-        if moose > 0:
-            self.zoom_in()
-        elif moose < 0:
-            self.zoom_out()
+        modifiers = QApplication.keyboardModifiers()
+        if modifiers == QtCore.Qt.ControlModifier:
+            # zoom in / out
+            if moose > 0:
+                self.zoom_in()
+            elif moose < 0:
+                self.zoom_out()
+        else:
+            # next or previous image
+            if moose > 0:
+                self.parent.dir_browse(-1)
+            elif moose < 0:
+                self.parent.dir_browse(1)
 
     def zoom_in(self):
         self.zoom *= 1.05
