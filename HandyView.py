@@ -5,7 +5,7 @@ import re
 from PIL import Image
 
 from PyQt5 import QtCore
-from PyQt5.QtGui import QPixmap, QTransform, QColor, QImage, QIcon
+from PyQt5.QtGui import QPixmap, QTransform, QColor, QImage, QIcon, QFont
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QGraphicsView,
                              QGraphicsScene)
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QVBoxLayout, QGroupBox,
@@ -109,7 +109,8 @@ class Canvas(QWidget):
             self.key = sys.argv[1]
         except IndexError:
             self.key = 'icon.png'  # show the icon image
-            self.exclude_names = None
+
+        self.exclude_names = None
         try:
             open(self.key, 'r')
         except IOError:
@@ -128,6 +129,7 @@ class Canvas(QWidget):
             goto_btn = QPushButton('GO', self)
             goto_btn.clicked.connect(self.goto_button_clicked)
             self.name_label = QLabel(self)
+            self.name_label.setFont(QFont('Times', 15))
             self.name_label.setTextInteractionFlags(
                 QtCore.Qt.TextSelectableByMouse)
             self.name_label.setStyleSheet('QLabel {color : green;}')
@@ -326,6 +328,8 @@ class Canvas(QWidget):
         if init:
             if self.imgw < 500:
                 self.qview.set_zoom(500 // self.imgw)
+            else:
+                self.qview.set_zoom(1)
         self.qview.set_transform()
 
     def dir_browse(self, direc):
@@ -488,6 +492,14 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon('icon.png'))
+
+    screen = app.primaryScreen()
+    print(f'Screen: {screen.name()}')
+    size = screen.size()
+    # rect = screen.availableGeometry()
+
     main = MainWindow()
+    main.setGeometry(0, 0, size.width(),
+                     size.height())  # (left, top, width, height)
     main.showMaximized()
     sys.exit(app.exec_())

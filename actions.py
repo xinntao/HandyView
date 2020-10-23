@@ -23,7 +23,7 @@ def new_action(parent,
     """
     action = QAction(text, parent)
     if icon_name:
-        action.setIcon(QIcon(osp.join(ROOT_DIR, f'icons/{icon_name}.png')))
+        action.setIcon(QIcon(osp.join(ROOT_DIR, f'icons/{icon_name}')))
     if shortcut:
         action.setShortcut(shortcut)
     # trigger
@@ -41,7 +41,7 @@ def open(parent):
     return new_action(
         parent,
         'Open',
-        icon_name='open',
+        icon_name='open.png',
         shortcut='Ctrl+O',
         slot=parent.open_file_dialog)
 
@@ -61,7 +61,7 @@ def compare(parent):
     return new_action(
         parent,
         'Compare',
-        icon_name='compare',
+        icon_name='compare.png',
         shortcut='F6',
         slot=parent.refresh_img_list)
 
@@ -71,7 +71,7 @@ def history(parent):
     return new_action(
         parent,
         'History',
-        icon_name='history',
+        icon_name='history.png',
         # shortcut='Ctrl+C',
         slot=parent.open_history)
 
@@ -81,6 +81,6 @@ def exclude_file_name(parent):
     return new_action(
         parent,
         'Exclude',
-        icon_name='exclude',
+        icon_name='exclude.png',
         # shortcut='Ctrl+C',
         slot=parent.exclude_file_name)
