@@ -137,6 +137,7 @@ class Canvas(QWidget):
             self.info_label.setTextInteractionFlags(
                 QtCore.Qt.TextSelectableByMouse)
             self.info_label.setStyleSheet('QLabel {color : blue;}')
+            self.info_label.setFont(QFont('Times', 15))
 
             info_grid = QGridLayout()
             info_grid.addWidget(self.goto_edit, 0, 0, 1, 1)
@@ -318,7 +319,7 @@ class Canvas(QWidget):
             f'[{self.dirpos + 1:d} / {len(self.imgfiles):d}] '
             f'{self.img_name}')
         self.info_label.setText(
-            f'  {self.imgh:d} x {self.imgw:d}, {self.file_size:.2f} MB. '
+            f' {self.imgh:d} x {self.imgw:d}, {self.file_size:.2f} MB. '
             f'{self.color_type}')
 
         self.qlabel_info_wh.setText(
@@ -491,7 +492,7 @@ if __name__ == '__main__':
     print('Welcom to HandyView.')
 
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon('icon.png'))
+    app.setWindowIcon(QIcon('icon.icon'))
 
     screen = app.primaryScreen()
     print(f'Screen: {screen.name()}')
@@ -499,6 +500,7 @@ if __name__ == '__main__':
     # rect = screen.availableGeometry()
 
     main = MainWindow()
+    main.setWindowIcon(QIcon('icon.ico'))
     main.setGeometry(0, 0, size.width(),
                      size.height())  # (left, top, width, height)
     main.showMaximized()
