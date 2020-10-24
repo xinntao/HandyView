@@ -116,6 +116,7 @@ class Canvas(QWidget):
             self.key = os.path.join(CURRENT_PATH,
                                     'icon.png')  # show the icon image
 
+        self.include_names = None
         self.exclude_names = None
         try:
             open(self.key, 'r')
@@ -163,8 +164,12 @@ class Canvas(QWidget):
             self.qlabel_info_mouse_rgb_value.setTextInteractionFlags(
                 QtCore.Qt.TextSelectableByMouse)
             self.qlabel_info_mouse_rgb_value.setFont(QFont('Times', 12))
-            # exclude names
-            self.qlabel_info_exclude_names = QLabel(self)  # exclude names
+            # include and exclude names
+            self.qlabel_info_include_names = QLabel(self)
+            self.qlabel_info_include_names.setTextInteractionFlags(
+                QtCore.Qt.TextSelectableByMouse)
+            self.qlabel_info_include_names.setFont(QFont('Times', 12))
+            self.qlabel_info_exclude_names = QLabel(self)
             self.qlabel_info_exclude_names.setTextInteractionFlags(
                 QtCore.Qt.TextSelectableByMouse)
             self.qlabel_info_exclude_names.setFont(QFont('Times', 12))
@@ -180,7 +185,8 @@ class Canvas(QWidget):
             main_layout.addWidget(self.qlabel_info_mouse_pos, 8, 0, 1, 50)
             main_layout.addWidget(self.qlabel_info_mouse_rgb_value, 9, 0, 1,
                                   50)
-            main_layout.addWidget(self.qlabel_info_exclude_names, 12, 0, 1, 50)
+            main_layout.addWidget(self.qlabel_info_include_names, 12, 0, 1, 50)
+            main_layout.addWidget(self.qlabel_info_exclude_names, 13, 0, 1, 50)
 
             # main view
             main_layout.addWidget(self.qview, 0, 0, -1, 50)
@@ -221,6 +227,15 @@ class Canvas(QWidget):
             self.qlabel_info_exclude_names.setStyleSheet(
                 'QLabel {color : black;}')
         self.qlabel_info_exclude_names.setText(show_str)
+        if isinstance(self.include_names, list):
+            show_str = 'Include:\n\t' + '\n\t'.join(self.include_names)
+            self.qlabel_info_include_names.setStyleSheet(
+                'QLabel {color : blue;}')
+        else:
+            show_str = 'Include: None'
+            self.qlabel_info_include_names.setStyleSheet(
+                'QLabel {color : black;}')
+        self.qlabel_info_include_names.setText(show_str)
 
         if self.key.endswith(FORMATS):
             # get image list
@@ -232,11 +247,19 @@ class Canvas(QWidget):
                 img_name = os.path.split(img_path)[1]
                 base, ext = os.path.splitext(img_name)
                 if ext in FORMATS:
-                    flag_add = True
-                    if self.exclude_names is not None:
+                    if self.include_names is not None:
+                        flag_add = False
+                        for include_name in self.include_names:
+                            if include_name in base:
+                                flag_add = True
+                    elif self.exclude_names is not None:
+                        flag_add = True
                         for exclude_name in self.exclude_names:
                             if exclude_name in base:
                                 flag_add = False
+                    else:
+                        flag_add = True
+
                     if flag_add:
                         self.imgfiles.append(img_name)
             # natural sort
@@ -375,6 +398,7 @@ class MainWindow(QMainWindow):
         file_menu = menubar.addMenu('&File')
         file_menu.addAction(actions.open(self))
         file_menu.addAction(actions.refresh(self))
+        file_menu.addAction(actions.include_file_name(self))
         file_menu.addAction(actions.exclude_file_name(self))
         file_menu.addAction(actions.history(self))
 
@@ -399,6 +423,7 @@ class MainWindow(QMainWindow):
         self.toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.toolbar.addAction(actions.open(self))
         self.toolbar.addAction(actions.refresh(self))
+        self.toolbar.addAction(actions.include_file_name(self))
         self.toolbar.addAction(actions.exclude_file_name(self))
         self.toolbar.addAction(actions.compare(self))
         self.toolbar.addAction(actions.history(self))
@@ -474,8 +499,24 @@ class MainWindow(QMainWindow):
                 self.canvas.exclude_names = [
                     v.strip() for v in exclude_names.split(',')
                 ]
+                self.canvas.include_names = None
             else:
                 self.canvas.exclude_names = None
+            self.canvas.get_img_list()
+            self.canvas.show_image(init=False)
+
+    def include_file_name(self):
+        include_names, ok = QInputDialog.getText(self, 'Include file name',
+                                                 'Key word (seperate by ,):',
+                                                 QLineEdit.Normal, '')
+        if ok:
+            if include_names != '':
+                self.canvas.include_names = [
+                    v.strip() for v in include_names.split(',')
+                ]
+                self.canvas.exclude_names = None
+            else:
+                self.canvas.include_names = None
             self.canvas.get_img_list()
             self.canvas.show_image(init=False)
 

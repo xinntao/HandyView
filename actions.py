@@ -69,11 +69,7 @@ def compare(parent):
 def history(parent):
     """History."""
     return new_action(
-        parent,
-        'History',
-        icon_name='history.png',
-        # shortcut='Ctrl+C',
-        slot=parent.open_history)
+        parent, 'History', icon_name='history.png', slot=parent.open_history)
 
 
 def exclude_file_name(parent):
@@ -82,5 +78,13 @@ def exclude_file_name(parent):
         parent,
         'Exclude',
         icon_name='exclude.png',
-        # shortcut='Ctrl+C',
         slot=parent.exclude_file_name)
+
+
+def include_file_name(parent):
+    """Include file name."""
+    return new_action(
+        parent,
+        'Include',
+        icon_name='include.png',
+        slot=parent.include_file_name)
