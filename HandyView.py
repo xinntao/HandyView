@@ -8,14 +8,22 @@ from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap, QTransform, QColor, QImage, QIcon, QFont
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QGraphicsView,
                              QGraphicsScene)
-from PyQt5.QtWidgets import (QWidget, QGridLayout, QVBoxLayout, QGroupBox,
-                             QLabel, QToolBar, QLineEdit, QPushButton)
+from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QToolBar, QLineEdit,
+                             QPushButton)
 from PyQt5.QtWidgets import QFileDialog, QInputDialog
 
 import actions as actions
 
 FORMATS = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM',
            '.bmp', '.BMP', '.gif', '.GIF', 'tiff')
+
+if getattr(sys, 'frozen', False):
+    # If the application is run as a bundle, the PyInstaller bootloader
+    # extends the sys module by a flag frozen=True and sets the app
+    # path into variable _MEIPASS'.
+    CURRENT_PATH = sys._MEIPASS
+else:
+    CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
 class HandyScene(QGraphicsScene):
@@ -105,7 +113,8 @@ class Canvas(QWidget):
         try:
             self.key = sys.argv[1]
         except IndexError:
-            self.key = 'icon.png'  # show the icon image
+            self.key = os.path.join(CURRENT_PATH,
+                                    'icon.png')  # show the icon image
 
         self.exclude_names = None
         try:
@@ -247,7 +256,7 @@ class Canvas(QWidget):
 
             # save open file history
             try:
-                with open('history.txt', 'r') as f:
+                with open(os.path.join(CURRENT_PATH, 'history.txt'), 'r') as f:
                     lines = f.readlines()
                     lines = [line.strip() for line in lines]
                     if len(lines) == 5:
@@ -258,7 +267,7 @@ class Canvas(QWidget):
             if self.key not in ['icon.png', './icon.png'] and (self.key
                                                                not in lines):
                 lines.insert(0, self.key)
-            with open('history.txt', 'w') as f:
+            with open(os.path.join(CURRENT_PATH, 'history.txt'), 'w') as f:
                 for line in lines:
                     f.write(f'{line}\n')
         else:
@@ -431,7 +440,7 @@ class MainWindow(QMainWindow):
 
     def open_file_dialog(self):
         try:
-            with open('history.txt', 'r') as f:
+            with open(os.path.join(CURRENT_PATH, 'history.txt'), 'r') as f:
                 history = f.readlines()[0]
                 history = history.strip()
         except Exception:
@@ -446,7 +455,7 @@ class MainWindow(QMainWindow):
         self.canvas.get_img_list()
 
     def open_history(self):
-        with open('history.txt', 'r') as f:
+        with open(os.path.join(CURRENT_PATH, 'history.txt'), 'r') as f:
             lines = f.readlines()
             lines = [line.strip() for line in lines]
         key, ok = QInputDialog().getItem(self, 'Open File History', 'History:',
