@@ -50,10 +50,15 @@ class HandyScene(QGraphicsScene):
                 'QLabel {color : black;}')
             # show RGB value
             pixel = self.parent.qimg.pixel(int(x_pos), int(y_pos))
-            rgba = QColor(pixel).getRgb()  # 8 bit RGBA
+            pixel_color = QColor(pixel)
+            self.set_color_label(pixel_color)
+            rgba = pixel_color.getRgb()  # 8 bit RGBA
             self.parent.qlabel_info_mouse_rgb_value.setText(
-                f'RGBA:\n ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, '
+                f' ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, '
                 f'{rgba[3]:3d})')
+
+    def set_color_label(self, color):
+        self.parent.qlabel_color.fill(color)
 
 
 class HandyView(QGraphicsView):
@@ -103,6 +108,32 @@ class HandyView(QGraphicsView):
     def set_transform(self):
         self.setTransform(QTransform().scale(self.zoom,
                                              self.zoom).rotate(self.rotate))
+
+
+class ColorLable(QLabel):
+
+    def __init__(self, text=None, color=None, parent=None):
+        """
+        Args:
+            text (str)
+            color (tuple): RGBA value.
+        """
+        super(ColorLable, self).__init__(parent)
+        self.parent = parent
+        self.setStyleSheet('border: 2px solid gray;')
+        self.pixmap = QPixmap(40, 20)
+        self.setPixmap(self.pixmap)
+        if text is not None:
+            self.setText(text)
+        if color is not None:
+            self.fill(color)
+
+    def fill(self, color):
+        if isinstance(color, (list, tuple)):
+            self.pixmap.fill(QColor(*color))
+        else:
+            self.pixmap.fill(color)
+        self.setPixmap(self.pixmap)
 
 
 class Canvas(QWidget):
@@ -164,6 +195,11 @@ class Canvas(QWidget):
             self.qlabel_info_mouse_rgb_value.setTextInteractionFlags(
                 QtCore.Qt.TextSelectableByMouse)
             self.qlabel_info_mouse_rgb_value.setFont(QFont('Times', 12))
+            # pixel color at the mouse position
+            self.qlable_color_title = QLabel('RGBA:', self)
+            self.qlable_color_title.setFont(QFont('Times', 12))
+            self.qlabel_color = ColorLable(color=(255, 255, 255))
+
             # include and exclude names
             self.qlabel_info_include_names = QLabel(self)
             self.qlabel_info_include_names.setTextInteractionFlags(
@@ -176,6 +212,7 @@ class Canvas(QWidget):
 
             # layeouts
             info_grid = QGridLayout()
+            # int row, int column, int rowSpan, int columnSpan
             info_grid.addWidget(self.goto_edit, 0, 0, 1, 1)
             info_grid.addWidget(goto_btn, 0, 1, 1, 1)
             main_layout.addLayout(info_grid, 0, 0, 1, 10)
@@ -183,7 +220,11 @@ class Canvas(QWidget):
             main_layout.addWidget(self.info_label, 3, 0, 1, 50)
             main_layout.addWidget(self.qlabel_info_zoom_ration, 5, 0, 1, 50)
             main_layout.addWidget(self.qlabel_info_mouse_pos, 8, 0, 1, 50)
-            main_layout.addWidget(self.qlabel_info_mouse_rgb_value, 9, 0, 1,
+            color_grid = QGridLayout()
+            color_grid.addWidget(self.qlable_color_title, 0, 0, 1, 1)
+            color_grid.addWidget(self.qlabel_color, 0, 1, 1, 3)
+            main_layout.addLayout(color_grid, 9, 0, 1, 2)
+            main_layout.addWidget(self.qlabel_info_mouse_rgb_value, 10, 0, 1,
                                   50)
             main_layout.addWidget(self.qlabel_info_include_names, 12, 0, 1, 50)
             main_layout.addWidget(self.qlabel_info_exclude_names, 13, 0, 1, 50)
