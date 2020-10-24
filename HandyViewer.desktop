@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=HandyViewer
-Exec=/mnt/3TB/Projects/HandyViewer/HandyViewer.py %f
-Type=Application
-Terminal=false
-Name[en_HK]=HandyViewer
-Icon=/mnt/3TB/Projects/HandyViewer/icon.png

@@ -1,15 +1,29 @@
-import os.path
-from PyQt5 import QtCore
+from os import path as osp
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
 
-ROOT_DIR = os.path.join(os.path.abspath(__file__), '../')
+ROOT_DIR = osp.join(osp.abspath(__file__), '../')
 
-# factory producing different actions
-def new_action(parent, text, icon_name=None, shortcut=None, slot=None, checkable=False):
+
+def new_action(parent,
+               text,
+               icon_name=None,
+               shortcut=None,
+               slot=None,
+               checkable=False):
+    """Factory producing differnet actions.
+
+    Args:
+        parent (class): Parent class.
+        text (str): Shown text.
+        icon_name (str): Icon name in the path. Default: None.
+        shortcut (str): Keyboard shortcut. Default: None.
+        slot (func): Slot function. Default: None.
+        checkable (bool): Default: False.
+    """
     action = QAction(text, parent)
     if icon_name:
-        action.setIcon(QIcon(os.path.join(ROOT_DIR, 'icons/{}.png'.format(icon_name))))
+        action.setIcon(QIcon(osp.join(ROOT_DIR, f'icons/{icon_name}')))
     if shortcut:
         action.setShortcut(shortcut)
     # trigger
@@ -18,36 +32,59 @@ def new_action(parent, text, icon_name=None, shortcut=None, slot=None, checkable
         action.setCheckable(True)
     return action
 
-##################################
-# MenuBar
-##################################
+
+# Actions for Menu bar and Tool bar
+
 
 def open(parent):
-    # open an image. Also update image list.
-    return new_action(parent, 'Open...', icon_name='open_w', shortcut='Ctrl+O', \
+    """Show system open file dialog to open file."""
+    return new_action(
+        parent,
+        'Open',
+        icon_name='open.png',
+        shortcut='Ctrl+O',
         slot=parent.open_file_dialog)
 
 
-def open_tool(parent):
-    # open an image. Also update image list.
-    return new_action(parent, 'Open...', icon_name='open', shortcut='Ctrl+O', \
-        slot=parent.open_file_dialog)
+def refresh(parent):
+    """Refresh the image list."""
+    return new_action(
+        parent,
+        'Refresh',
+        icon_name='refresh',
+        shortcut='F5',
+        slot=parent.refresh_img_list)
 
 
-def new(parent):
-    # open an image. Also update image list.
-    return new_action(parent, 'New', icon_name='new_w', shortcut='Ctrl+N', \
-        slot=print_slot)
+def compare(parent):
+    """Compare."""
+    return new_action(
+        parent,
+        'Compare',
+        icon_name='compare.png',
+        shortcut='F6',
+        slot=parent.refresh_img_list)
 
-def resize(parent):
-    # open an image. Also update image list.
-    return new_action(parent, 'Resize', icon_name='new_w', shortcut=None, \
-        slot=print_slot)
 
-def crop(parent):
-    # open an image. Also update image list.
-    return new_action(parent, 'Crop', icon_name='new_w', shortcut=None, \
-        slot=print_slot)
+def history(parent):
+    """History."""
+    return new_action(
+        parent, 'History', icon_name='history.png', slot=parent.open_history)
 
-def print_slot():
-    print('slot')
+
+def exclude_file_name(parent):
+    """Exclude file name."""
+    return new_action(
+        parent,
+        'Exclude',
+        icon_name='exclude.png',
+        slot=parent.exclude_file_name)
+
+
+def include_file_name(parent):
+    """Include file name."""
+    return new_action(
+        parent,
+        'Include',
+        icon_name='include.png',
+        slot=parent.include_file_name)
