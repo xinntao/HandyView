@@ -1,64 +1,82 @@
 # HandyView
 
-## Compile to exe in Windows
-> pyinstaller -D HandyView.py -i icon.ico   --windowed
+HandyView is a handy image viewer based on PyQt5. It provided convenient ways for viewing and comparing.
+
+## :sparkles: Features
+
+- Switch among images **with fixed zoom ration**, which is useful when comparing image details. (Unfortunately, I cannot find such a image viewer and this is the initial motivation to write HandyView).
+- Show basic image information, for example, image path, shape, size, color type, zoom ration, etc.
+- Show the position and color in the current mouse cursor.
+
+### Current screenshot
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/xinntao/public-figures/master/HandyView/HandyView.png">
+</p>
+
+## Usage
+
+I have now tested it on Windows. It should also work on Ubuntu (but may with some modification)
+
+### Windows
+
+#### Dependencies
+
+- Anaconda (Python >= 3.5 )
+- Python PyQt5 package
+
+> python HandyView.py [image_path]
+
+#### Compile to executable program
+
+Use `pyinstaller` to compile to executable program, so that you can double-click the image to open the HandyView.
+
+1. > pyinstaller -D HandyView.py -i icon.ico --windowed
+1. You will see a `dist` folder containing the outputs (dll, exe, etc)
+1. Copy the `icons` folder and the `icon.png` image to the `dist` folder
+1. Choose the `HandyView.exe` as the default image viewer.
+
+### Ubuntu
+
+I used Ubuntu in the previous versions. Now I switch to Windows (with wsl) for development.
+So this is not tested and may be out-of-date.
+
+1. Clone this repo `git clone git@github.com:xinntao/HandyView.git`
+1. How to double click to open an image
+    1. Modify the HandyView.desktop file - *Exec & Icon*
+    1. Copy the .desktop file to `/usr/share/applications`
+1. How to change the default image viewer
+    1. Right click an image
+    1. Go to `Properties` -> `Open With`
+    1. Choose *HandyView*
+
+## TODO list
+
+### Compare operations
+
+- [ ] Given two directories, it can compare the corresponding images.
+
+### Editing operation
+
+- [ ] Simple image edit: crop, resize, color convertion, etc.
+- [ ] Draw rectangular and enlarged this area.
+- [ ] Make gif easily.
 
 ## Reference
 
 - [Qt5 doc](https://doc.qt.io/qt-5/)
 - [PyQt5 doc](https://doc.qt.io/qtforpython/api.html)
-
 - [Key name](https://doc.qt.io/archives/qtjambi-4.5.2_01/com/trolltech/qt/core/Qt.Key.html)
 
-- menubar
-- toolbar
+## Acknowledgement
 
+### Icons
 
-- icon
-  - open: https://www.flaticon.com/free-icon/open_3143203?term=file%20open&page=1&position=1
-  - refresh: https://www.flaticon.com/free-icon/reuse_3299869?term=refresh&page=1&position=16
-  - compare: https://www.flaticon.com/free-icon/file-sharing_1037325?term=file%20compare&page=1&position=2
-  - file history: https://www.flaticon.com/free-icon/file_2521614?term=file%20history&page=1&position=46
-  - exclude name: https://www.flaticon.com/free-icon/eraser_1027522?term=remove&page=1&position=70
+I have used the icons from [www.flaticon.com](www.flaticon.com) The following are the source links.
 
-
-I want to **switch among images with a fixed zoomed ration** to compare image details more conveniently, especially in super-resolution (SR).
-
-However, most existing image viewers do not have this feature. Therefore, I want to develop an image viewer called **Handy Viewer**  to meet my requirements.
-
-This project is still under construction, advice, bug report and development are welcome :smiley:.
-
-### Current screenshot
-<p align="center">
-  <img src="https://c1.staticflickr.com/1/975/40897859985_9fa4f67558_b.jpg">
-</p>
-
-### Prerequisites
-
-- Ubuntu
-- Python3
-- PyQt5
-
-## How to use
-
-1. Clone this repo `git clone git@github.com:xinntao/HandyViewer.git`
-1. How to double clike to open an image
-    1. modify the HandyView.desktop file - *Exec & Icon*
-    1. copy the .desktop file to `/usr/share/applications`
-1. How to change the default image viewer
-    1. Right clike an image
-    1. Go to `Properties` -> `Open With`
-    1. Choose *HandyView*
-
-## Features
-
-### View
-- [x] When swith between different images, the zoom scale and postion can be maintained.
-- [x] Show some info, e.g., image path, image width & height, color type(RGB, RGBA, L and etc), zoom ration.
-- [x] Show cursor position (in image pixel, ignoring zoom ration) [for draw rectangular, crop later]
-- [ ] Given two directories, it can compare the corresponding images (image names in the two directories can be the same.)
-
-### Edit
-- [ ] Simple image edit: crop, resize, rgb_ycbcr convertion and etc.
-- [ ] Draw rectangular and enlarged this area.
-- [ ] make gif easily.
+- [Open icon](https://www.flaticon.com/free-icon/open_3143203?term=file%20open&page=1&position=1)
+- [Refresh icon](https://www.flaticon.com/free-icon/reuse_3299869?term=refresh&page=1&position=16)
+- [Include icon](https://www.flaticon.com/free-icon/add_2921226)
+- [Exclude icon](https://www.flaticon.com/free-icon/remove_2921203)
+- [Compare](https://www.flaticon.com/free-icon/file-sharing_1037325?term=file%20compare&page=1&position=2)
+- [History](https://www.flaticon.com/free-icon/timer_2921268)
