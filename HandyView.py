@@ -30,8 +30,8 @@ class HandyScene(QGraphicsScene):
         x_pos = event.scenePos().x()
         y_pos = event.scenePos().y()
         self.parent.qlabel_info_mouse_pos.setText(
-            ('Cursor position: (ignore zoom) \n'
-             f"  x (width):\t{x_pos:.1f}\n  y (height):\t{y_pos:.1f}"))
+            ('Cursor position:\n (ignore zoom)\n'
+             f" Height(y): {x_pos:.1f}\n Width(x):  {y_pos:.1f}"))
         # if the curse is out of image, the text will be red
         if (x_pos < 0 or y_pos < 0 or x_pos > self.parent.imgw
                 or y_pos > self.parent.imgh):
@@ -44,7 +44,7 @@ class HandyScene(QGraphicsScene):
             pixel = self.parent.qimg.pixel(int(x_pos), int(y_pos))
             rgba = QColor(pixel).getRgb()  # 8 bit RGBA
             self.parent.qlabel_info_mouse_rgb_value.setText(
-                f'\nRGBA: ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, '
+                f'RGBA:\n ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, '
                 f'{rgba[3]:3d})')
 
 
@@ -79,20 +79,17 @@ class HandyView(QGraphicsView):
 
     def zoom_in(self):
         self.zoom *= 1.05
-        self.parent.qlabel_info_zoom_ration.setText(
-            f'\nZoom ration:\t{self.zoom:.1f}')
+        self.parent.qlabel_info_zoom_ration.setText(f'Zoom: {self.zoom:.2f}')
         self.set_transform()
 
     def zoom_out(self):
         self.zoom /= 1.05
-        self.parent.qlabel_info_zoom_ration.setText(
-            f'\nZoom ration:\t{self.zoom:.1f}')
+        self.parent.qlabel_info_zoom_ration.setText(f'Zoom: {self.zoom:.2f}')
         self.set_transform()
 
     def set_zoom(self, ratio):
         self.zoom = ratio
-        self.parent.qlabel_info_zoom_ration.setText(
-            f'\nZoom ration:\t{self.zoom:.1f}')
+        self.parent.qlabel_info_zoom_ration.setText(f'Zoom: {self.zoom:.2f}')
         self.set_transform()
 
     def set_transform(self):
@@ -124,68 +121,63 @@ class Canvas(QWidget):
             self.qscene = HandyScene(self)
             self.qview = HandyView(self.qscene, self)
 
+            # goto edit and botton
             self.goto_edit = QLineEdit()
             self.goto_edit.setPlaceholderText('Index. Default: 1')
             goto_btn = QPushButton('GO', self)
             goto_btn.clicked.connect(self.goto_button_clicked)
+            # name label showing image index and image path
             self.name_label = QLabel(self)
             self.name_label.setFont(QFont('Times', 15))
             self.name_label.setTextInteractionFlags(
                 QtCore.Qt.TextSelectableByMouse)
             self.name_label.setStyleSheet('QLabel {color : green;}')
+            # info label showing image shape, size and color type
             self.info_label = QLabel(self)
             self.info_label.setTextInteractionFlags(
                 QtCore.Qt.TextSelectableByMouse)
             self.info_label.setStyleSheet('QLabel {color : blue;}')
-            self.info_label.setFont(QFont('Times', 15))
+            self.info_label.setFont(QFont('Times', 12))
+            # zoom label showing zoom ratio
+            self.qlabel_info_zoom_ration = QLabel(self)  # zoom ratio
+            self.qlabel_info_zoom_ration.setTextInteractionFlags(
+                QtCore.Qt.TextSelectableByMouse)
+            self.qlabel_info_zoom_ration.setStyleSheet(
+                'QLabel {color : green;}')
+            self.qlabel_info_zoom_ration.setFont(QFont('Times', 12))
+            # mouse position and mouse rgb value
+            self.qlabel_info_mouse_pos = QLabel(self)
+            self.qlabel_info_mouse_pos.setTextInteractionFlags(
+                QtCore.Qt.TextSelectableByMouse)
+            self.qlabel_info_mouse_pos.setFont(QFont('Times', 12))
+            self.qlabel_info_mouse_rgb_value = QLabel(self)
+            self.qlabel_info_mouse_rgb_value.setTextInteractionFlags(
+                QtCore.Qt.TextSelectableByMouse)
+            self.qlabel_info_mouse_rgb_value.setFont(QFont('Times', 12))
+            # exclude names
+            self.qlabel_info_exclude_names = QLabel(self)  # exclude names
+            self.qlabel_info_exclude_names.setTextInteractionFlags(
+                QtCore.Qt.TextSelectableByMouse)
+            self.qlabel_info_exclude_names.setFont(QFont('Times', 12))
 
+            # layeouts
             info_grid = QGridLayout()
             info_grid.addWidget(self.goto_edit, 0, 0, 1, 1)
             info_grid.addWidget(goto_btn, 0, 1, 1, 1)
-            # info_grid.addWidget(self.name_label, 0, 2, 1, 10)
-
             main_layout.addLayout(info_grid, 0, 0, 1, 10)
             main_layout.addWidget(self.name_label, 1, 0, 1, 50)
-            main_layout.addWidget(self.info_label, 2, 0, 1, 50)
+            main_layout.addWidget(self.info_label, 3, 0, 1, 50)
+            main_layout.addWidget(self.qlabel_info_zoom_ration, 5, 0, 1, 50)
+            main_layout.addWidget(self.qlabel_info_mouse_pos, 8, 0, 1, 50)
+            main_layout.addWidget(self.qlabel_info_mouse_rgb_value, 9, 0, 1,
+                                  50)
+            main_layout.addWidget(self.qlabel_info_exclude_names, 12, 0, 1, 50)
 
             # main view
             main_layout.addWidget(self.qview, 0, 0, -1, 50)
             # bottom QLabel, show image path
             self.qlabel_img_path = QLabel(self)
             main_layout.addWidget(self.qlabel_img_path, 61, 0, 1, 50)
-
-            # information panel; multiple QLabels, using setText to update
-            self.info_group = QGroupBox('Information Panel')
-            self.qlabel_info_mouse_pos = QLabel(self)
-            self.qlabel_info_mouse_rgb_value = QLabel(self)
-            self.qlabel_info_wh = QLabel(self)  # image width and height
-            self.qlabel_info_color_type = QLabel(self)  # image color type
-            self.qlabel_info_zoom_ration = QLabel(self)  # zoom ratio
-            self.qlabel_info_exclude_names = QLabel(self)  # exclude names
-
-            self.qlabel_info_mouse_pos.setTextInteractionFlags(
-                QtCore.Qt.TextSelectableByMouse)
-            self.qlabel_info_mouse_rgb_value.setTextInteractionFlags(
-                QtCore.Qt.TextSelectableByMouse)
-            self.qlabel_info_wh.setTextInteractionFlags(
-                QtCore.Qt.TextSelectableByMouse)
-            self.qlabel_info_color_type.setTextInteractionFlags(
-                QtCore.Qt.TextSelectableByMouse)
-            self.qlabel_info_zoom_ration.setTextInteractionFlags(
-                QtCore.Qt.TextSelectableByMouse)
-            self.qlabel_info_exclude_names.setTextInteractionFlags(
-                QtCore.Qt.TextSelectableByMouse)
-            # real-time mouse position(relate to original images)
-            infor_group_layout = QVBoxLayout()
-            infor_group_layout.setAlignment(QtCore.Qt.AlignTop)
-            infor_group_layout.addWidget(self.qlabel_info_mouse_pos)
-            infor_group_layout.addWidget(self.qlabel_info_mouse_rgb_value)
-            infor_group_layout.addWidget(self.qlabel_info_wh)
-            infor_group_layout.addWidget(self.qlabel_info_color_type)
-            infor_group_layout.addWidget(self.qlabel_info_zoom_ration)
-            infor_group_layout.addWidget(self.qlabel_info_exclude_names)
-            self.info_group.setLayout(infor_group_layout)
-            main_layout.addWidget(self.info_group, 30, 50, 15, 10)
 
             self.qview_bg_color = 'white'
 
@@ -319,12 +311,9 @@ class Canvas(QWidget):
             f'[{self.dirpos + 1:d} / {len(self.imgfiles):d}] '
             f'{self.img_name}')
         self.info_label.setText(
-            f' {self.imgh:d} x {self.imgw:d}, {self.file_size:.2f} MB. '
-            f'{self.color_type}')
-
-        self.qlabel_info_wh.setText(
-            f'\nImage size:\n  Height:\t{self.imgh:d}\n  Width:\t{self.imgw:d}'
-        )
+            f'Info: \n'
+            f' Height: {self.imgh:d}\n Width:  {self.imgw:d}\n'
+            f' Size: {self.file_size:.2f} MB\n Type: {self.color_type}')
 
         if init:
             if self.imgw < 500:
