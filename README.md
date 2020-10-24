@@ -16,20 +16,22 @@ HandyView is a handy image viewer based on PyQt5. It provided convenient ways fo
 
 ## Usage
 
-I have now tested it on Windows. It should also work on Ubuntu (but may with some modification)
+I have now tested it on Windows. It should also work on Ubuntu (but may with some modifications).
 
 ### Windows
 
 #### Dependencies
 
-- Anaconda (Python >= 3.5 )
-- Python PyQt5 package
+- Anaconda (Python >= 3.5)
+- Python `PyQt5` package
+
+In the command line, run:
 
 > python HandyView.py [image_path]
 
 #### Compile to executable program
 
-Use `pyinstaller` to compile to executable program, so that you can double-click the image to open the HandyView.
+Use `pyinstaller` to compile to executable program, so that you can **double-click the image to open** the HandyView.
 
 1. > pyinstaller -D HandyView.py -i icon.ico --windowed
 1. You will see a `dist` folder containing the outputs (dll, exe, etc)
@@ -39,7 +41,7 @@ Use `pyinstaller` to compile to executable program, so that you can double-click
 ### Ubuntu
 
 I used Ubuntu in the previous versions. Now I switch to Windows (with wsl) for development.
-So this is not tested and may be out-of-date.
+So this is not tested on Ubuntu and may be out-of-date.
 
 1. Clone this repo `git clone git@github.com:xinntao/HandyView.git`
 1. How to double click to open an image
@@ -78,5 +80,5 @@ I have used the icons from [www.flaticon.com](www.flaticon.com) The following ar
 - [Refresh icon](https://www.flaticon.com/free-icon/reuse_3299869?term=refresh&page=1&position=16)
 - [Include icon](https://www.flaticon.com/free-icon/add_2921226)
 - [Exclude icon](https://www.flaticon.com/free-icon/remove_2921203)
-- [Compare](https://www.flaticon.com/free-icon/file-sharing_1037325?term=file%20compare&page=1&position=2)
-- [History](https://www.flaticon.com/free-icon/timer_2921268)
+- [Compare icon](https://www.flaticon.com/free-icon/file-sharing_1037325?term=file%20compare&page=1&position=2)
+- [History icon](https://www.flaticon.com/free-icon/timer_2921268)
