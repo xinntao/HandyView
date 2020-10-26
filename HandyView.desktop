@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=HandyView
-Exec=/mnt/Xintao/Projects/HandyView/HandyView.py %f
+Exec=/mnt/Xintao/Projects/HandyView/handyview/handyview.py %f
 Type=Application
 Terminal=false
-Icon=/mnt/Xintao/Projects/HandyView/icon.png
+Icon=/mnt/Xintao/Projects/HandyView/handyview/icon.png
