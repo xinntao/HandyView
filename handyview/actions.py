@@ -23,7 +23,8 @@ def new_action(parent,
     """
     action = QAction(text, parent)
     if icon_name:
-        action.setIcon(QIcon(osp.join(ROOT_DIR, f'icons/{icon_name}')))
+        action.setIcon(
+            QIcon(osp.join(ROOT_DIR, f'handyview/icons/{icon_name}')))
     if shortcut:
         action.setShortcut(shortcut)
     # trigger
