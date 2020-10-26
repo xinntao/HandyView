@@ -2,7 +2,7 @@
 
 [English](README.md) **|** [简体中文](README_CN.md) &emsp; [GitHub](https://github.com/xinntao/HandyView) **|** [Gitee码云](https://gitee.com/xinntao/HandyView)
 
-HandyView is a handy image viewer based on PyQt5. It provided convenient ways for viewing and comparing.
+HandyView 是一款基于 PyQt5 开发的方便的图像查看器. It provided convenient ways for viewing and comparing.
 
 ## :sparkles: Features
 
