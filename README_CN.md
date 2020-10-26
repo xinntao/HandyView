@@ -25,7 +25,19 @@ I have now tested it on Windows. It should also work on Ubuntu (but may with som
 #### Dependencies
 
 - Anaconda (Python >= 3.5)
-- Python `PyQt5` package
+
+1. Clone repo
+
+    ```bash
+    git clone https://github.com/xinntao/HandyView.git
+    ```
+
+1. Install dependent packages
+
+    ```bash
+    cd HandyView
+    pip install -r requirements.txt
+    ```
 
 In the command line, run:
 
@@ -38,7 +50,7 @@ Use `pyinstaller` to compile to executable program, so that you can **double-cli
 1. > pyinstaller -D handyview/handyview.py -i icon.ico --windowed
 1. You will see a `dist` folder containing the outputs (dll, exe, etc)
 1. Copy the `handyview/icons` folder and the `handyview/icon.png` image to the `dist` folder
-1. Choose the `handyview.exe` as the default image viewer.
+1. Choose the `dist/handyview/handyview.exe` as the default image viewer.
 
 ### Ubuntu
 
