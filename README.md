@@ -27,16 +27,16 @@ I have now tested it on Windows. It should also work on Ubuntu (but may with som
 
 In the command line, run:
 
-> python HandyView.py [image_path]
+> python handyview/handyview.py [image_path]
 
 #### Compile to executable program
 
 Use `pyinstaller` to compile to executable program, so that you can **double-click the image to open** the HandyView.
 
-1. > pyinstaller -D HandyView.py -i icon.ico --windowed
+1. > pyinstaller -D handyview/handyview.py -i icon.ico --windowed
 1. You will see a `dist` folder containing the outputs (dll, exe, etc)
-1. Copy the `icons` folder and the `icon.png` image to the `dist` folder
-1. Choose the `HandyView.exe` as the default image viewer.
+1. Copy the `handyview/icons` folder and the `handyview/icon.png` image to the `dist` folder
+1. Choose the `handyview.exe` as the default image viewer.
 
 ### Ubuntu
 
