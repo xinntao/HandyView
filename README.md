@@ -1,4 +1,4 @@
-# HandyView
+# ![alt text](icon.ico) HandyView
 
 HandyView is a handy image viewer based on PyQt5. It provided convenient ways for viewing and comparing.
 
@@ -11,7 +11,7 @@ HandyView is a handy image viewer based on PyQt5. It provided convenient ways fo
 ### Current screenshot
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/xinntao/public-figures/master/HandyView/HandyView.png">
+  <img src="asserts/screenshot.png">
 </p>
 
 ## Usage

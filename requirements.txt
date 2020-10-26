@@ -1,0 +1,2 @@
+Pillow
+pyqt5
