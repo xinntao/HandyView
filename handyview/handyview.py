@@ -529,6 +529,7 @@ class MainWindow(QMainWindow):
             self.canvas.show_image(init=True)
 
     def exclude_file_name(self):
+        # show current exclude names as the default values
         current_exclude_names = self.canvas.exclude_names
         if current_exclude_names is None:
             current_exclude_names = ''
@@ -552,6 +553,7 @@ class MainWindow(QMainWindow):
             self.canvas.show_image(init=False)
 
     def include_file_name(self):
+        # show current include names as the default values
         current_include_names = self.canvas.include_names
         if current_include_names is None:
             current_include_names = ''
