@@ -529,9 +529,18 @@ class MainWindow(QMainWindow):
             self.canvas.show_image(init=True)
 
     def exclude_file_name(self):
+        # show current exclude names as the default values
+        current_exclude_names = self.canvas.exclude_names
+        if current_exclude_names is None:
+            current_exclude_names = ''
+        else:
+            current_exclude_names = ', '.join(current_exclude_names)
+            current_exclude_names += ', '
+
         exclude_names, ok = QInputDialog.getText(self, 'Exclude file name',
                                                  'Key word (seperate by ,):',
-                                                 QLineEdit.Normal, '')
+                                                 QLineEdit.Normal,
+                                                 current_exclude_names)
         if ok:
             if exclude_names != '':
                 self.canvas.exclude_names = [
@@ -544,9 +553,18 @@ class MainWindow(QMainWindow):
             self.canvas.show_image(init=False)
 
     def include_file_name(self):
+        # show current include names as the default values
+        current_include_names = self.canvas.include_names
+        if current_include_names is None:
+            current_include_names = ''
+        else:
+            current_include_names = ', '.join(current_include_names)
+            current_include_names += ', '
+
         include_names, ok = QInputDialog.getText(self, 'Include file name',
                                                  'Key word (seperate by ,):',
-                                                 QLineEdit.Normal, '')
+                                                 QLineEdit.Normal,
+                                                 current_include_names)
         if ok:
             if include_names != '':
                 self.canvas.include_names = [
