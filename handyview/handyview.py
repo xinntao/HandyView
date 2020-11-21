@@ -5,11 +5,12 @@ import re
 import sys
 from PIL import Image
 from PyQt5 import QtCore
+from PyQt5.QtCore import QRect, QPoint, QSize
 from PyQt5.QtGui import QColor, QFont, QIcon, QImage, QPixmap, QTransform
 from PyQt5.QtWidgets import (QApplication, QFileDialog, QGraphicsScene,
                              QGraphicsView, QGridLayout, QInputDialog, QLabel,
                              QLineEdit, QMainWindow, QPushButton, QToolBar,
-                             QWidget)
+                             QWidget, QRubberBand, QDockWidget, QFrame)
 
 FORMATS = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM',
            '.bmp', '.BMP', '.gif', '.GIF', 'tiff')
@@ -30,13 +31,18 @@ class HandyScene(QGraphicsScene):
         self.parent = parent
 
     def mouseMoveEvent(self, event):
-        """Show mouse position on the original image.
+        """It only works when no mouse button is pressed.
+        Show mouse position on the original image.
         Zooming will not influence the position."""
         x_pos = event.scenePos().x()
         y_pos = event.scenePos().y()
+        self.show_position(x_pos, y_pos)
+        self.show_color(x_pos, y_pos)
+
+    def show_position(self, x_pos, y_pos):
         self.parent.qlabel_info_mouse_pos.setText(
             ('Cursor position:\n (ignore zoom)\n'
-             f' Height(y): {x_pos:.1f}\n Width(x):  {y_pos:.1f}'))
+             f' Height(y): {y_pos:.1f}\n Width(x):  {x_pos:.1f}'))
         # if the curse is out of image, the text will be red
         if (x_pos < 0 or y_pos < 0 or x_pos > self.parent.imgw
                 or y_pos > self.parent.imgh):
@@ -45,20 +51,21 @@ class HandyScene(QGraphicsScene):
         else:
             self.parent.qlabel_info_mouse_pos.setStyleSheet(
                 'QLabel {color : black;}')
-            # show RGB value
-            pixel = self.parent.qimg.pixel(int(x_pos), int(y_pos))
-            pixel_color = QColor(pixel)
-            self.set_color_label(pixel_color)
-            rgba = pixel_color.getRgb()  # 8 bit RGBA
-            self.parent.qlabel_info_mouse_rgb_value.setText(
-                f' ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, '
-                f'{rgba[3]:3d})')
 
-    def set_color_label(self, color):
-        self.parent.qlabel_color.fill(color)
+    def show_color(self, x_pos, y_pos):
+        # show RGB value
+        pixel = self.parent.qimg.pixel(int(x_pos), int(y_pos))
+        pixel_color = QColor(pixel)
+        self.parent.qlabel_color.fill(pixel_color)
+        rgba = pixel_color.getRgb()  # 8 bit RGBA
+        self.parent.qlabel_info_mouse_rgb_value.setText(
+            f' ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, '
+            f'{rgba[3]:3d})')
 
 
 class HandyView(QGraphicsView):
+    # https://stackoverflow.com/questions/47102224/pyqt-draw-selection-rectangle-over-picture
+    # rectChanged = QtCore.pyqtSignal(QRect)
 
     def __init__(self, scene, parent=None):
         super(HandyView, self).__init__(scene, parent)
@@ -70,6 +77,88 @@ class HandyView(QGraphicsView):
         self.zoom = 1
         self.rotvals = (0, -90, -180, -270)
         self.rotate = 0
+
+        self.rubberBand = QRubberBand(QRubberBand.Rectangle, self)
+        self.origin = QPoint()
+        self.changeRubberBand = False
+        self.rect_top_left = (0, 0)
+
+    def mousePressEvent(self, event):
+        self.origin = event.pos()
+        self.rubberBand.setGeometry(QRect(self.origin, QSize()))
+        # self.rectChanged.emit(self.rubberBand.geometry())
+        self.rubberBand.show()
+        self.changeRubberBand = True
+
+        scene_pos = self.mapToScene(event.pos())
+        x_scene, y_scene = scene_pos.x(), scene_pos.y()
+        self.rect_top_left = (x_scene, y_scene)
+        self.show_rect_position(x_scene, y_scene, None, None)
+
+        QGraphicsView.mousePressEvent(self, event)
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() == QtCore.Qt.LeftButton:
+            scene_pos = self.mapToScene(event.pos())
+            x_scene, y_scene = scene_pos.x(), scene_pos.y()
+            self.show_position(x_scene, y_scene)
+            self.show_color(x_scene, y_scene)
+            self.show_rect_position(None, None, x_scene, y_scene)
+
+            if self.changeRubberBand:
+                self.rubberBand.setGeometry(
+                    QRect(self.origin, event.pos()).normalized())
+                # self.rectChanged.emit(self.rubberBand.geometry())
+        QGraphicsView.mouseMoveEvent(self, event)
+
+    def mouseReleaseEvent(self, event):
+        self.changeRubberBand = False
+        QGraphicsView.mouseReleaseEvent(self, event)
+
+    def show_rect_position(self, x_start, y_start, x_end, y_end):
+        if x_start is None: x_start = self.rect_top_left[0]
+        if y_start is None: y_start = self.rect_top_left[1]
+        if x_end is None: x_end = x_start
+        if y_end is None: y_end = y_start
+        x_len = x_end - x_start
+        y_len = y_end - y_start
+
+        self.parent.qlabel_rect_pos.setText(
+            'Rect Pos: (H, W)\n'
+            f' Top-Left: {int(y_start)}, {int(x_start)}\n'
+            f' Btm-Rite: {int(y_end)}, {int(x_end)}\n'
+            f' Length  : {int(y_len)}, {int(x_len)}')
+
+        if (0 < x_start < self.parent.imgw and 0 < y_start < self.parent.imgh
+                and 0 < x_end < self.parent.imgw
+                and 0 < y_end < self.parent.imgh):
+            self.parent.qlabel_rect_pos.setStyleSheet(
+                'QLabel {color : black;}')
+        else:
+            self.parent.qlabel_rect_pos.setStyleSheet('QLabel {color : red;}')
+
+    def show_position(self, x_pos, y_pos):
+        self.parent.qlabel_info_mouse_pos.setText(
+            ('Cursor position:\n (ignore zoom)\n'
+             f' Height(y): {y_pos:.1f}\n Width(x):  {x_pos:.1f}'))
+        # if the curse is out of image, the text will be red
+        if (x_pos < 0 or y_pos < 0 or x_pos > self.parent.imgw
+                or y_pos > self.parent.imgh):
+            self.parent.qlabel_info_mouse_pos.setStyleSheet(
+                'QLabel {color : red;}')
+        else:
+            self.parent.qlabel_info_mouse_pos.setStyleSheet(
+                'QLabel {color : black;}')
+
+    def show_color(self, x_pos, y_pos):
+        # show RGB value
+        pixel = self.parent.qimg.pixel(int(x_pos), int(y_pos))
+        pixel_color = QColor(pixel)
+        self.parent.qlabel_color.fill(pixel_color)
+        rgba = pixel_color.getRgb()  # 8 bit RGBA
+        self.parent.qlabel_info_mouse_rgb_value.setText(
+            f' ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, '
+            f'{rgba[3]:3d})')
 
     def wheelEvent(self, event):
         moose = event.angleDelta().y() / 120
@@ -117,7 +206,7 @@ class ColorLable(QLabel):
         """
         super(ColorLable, self).__init__(parent)
         self.parent = parent
-        self.setStyleSheet('border: 2px solid gray;')
+        # self.setStyleSheet('border: 2px solid gray;')
         self.pixmap = QPixmap(40, 20)
         self.setPixmap(self.pixmap)
         if text is not None:
@@ -131,6 +220,14 @@ class ColorLable(QLabel):
         else:
             self.pixmap.fill(color)
         self.setPixmap(self.pixmap)
+
+
+class QHLine(QFrame):
+
+    def __init__(self):
+        super(QHLine, self).__init__()
+        self.setFrameShape(QFrame.HLine)
+        self.setFrameShadow(QFrame.Sunken)
 
 
 class Canvas(QWidget):
@@ -188,10 +285,14 @@ class Canvas(QWidget):
             self.qlabel_info_mouse_pos.setTextInteractionFlags(
                 QtCore.Qt.TextSelectableByMouse)
             self.qlabel_info_mouse_pos.setFont(QFont('Times', 12))
+            self.qlabel_info_mouse_pos.setText(
+                'Cursor position:\n (ignore zoom)\n'
+                ' Height(y): 0.0\n Width(x):  0.0')
             self.qlabel_info_mouse_rgb_value = QLabel(self)
             self.qlabel_info_mouse_rgb_value.setTextInteractionFlags(
                 QtCore.Qt.TextSelectableByMouse)
             self.qlabel_info_mouse_rgb_value.setFont(QFont('Times', 12))
+            self.qlabel_info_mouse_rgb_value.setText(' (255, 255, 255, 255)')
             # pixel color at the mouse position
             self.qlable_color_title = QLabel('RGBA:', self)
             self.qlable_color_title.setFont(QFont('Times', 12))
@@ -207,24 +308,20 @@ class Canvas(QWidget):
                 QtCore.Qt.TextSelectableByMouse)
             self.qlabel_info_exclude_names.setFont(QFont('Times', 12))
 
+            # draw rectangle position and length
+            self.qlabel_rect_pos = QLabel(self)
+            self.qlabel_rect_pos.setTextInteractionFlags(
+                QtCore.Qt.TextSelectableByMouse)
+            self.qlabel_rect_pos.setFont(QFont('Times', 12))
+            self.qlabel_rect_pos.setText('Rect Pos: (H, W)\n Top-Left: 0, 0\n'
+                                         ' Btm-Rite: 0, 0\n Length  : 0, 0')
             # layeouts
             info_grid = QGridLayout()
             # int row, int column, int rowSpan, int columnSpan
             info_grid.addWidget(self.goto_edit, 0, 0, 1, 1)
             info_grid.addWidget(goto_btn, 0, 1, 1, 1)
-            main_layout.addLayout(info_grid, 0, 0, 1, 10)
-            main_layout.addWidget(self.name_label, 1, 0, 1, 50)
-            main_layout.addWidget(self.info_label, 3, 0, 1, 50)
-            main_layout.addWidget(self.qlabel_info_zoom_ration, 5, 0, 1, 50)
-            main_layout.addWidget(self.qlabel_info_mouse_pos, 8, 0, 1, 50)
-            color_grid = QGridLayout()
-            color_grid.addWidget(self.qlable_color_title, 0, 0, 1, 1)
-            color_grid.addWidget(self.qlabel_color, 0, 1, 1, 3)
-            main_layout.addLayout(color_grid, 9, 0, 1, 2)
-            main_layout.addWidget(self.qlabel_info_mouse_rgb_value, 10, 0, 1,
-                                  50)
-            main_layout.addWidget(self.qlabel_info_include_names, 12, 0, 1, 50)
-            main_layout.addWidget(self.qlabel_info_exclude_names, 13, 0, 1, 50)
+            main_layout.addWidget(self.name_label, 0, 0, 1, 50)
+            main_layout.addLayout(info_grid, 1, 0, 1, 10)
 
             # main view
             main_layout.addWidget(self.qview, 0, 0, -1, 50)
@@ -426,7 +523,7 @@ class MainWindow(QMainWindow):
         self.init_toolbar()
         self.init_statusbar()
         self.init_central_window()
-        # self.add_dock_window()
+        self.add_dock_window()
 
     def init_menubar(self):
         # create menubar
@@ -474,28 +571,38 @@ class MainWindow(QMainWindow):
         self.canvas = Canvas(self)
         self.setCentralWidget(self.canvas)
 
-    """
     def add_dock_window(self):
-        # Tools
-        dock_tool = QDockWidget('Tools', self)
-        dock_tool.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea
-                                  | QtCore.Qt.RightDockWidgetArea)
-        label = QLabel('This is the first dock window.')
-        dock_tool.setWidget(label)
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dock_tool)
-
         # Info
-        dock_info = QDockWidget('Info', self)
+        dock_info = QDockWidget('Information Panel', self)
         dock_info.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea
                                   | QtCore.Qt.RightDockWidgetArea)
-        label_info = QLabel('This is the info dock window.')
-        dock_info.setWidget(label_info)
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dock_info)
+        dock_info.setFeatures(QDockWidget.DockWidgetMovable
+                              | QDockWidget.DockWidgetFloatable)
+        dockedWidget = QWidget()
+        dock_info.setWidget(dockedWidget)
+        layout = QGridLayout()
+        layout.addWidget(self.canvas.info_label, 0, 0, 1, 3)
+        layout.addWidget(self.canvas.qlabel_info_zoom_ration, 1, 0, 1, 3)
+        layout.addWidget(self.canvas.qlabel_info_mouse_pos, 2, 0, 1, 3)
+        # layout.addWidget(self.canvas.info_label)
+        # layout.addWidget(self.canvas.qlabel_info_zoom_ration)
+        # layout.addWidget(self.canvas.qlabel_info_mouse_pos)
+        color_grid = QGridLayout()
+        color_grid.addWidget(self.canvas.qlable_color_title, 0, 0, 1, 1)
+        color_grid.addWidget(self.canvas.qlabel_color, 0, 1, 1, 3)
+        color_grid.addWidget(self.canvas.qlabel_info_mouse_rgb_value, 1, 0, 1,
+                             3)
+        layout.addLayout(color_grid, 3, 0, 1, 3)
+        layout.addWidget(QHLine(), 4, 0, 1, 3)
+        layout.addWidget(self.canvas.qlabel_rect_pos, 5, 0, 1, 3)
+        layout.addWidget(QHLine(), 6, 0, 1, 3)
+        layout.addWidget(self.canvas.qlabel_info_include_names, 7, 0, 1, 3)
+        layout.addWidget(self.canvas.qlabel_info_exclude_names, 8, 0, 1, 3)
 
-        # add to View menu bar
-        self.view_menu.addAction(dock_tool.toggleViewAction())
-        self.view_menu.addAction(dock_info.toggleViewAction())
-    """
+        blank_qlabel = QLabel()
+        layout.addWidget(blank_qlabel, 7, 0, 20, 3)
+        dockedWidget.setLayout(layout)
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dock_info)
 
     ##################################
     # Slots
