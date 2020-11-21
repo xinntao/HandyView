@@ -65,7 +65,7 @@ class HVView(QGraphicsView):
 
         if event.buttons() == QtCore.Qt.LeftButton:
             # Show selection rect position
-            ori_scene_pos = self.mapToScene(self.rubber_band_origin.pos())
+            ori_scene_pos = self.mapToScene(self.rubber_band_origin)
             ori_x_scene, ori_y_scene = ori_scene_pos.x(), ori_scene_pos.y()
             self.show_rect_position(ori_x_scene, ori_y_scene, x_scene, y_scene)
             # Show rubber band
