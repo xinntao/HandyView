@@ -4,7 +4,8 @@ Include customized widgets used in HandyView.
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QColor, QFont, QPixmap
-from PyQt5.QtWidgets import QFrame, QLabel, QDialog, QPushButton, QHBoxLayout, QVBoxLayout
+from PyQt5.QtWidgets import (QDialog, QFrame, QHBoxLayout, QLabel, QPushButton,
+                             QVBoxLayout)
 
 
 class ColorLabel(QLabel):
