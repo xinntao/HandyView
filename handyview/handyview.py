@@ -5,12 +5,11 @@ import re
 import sys
 from PIL import Image
 from PyQt5 import QtCore
-from PyQt5.QtCore import QRect, QPoint, QSize
-from PyQt5.QtGui import QColor, QFont, QIcon, QImage, QPixmap, QTransform
-from PyQt5.QtWidgets import (QApplication, QFileDialog, QGraphicsScene,
-                             QGraphicsView, QGridLayout, QInputDialog, QLabel,
-                             QLineEdit, QMainWindow, QPushButton, QToolBar,
-                             QWidget, QRubberBand, QDockWidget, QFrame)
+from PyQt5.QtGui import QColor, QFont, QIcon, QImage, QPixmap
+from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog, QFrame,
+                             QGridLayout, QInputDialog, QLabel, QLineEdit,
+                             QMainWindow, QPushButton, QToolBar, QWidget)
+from view_scene import HVScene, HVView
 
 FORMATS = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM',
            '.bmp', '.BMP', '.gif', '.GIF', 'tiff')
@@ -22,178 +21,6 @@ if getattr(sys, 'frozen', False):
     CURRENT_PATH = sys._MEIPASS
 else:
     CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
-
-
-class HandyScene(QGraphicsScene):
-
-    def __init__(self, parent=None):
-        super(HandyScene, self).__init__()
-        self.parent = parent
-
-    def mouseMoveEvent(self, event):
-        """It only works when no mouse button is pressed.
-        Show mouse position on the original image.
-        Zooming will not influence the position."""
-        x_pos = event.scenePos().x()
-        y_pos = event.scenePos().y()
-        self.show_position(x_pos, y_pos)
-        self.show_color(x_pos, y_pos)
-
-    def show_position(self, x_pos, y_pos):
-        self.parent.qlabel_info_mouse_pos.setText(
-            ('Cursor position:\n (ignore zoom)\n'
-             f' Height(y): {y_pos:.1f}\n Width(x):  {x_pos:.1f}'))
-        # if the curse is out of image, the text will be red
-        if (x_pos < 0 or y_pos < 0 or x_pos > self.parent.imgw
-                or y_pos > self.parent.imgh):
-            self.parent.qlabel_info_mouse_pos.setStyleSheet(
-                'QLabel {color : red;}')
-        else:
-            self.parent.qlabel_info_mouse_pos.setStyleSheet(
-                'QLabel {color : black;}')
-
-    def show_color(self, x_pos, y_pos):
-        # show RGB value
-        pixel = self.parent.qimg.pixel(int(x_pos), int(y_pos))
-        pixel_color = QColor(pixel)
-        self.parent.qlabel_color.fill(pixel_color)
-        rgba = pixel_color.getRgb()  # 8 bit RGBA
-        self.parent.qlabel_info_mouse_rgb_value.setText(
-            f' ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, '
-            f'{rgba[3]:3d})')
-
-
-class HandyView(QGraphicsView):
-    # https://stackoverflow.com/questions/47102224/pyqt-draw-selection-rectangle-over-picture
-    # rectChanged = QtCore.pyqtSignal(QRect)
-
-    def __init__(self, scene, parent=None):
-        super(HandyView, self).__init__(scene, parent)
-        self.parent = parent
-        self.setDragMode(QGraphicsView.ScrollHandDrag)
-        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-        self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
-        self.setMouseTracking(True)
-        self.zoom = 1
-        self.rotvals = (0, -90, -180, -270)
-        self.rotate = 0
-
-        self.rubberBand = QRubberBand(QRubberBand.Rectangle, self)
-        self.origin = QPoint()
-        self.changeRubberBand = False
-        self.rect_top_left = (0, 0)
-
-    def mousePressEvent(self, event):
-        self.origin = event.pos()
-        self.rubberBand.setGeometry(QRect(self.origin, QSize()))
-        # self.rectChanged.emit(self.rubberBand.geometry())
-        self.rubberBand.show()
-        self.changeRubberBand = True
-
-        scene_pos = self.mapToScene(event.pos())
-        x_scene, y_scene = scene_pos.x(), scene_pos.y()
-        self.rect_top_left = (x_scene, y_scene)
-        self.show_rect_position(x_scene, y_scene, None, None)
-
-        QGraphicsView.mousePressEvent(self, event)
-
-    def mouseMoveEvent(self, event):
-        if event.buttons() == QtCore.Qt.LeftButton:
-            scene_pos = self.mapToScene(event.pos())
-            x_scene, y_scene = scene_pos.x(), scene_pos.y()
-            self.show_position(x_scene, y_scene)
-            self.show_color(x_scene, y_scene)
-            self.show_rect_position(None, None, x_scene, y_scene)
-
-            if self.changeRubberBand:
-                self.rubberBand.setGeometry(
-                    QRect(self.origin, event.pos()).normalized())
-                # self.rectChanged.emit(self.rubberBand.geometry())
-        QGraphicsView.mouseMoveEvent(self, event)
-
-    def mouseReleaseEvent(self, event):
-        self.changeRubberBand = False
-        QGraphicsView.mouseReleaseEvent(self, event)
-
-    def show_rect_position(self, x_start, y_start, x_end, y_end):
-        if x_start is None: x_start = self.rect_top_left[0]
-        if y_start is None: y_start = self.rect_top_left[1]
-        if x_end is None: x_end = x_start
-        if y_end is None: y_end = y_start
-        x_len = x_end - x_start
-        y_len = y_end - y_start
-
-        self.parent.qlabel_rect_pos.setText(
-            'Rect Pos: (H, W)\n'
-            f' Top-Left: {int(y_start)}, {int(x_start)}\n'
-            f' Btm-Rite: {int(y_end)}, {int(x_end)}\n'
-            f' Length  : {int(y_len)}, {int(x_len)}')
-
-        if (0 < x_start < self.parent.imgw and 0 < y_start < self.parent.imgh
-                and 0 < x_end < self.parent.imgw
-                and 0 < y_end < self.parent.imgh):
-            self.parent.qlabel_rect_pos.setStyleSheet(
-                'QLabel {color : black;}')
-        else:
-            self.parent.qlabel_rect_pos.setStyleSheet('QLabel {color : red;}')
-
-    def show_position(self, x_pos, y_pos):
-        self.parent.qlabel_info_mouse_pos.setText(
-            ('Cursor position:\n (ignore zoom)\n'
-             f' Height(y): {y_pos:.1f}\n Width(x):  {x_pos:.1f}'))
-        # if the curse is out of image, the text will be red
-        if (x_pos < 0 or y_pos < 0 or x_pos > self.parent.imgw
-                or y_pos > self.parent.imgh):
-            self.parent.qlabel_info_mouse_pos.setStyleSheet(
-                'QLabel {color : red;}')
-        else:
-            self.parent.qlabel_info_mouse_pos.setStyleSheet(
-                'QLabel {color : black;}')
-
-    def show_color(self, x_pos, y_pos):
-        # show RGB value
-        pixel = self.parent.qimg.pixel(int(x_pos), int(y_pos))
-        pixel_color = QColor(pixel)
-        self.parent.qlabel_color.fill(pixel_color)
-        rgba = pixel_color.getRgb()  # 8 bit RGBA
-        self.parent.qlabel_info_mouse_rgb_value.setText(
-            f' ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, '
-            f'{rgba[3]:3d})')
-
-    def wheelEvent(self, event):
-        moose = event.angleDelta().y() / 120
-        modifiers = QApplication.keyboardModifiers()
-        if modifiers == QtCore.Qt.ControlModifier:
-            # zoom in / out
-            if moose > 0:
-                self.zoom_in()
-            elif moose < 0:
-                self.zoom_out()
-        else:
-            # next or previous image
-            if moose > 0:
-                self.parent.dir_browse(-1)
-            elif moose < 0:
-                self.parent.dir_browse(1)
-
-    def zoom_in(self):
-        self.zoom *= 1.05
-        self.parent.qlabel_info_zoom_ration.setText(f'Zoom: {self.zoom:.2f}')
-        self.set_transform()
-
-    def zoom_out(self):
-        self.zoom /= 1.05
-        self.parent.qlabel_info_zoom_ration.setText(f'Zoom: {self.zoom:.2f}')
-        self.set_transform()
-
-    def set_zoom(self, ratio):
-        self.zoom = ratio
-        self.parent.qlabel_info_zoom_ration.setText(f'Zoom: {self.zoom:.2f}')
-        self.set_transform()
-
-    def set_transform(self):
-        self.setTransform(QTransform().scale(self.zoom,
-                                             self.zoom).rotate(self.rotate))
 
 
 class ColorLable(QLabel):
@@ -253,8 +80,8 @@ class Canvas(QWidget):
             # layout
             main_layout = QGridLayout(self)
             # QGraphicsView - QGraphicsScene - QPixmap
-            self.qscene = HandyScene(self)
-            self.qview = HandyView(self.qscene, self)
+            self.qscene = HVScene(self)
+            self.qview = HVView(self.qscene, self)
 
             # goto edit and botton
             self.goto_edit = QLineEdit()
