@@ -249,7 +249,7 @@ class Canvas(QWidget):
             f'[{self.dirpos + 1:d} / {len(self.imgfiles):d}] '
             f'{self.img_name}')
         self.info_label.setText(
-            f'Info: \n'
+            'Info: \n'
             f' Height: {self.imgh:d}\n Width:  {self.imgw:d}\n'
             f' Size: {self.file_size:.2f} MB\n Type: {self.color_type}')
 
