@@ -5,11 +5,12 @@ import re
 import sys
 from PIL import Image
 from PyQt5 import QtCore
-from PyQt5.QtGui import QColor, QFont, QIcon, QImage, QPixmap
-from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog, QFrame,
+from PyQt5.QtGui import QFont, QIcon, QImage, QPixmap
+from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog,
                              QGridLayout, QInputDialog, QLabel, QLineEdit,
                              QMainWindow, QPushButton, QToolBar, QWidget)
 from view_scene import HVScene, HVView
+from widgets import ColorLabel, HLine, HVLable
 
 FORMATS = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM',
            '.bmp', '.BMP', '.gif', '.GIF', 'tiff')
@@ -21,40 +22,6 @@ if getattr(sys, 'frozen', False):
     CURRENT_PATH = sys._MEIPASS
 else:
     CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
-
-
-class ColorLable(QLabel):
-
-    def __init__(self, text=None, color=None, parent=None):
-        """
-        Args:
-            text (str)
-            color (tuple): RGBA value.
-        """
-        super(ColorLable, self).__init__(parent)
-        self.parent = parent
-        # self.setStyleSheet('border: 2px solid gray;')
-        self.pixmap = QPixmap(40, 20)
-        self.setPixmap(self.pixmap)
-        if text is not None:
-            self.setText(text)
-        if color is not None:
-            self.fill(color)
-
-    def fill(self, color):
-        if isinstance(color, (list, tuple)):
-            self.pixmap.fill(QColor(*color))
-        else:
-            self.pixmap.fill(color)
-        self.setPixmap(self.pixmap)
-
-
-class QHLine(QFrame):
-
-    def __init__(self):
-        super(QHLine, self).__init__()
-        self.setFrameShape(QFrame.HLine)
-        self.setFrameShadow(QFrame.Sunken)
 
 
 class Canvas(QWidget):
@@ -89,11 +56,8 @@ class Canvas(QWidget):
             goto_btn = QPushButton('GO', self)
             goto_btn.clicked.connect(self.goto_button_clicked)
             # name label showing image index and image path
-            self.name_label = QLabel(self)
-            self.name_label.setFont(QFont('Times', 15))
-            self.name_label.setTextInteractionFlags(
-                QtCore.Qt.TextSelectableByMouse)
-            self.name_label.setStyleSheet('QLabel {color : green;}')
+            self.name_label = HVLable('', self, 'green', 'Times', 15)
+
             # info label showing image shape, size and color type
             self.info_label = QLabel(self)
             self.info_label.setTextInteractionFlags(
@@ -123,7 +87,7 @@ class Canvas(QWidget):
             # pixel color at the mouse position
             self.qlable_color_title = QLabel('RGBA:', self)
             self.qlable_color_title.setFont(QFont('Times', 12))
-            self.qlabel_color = ColorLable(color=(255, 255, 255))
+            self.qlabel_color = ColorLabel(color=(255, 255, 255))
 
             # include and exclude names
             self.qlabel_info_include_names = QLabel(self)
@@ -420,9 +384,9 @@ class MainWindow(QMainWindow):
         color_grid.addWidget(self.canvas.qlabel_info_mouse_rgb_value, 1, 0, 1,
                              3)
         layout.addLayout(color_grid, 3, 0, 1, 3)
-        layout.addWidget(QHLine(), 4, 0, 1, 3)
+        layout.addWidget(HLine(), 4, 0, 1, 3)
         layout.addWidget(self.canvas.qlabel_rect_pos, 5, 0, 1, 3)
-        layout.addWidget(QHLine(), 6, 0, 1, 3)
+        layout.addWidget(HLine(), 6, 0, 1, 3)
         layout.addWidget(self.canvas.qlabel_info_include_names, 7, 0, 1, 3)
         layout.addWidget(self.canvas.qlabel_info_exclude_names, 8, 0, 1, 3)
 
