@@ -5,7 +5,7 @@ import re
 import sys
 from PIL import Image
 from PyQt5 import QtCore
-from PyQt5.QtGui import QFont, QIcon, QImage, QPixmap
+from PyQt5.QtGui import QIcon, QImage, QPixmap
 from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog,
                              QGridLayout, QInputDialog, QLabel, QLineEdit,
                              QMainWindow, QPushButton, QToolBar, QWidget)
@@ -13,7 +13,7 @@ from view_scene import HVScene, HVView
 from widgets import ColorLabel, HLine, HVLable
 
 FORMATS = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM',
-           '.bmp', '.BMP', '.gif', '.GIF', 'tiff')
+           '.bmp', '.BMP', '.gif', '.GIF', '.tiff')
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the PyInstaller bootloader
@@ -32,101 +32,106 @@ class Canvas(QWidget):
         try:
             self.key = sys.argv[1]
         except IndexError:
-            self.key = os.path.join(CURRENT_PATH,
-                                    'icon.png')  # show the icon image
+            # show the icon image
+            self.key = os.path.join(CURRENT_PATH, 'icon.png')
 
-        self.include_names = None
-        self.exclude_names = None
         try:
             open(self.key, 'r')
         except IOError:
             print(f'There was an error opening {self.key}')
             sys.exit(1)
 
+        # initialize widgets and layout
+        self.init_widgets_layout()
+
+        self.include_names = None
+        self.exclude_names = None
+        self.qview_bg_color = 'white'
+
         if self.key.endswith(FORMATS):
-            # layout
-            main_layout = QGridLayout(self)
-            # QGraphicsView - QGraphicsScene - QPixmap
-            self.qscene = HVScene(self)
-            self.qview = HVView(self.qscene, self)
-
-            # goto edit and botton
-            self.goto_edit = QLineEdit()
-            self.goto_edit.setPlaceholderText('Index. Default: 1')
-            goto_btn = QPushButton('GO', self)
-            goto_btn.clicked.connect(self.goto_button_clicked)
-            # name label showing image index and image path
-            self.name_label = HVLable('', self, 'green', 'Times', 15)
-
-            # info label showing image shape, size and color type
-            self.info_label = QLabel(self)
-            self.info_label.setTextInteractionFlags(
-                QtCore.Qt.TextSelectableByMouse)
-            self.info_label.setStyleSheet('QLabel {color : blue;}')
-            self.info_label.setFont(QFont('Times', 12))
-            # zoom label showing zoom ratio
-            self.qlabel_info_zoom_ration = QLabel(self)  # zoom ratio
-            self.qlabel_info_zoom_ration.setTextInteractionFlags(
-                QtCore.Qt.TextSelectableByMouse)
-            self.qlabel_info_zoom_ration.setStyleSheet(
-                'QLabel {color : green;}')
-            self.qlabel_info_zoom_ration.setFont(QFont('Times', 12))
-            # mouse position and mouse rgb value
-            self.qlabel_info_mouse_pos = QLabel(self)
-            self.qlabel_info_mouse_pos.setTextInteractionFlags(
-                QtCore.Qt.TextSelectableByMouse)
-            self.qlabel_info_mouse_pos.setFont(QFont('Times', 12))
-            self.qlabel_info_mouse_pos.setText(
-                'Cursor position:\n (ignore zoom)\n'
-                ' Height(y): 0.0\n Width(x):  0.0')
-            self.qlabel_info_mouse_rgb_value = QLabel(self)
-            self.qlabel_info_mouse_rgb_value.setTextInteractionFlags(
-                QtCore.Qt.TextSelectableByMouse)
-            self.qlabel_info_mouse_rgb_value.setFont(QFont('Times', 12))
-            self.qlabel_info_mouse_rgb_value.setText(' (255, 255, 255, 255)')
-            # pixel color at the mouse position
-            self.qlable_color_title = QLabel('RGBA:', self)
-            self.qlable_color_title.setFont(QFont('Times', 12))
-            self.qlabel_color = ColorLabel(color=(255, 255, 255))
-
-            # include and exclude names
-            self.qlabel_info_include_names = QLabel(self)
-            self.qlabel_info_include_names.setTextInteractionFlags(
-                QtCore.Qt.TextSelectableByMouse)
-            self.qlabel_info_include_names.setFont(QFont('Times', 12))
-            self.qlabel_info_exclude_names = QLabel(self)
-            self.qlabel_info_exclude_names.setTextInteractionFlags(
-                QtCore.Qt.TextSelectableByMouse)
-            self.qlabel_info_exclude_names.setFont(QFont('Times', 12))
-
-            # draw rectangle position and length
-            self.qlabel_rect_pos = QLabel(self)
-            self.qlabel_rect_pos.setTextInteractionFlags(
-                QtCore.Qt.TextSelectableByMouse)
-            self.qlabel_rect_pos.setFont(QFont('Times', 12))
-            self.qlabel_rect_pos.setText('Rect Pos: (H, W)\n Top-Left: 0, 0\n'
-                                         ' Btm-Rite: 0, 0\n Length  : 0, 0')
-            # layeouts
-            info_grid = QGridLayout()
-            # int row, int column, int rowSpan, int columnSpan
-            info_grid.addWidget(self.goto_edit, 0, 0, 1, 1)
-            info_grid.addWidget(goto_btn, 0, 1, 1, 1)
-            main_layout.addWidget(self.name_label, 0, 0, 1, 50)
-            main_layout.addLayout(info_grid, 1, 0, 1, 10)
-
-            # main view
-            main_layout.addWidget(self.qview, 0, 0, -1, 50)
-            # bottom QLabel, show image path
-            self.qlabel_img_path = QLabel(self)
-            main_layout.addWidget(self.qlabel_img_path, 61, 0, 1, 50)
-
-            self.qview_bg_color = 'white'
-
             self.get_img_list()
             self.show_image(init=True)
         else:
             print('Unsupported file format.')
             sys.exit(1)
+
+    def init_widgets_layout(self):
+        # QGraphicsView - QGraphicsScene - QPixmap
+        self.qscene = HVScene(self)
+        self.qview = HVView(self.qscene, self)
+
+        # name label showing image index and image path
+        self.name_label = HVLable('', self, 'green', 'Times', 15)
+        # goto edit and botton for indexing
+        self.goto_edit = QLineEdit()
+        self.goto_edit.setPlaceholderText('Index. Default: 1')
+        goto_btn = QPushButton('GO', self)
+        goto_btn.clicked.connect(self.goto_button_clicked)
+
+        # info label showing image shape, size and color type
+        self.info_label = HVLable('', self, 'blue', 'Times', 12)
+        # zoom label showing zoom ratio
+        self.zoom_label = HVLable('1.00', self, 'green', 'Times', 12)
+        # mouse position and mouse rgb value
+        mouse_pos_text = ('Cursor position:\n (ignore zoom)\n'
+                          ' Height(y): 0.0\n Width(x):  0.0')
+        self.mouse_pos_label = HVLable(mouse_pos_text, self, 'black', 'Times',
+                                       12)
+        self.mouse_rgb_label = HVLable(' (255, 255, 255, 255)', self, 'black',
+                                       'Times', 12)
+        # pixel color at the mouse position
+        self.mouse_color_title = HVLable('RGBA:', self, 'black', 'Times', 12)
+        self.mouse_color_label = ColorLabel(color=(255, 255, 255))
+
+        # selection rectangle position and length
+        selection_pos_text = ('Rect Pos: (H, W)\n Start: 0, 0\n'
+                              ' End  : 0, 0\n Len  : 0, 0')
+        self.selection_pos_label = HVLable(selection_pos_text, self, 'black',
+                                           'Times', 12)
+
+        # include and exclude names
+        self.include_names_label = HVLable('', self, 'black', 'Times', 12)
+        self.exclude_names_label = HVLable('', self, 'black', 'Times', 12)
+
+        # show the full image path at the bottom
+        self.img_path_label = HVLable('', self, 'black', 'Times', 12)
+
+        # ---------
+        # layouts
+        # ---------
+        main_layout = QGridLayout(self)
+        # QGridLayout:
+        # int row, int column, int rowSpan, int columnSpan
+        main_layout.addWidget(self.name_label, 0, 0, 1, 50)
+
+        name_grid = QGridLayout()
+        name_grid.addWidget(self.goto_edit, 0, 0, 1, 1)
+        name_grid.addWidget(goto_btn, 0, 1, 1, 1)
+        main_layout.addLayout(name_grid, 1, 0, 1, 10)
+
+        main_layout.addWidget(self.qview, 0, 0, -1, 50)
+        main_layout.addWidget(self.img_path_label, 61, 0, 1, 50)
+
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_F9:
+            self.toggle_bg_color()
+        elif event.key() == QtCore.Qt.Key_R:
+            self.qview.set_zoom(1)
+        elif event.key() == QtCore.Qt.Key_Space:
+            self.dir_browse(1)
+        elif event.key() == QtCore.Qt.Key_Backspace:
+            self.dir_browse(-1)
+
+    def keyReleaseEvent(self, event):
+        # there is a key focus problem, so we use KeyReleaseEvent
+        if event.key() == QtCore.Qt.Key_Right:
+            self.dir_browse(1)
+        elif event.key() == QtCore.Qt.Key_Left:
+            self.dir_browse(-1)
+        elif event.key() == QtCore.Qt.Key_Up:
+            self.qview.zoom_in()
+        elif event.key() == QtCore.Qt.Key_Down:
+            self.qview.zoom_out()
 
     def goto_button_clicked(self):
         goto_str = self.goto_edit.text()
@@ -140,35 +145,32 @@ class Canvas(QWidget):
         self.show_image()
 
     def get_img_list(self):
+        # if key is a folder, get the first image path
         if os.path.isdir(self.key):
             self.key = sorted(glob.glob(os.path.join(self.key, '*')))[0]
 
-        # set label show
+        # show exclude and include names
         if isinstance(self.exclude_names, list):
             show_str = 'Exclude:\n\t' + '\n\t'.join(self.exclude_names)
-            self.qlabel_info_exclude_names.setStyleSheet(
-                'QLabel {color : red;}')
+            self.exclude_names_label.setStyleSheet('QLabel {color : red;}')
         else:
             show_str = 'Exclude: None'
-            self.qlabel_info_exclude_names.setStyleSheet(
-                'QLabel {color : black;}')
-        self.qlabel_info_exclude_names.setText(show_str)
+            self.exclude_names_label.setStyleSheet('QLabel {color : black;}')
+        self.exclude_names_label.setText(show_str)
         if isinstance(self.include_names, list):
             show_str = 'Include:\n\t' + '\n\t'.join(self.include_names)
-            self.qlabel_info_include_names.setStyleSheet(
-                'QLabel {color : blue;}')
+            self.include_names_label.setStyleSheet('QLabel {color : blue;}')
         else:
             show_str = 'Include: None'
-            self.qlabel_info_include_names.setStyleSheet(
-                'QLabel {color : black;}')
-        self.qlabel_info_include_names.setText(show_str)
+            self.include_names_label.setStyleSheet('QLabel {color : black;}')
+        self.include_names_label.setText(show_str)
 
         if self.key.endswith(FORMATS):
             # get image list
             self.path, self.img_name = os.path.split(self.key)
             self.imgfiles = []
-            if self.path == '':
-                self.path = './'
+            if self.path == '': self.path = './'  # noqa: E701
+            # deal with include and exclude names
             for img_path in sorted(glob.glob(os.path.join(self.path, '*'))):
                 img_name = os.path.split(img_path)[1]
                 base, ext = os.path.splitext(img_name)
@@ -185,64 +187,42 @@ class Canvas(QWidget):
                                 flag_add = False
                     else:
                         flag_add = True
-
                     if flag_add:
                         self.imgfiles.append(img_name)
-            # natural sort
+            # natural sort for numbers in name
             self.imgfiles.sort(key=lambda s: [
                 int(t) if t.isdigit() else t.lower()
                 for t in re.split(r'(\d+)', s)
             ])
-            # get current pos
+            # get current position
             try:
                 self.dirpos = self.imgfiles.index(self.img_name)
             except ValueError:
                 # self.img_name may not in self.imgfiles after refreshing
                 self.dirpos = 0
-            # update information
-            self.key = self.key.replace('\\', '/')
-            self.qlabel_img_path.setText(f'{self.key}')
 
             # save open file history
-            try:
-                with open(os.path.join(CURRENT_PATH, 'history.txt'), 'r') as f:
-                    lines = f.readlines()
-                    lines = [line.strip() for line in lines]
-                    if len(lines) == 5:
-                        del lines[-1]
-            except Exception:
-                lines = []
-            # add the new records to the first line
-            if self.key not in ['icon.png', './icon.png'] and (self.key
-                                                               not in lines):
-                lines.insert(0, self.key)
-            with open(os.path.join(CURRENT_PATH, 'history.txt'), 'w') as f:
-                for line in lines:
-                    f.write(f'{line}\n')
+            self.save_open_history()
         else:
             raise ValueError('Wrong key!')
             exit(-1)
 
-    def keyPressEvent(self, event):
-        if event.key() == QtCore.Qt.Key_F9:
-            self.toggle_bg_color()
-        elif event.key() == QtCore.Qt.Key_R:
-            self.qview.set_zoom(1)
-        elif event.key() == QtCore.Qt.Key_Space:
-            self.dir_browse(1)
-        elif event.key() == QtCore.Qt.Key_Backspace:
-            self.dir_browse(-1)
-
-    def keyReleaseEvent(self, event):
-        # there is key focus problem, so we use KeyReleaseEvent
-        if event.key() == QtCore.Qt.Key_Right:
-            self.dir_browse(1)
-        elif event.key() == QtCore.Qt.Key_Left:
-            self.dir_browse(-1)
-        elif event.key() == QtCore.Qt.Key_Up:
-            self.qview.zoom_in()
-        elif event.key() == QtCore.Qt.Key_Down:
-            self.qview.zoom_out()
+    def save_open_history(self):
+        try:
+            with open(os.path.join(CURRENT_PATH, 'history.txt'), 'r') as f:
+                lines = f.readlines()
+                lines = [line.strip() for line in lines]
+                if len(lines) == 5:
+                    del lines[-1]
+        except Exception:
+            lines = []
+        # add the new record to the first line
+        if self.key not in ['icon.png', './icon.png'] and (self.key
+                                                           not in lines):
+            lines.insert(0, self.key)
+        with open(os.path.join(CURRENT_PATH, 'history.txt'), 'w') as f:
+            for line in lines:
+                f.write(f'{line}\n')
 
     def show_image(self, init=False):
         self.qscene.clear()
@@ -253,7 +233,7 @@ class Canvas(QWidget):
         # put image always in the center of a QGraphicsView
         self.qscene.setSceneRect(0, 0, self.imgw, self.imgh)
         self.key = self.key.replace('\\', '/')
-        self.qlabel_img_path.setText(f'{self.key}')
+        self.img_path_label.setText(f'{self.key}')
 
         try:
             with Image.open(self.key) as lazy_img:
@@ -264,7 +244,7 @@ class Canvas(QWidget):
 
         # update information panel
         self.path, self.img_name = os.path.split(self.key)
-        self.file_size = os.path.getsize(self.key) / 1024 / 1024  # in MB
+        self.file_size = sizeof_fmt(os.path.getsize(self.key))
         self.name_label.setText(
             f'[{self.dirpos + 1:d} / {len(self.imgfiles):d}] '
             f'{self.img_name}')
@@ -280,15 +260,14 @@ class Canvas(QWidget):
                 self.qview.set_zoom(1)
         self.qview.set_transform()
 
-    def dir_browse(self, direc):
+    def dir_browse(self, direction):
         if len(self.imgfiles) > 1:
-            self.dirpos += direc
+            self.dirpos += direction
             if self.dirpos > (len(self.imgfiles) - 1):
                 self.dirpos = 0
             elif self.dirpos < 0:
                 self.dirpos = (len(self.imgfiles) - 1)
             self.key = os.path.join(self.path, self.imgfiles[self.dirpos])
-
             self.show_image()
 
     def toggle_bg_color(self):
@@ -356,7 +335,7 @@ class MainWindow(QMainWindow):
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolbar)
 
     def init_statusbar(self):
-        self.statusBar().showMessage('Ready')
+        self.statusBar().showMessage('Welcome to HandyView.')
 
     def init_central_window(self):
         self.canvas = Canvas(self)
@@ -367,37 +346,36 @@ class MainWindow(QMainWindow):
         dock_info = QDockWidget('Information Panel', self)
         dock_info.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea
                                   | QtCore.Qt.RightDockWidgetArea)
+        # not show close button
         dock_info.setFeatures(QDockWidget.DockWidgetMovable
                               | QDockWidget.DockWidgetFloatable)
         dockedWidget = QWidget()
         dock_info.setWidget(dockedWidget)
         layout = QGridLayout()
         layout.addWidget(self.canvas.info_label, 0, 0, 1, 3)
-        layout.addWidget(self.canvas.qlabel_info_zoom_ration, 1, 0, 1, 3)
-        layout.addWidget(self.canvas.qlabel_info_mouse_pos, 2, 0, 1, 3)
-        # layout.addWidget(self.canvas.info_label)
-        # layout.addWidget(self.canvas.qlabel_info_zoom_ration)
-        # layout.addWidget(self.canvas.qlabel_info_mouse_pos)
+        layout.addWidget(self.canvas.zoom_label, 1, 0, 1, 3)
+        layout.addWidget(self.canvas.mouse_pos_label, 2, 0, 1, 3)
         color_grid = QGridLayout()
-        color_grid.addWidget(self.canvas.qlable_color_title, 0, 0, 1, 1)
-        color_grid.addWidget(self.canvas.qlabel_color, 0, 1, 1, 3)
-        color_grid.addWidget(self.canvas.qlabel_info_mouse_rgb_value, 1, 0, 1,
-                             3)
+        color_grid.addWidget(self.canvas.mouse_color_title, 0, 0, 1, 1)
+        color_grid.addWidget(self.canvas.mouse_color_label, 0, 1, 1, 3)
+        color_grid.addWidget(self.canvas.mouse_rgb_label, 1, 0, 1, 3)
         layout.addLayout(color_grid, 3, 0, 1, 3)
         layout.addWidget(HLine(), 4, 0, 1, 3)
-        layout.addWidget(self.canvas.qlabel_rect_pos, 5, 0, 1, 3)
+        layout.addWidget(self.canvas.selection_pos_label, 5, 0, 1, 3)
         layout.addWidget(HLine(), 6, 0, 1, 3)
-        layout.addWidget(self.canvas.qlabel_info_include_names, 7, 0, 1, 3)
-        layout.addWidget(self.canvas.qlabel_info_exclude_names, 8, 0, 1, 3)
+        layout.addWidget(self.canvas.include_names_label, 7, 0, 1, 3)
+        layout.addWidget(self.canvas.exclude_names_label, 8, 0, 1, 3)
 
+        # for compact space
         blank_qlabel = QLabel()
         layout.addWidget(blank_qlabel, 7, 0, 20, 3)
         dockedWidget.setLayout(layout)
+
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dock_info)
 
-    ##################################
+    # --------
     # Slots
-    ##################################
+    # --------
 
     def open_file_dialog(self):
         try:
@@ -474,6 +452,24 @@ class MainWindow(QMainWindow):
             self.canvas.get_img_list()
             self.canvas.show_image(init=False)
 
+    def set_statusbar(self, text):
+        self.statusBar().showMessage(text)
+
+
+def sizeof_fmt(size, suffix='B'):
+    """Get human readable file size.
+    Args:
+        size (int): File size.
+        suffix (str): Suffix. Default: 'B'.
+    Return:
+        str: Formated file siz.
+    """
+    for unit in ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z']:
+        if abs(size) < 1024.0:
+            return f'{size:3.1f} {unit}{suffix}'
+        size /= 1024.0
+    return f'{size:3.1f} Y{suffix}'
+
 
 if __name__ == '__main__':
     import platform
@@ -482,13 +478,12 @@ if __name__ == '__main__':
         import ctypes
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
             'HandyView')
-    print('Welcom to HandyView.')
+    print('Welcome to HandyView.')
 
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon('icon.icon'))
 
     screen = app.primaryScreen()
-    print(f'Screen: {screen.name()}')
     size = screen.size()
     # rect = screen.availableGeometry()
 
@@ -497,4 +492,8 @@ if __name__ == '__main__':
     main.setGeometry(0, 0, size.width(),
                      size.height())  # (left, top, width, height)
     main.showMaximized()
+
+    # change status bar info
+    main.set_statusbar(
+        f'Screen: {screen.name()} with size {size.width()} x {size.height()}.')
     sys.exit(app.exec_())

@@ -100,25 +100,24 @@ class HVView(QGraphicsView):
 
     def show_mouse_position(self, x_pos, y_pos):
         """Show mouse position under the scene position (ignore the zoom)."""
-        self.parent.qlabel_info_mouse_pos.setText(
+        self.parent.mouse_pos_label.setText(
             ('Cursor position:\n (ignore zoom)\n'
              f' Height(y): {y_pos:.1f}\n Width(x):  {x_pos:.1f}'))
 
         # if cursor is out of image, the text will be red
         if (0 < x_pos < self.parent.imgw and 0 < y_pos < self.parent.imgh):
-            self.parent.qlabel_info_mouse_pos.setStyleSheet(
+            self.parent.mouse_pos_label.setStyleSheet(
                 'QLabel {color : black;}')
         else:
-            self.parent.qlabel_info_mouse_pos.setStyleSheet(
-                'QLabel {color : red;}')
+            self.parent.mouse_pos_label.setStyleSheet('QLabel {color : red;}')
 
     def show_mouse_color(self, x_pos, y_pos):
         """Show mouse color with RGBA values."""
         pixel = self.parent.qimg.pixel(int(x_pos), int(y_pos))
         pixel_color = QColor(pixel)
-        self.parent.qlabel_color.fill(pixel_color)
+        self.parent.mouse_color_label.fill(pixel_color)
         rgba = pixel_color.getRgb()  # 8 bit RGBA
-        self.parent.qlabel_info_mouse_rgb_value.setText(
+        self.parent.mouse_rgb_label.setText(
             f' ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, '
             f'{rgba[3]:3d})')
 
@@ -126,7 +125,7 @@ class HVView(QGraphicsView):
         """Show selection rect position."""
         x_len = x_end - x_start
         y_len = y_end - y_start
-        self.parent.qlabel_rect_pos.setText(
+        self.parent.selection_pos_label.setText(
             'Rect Pos: (H, W)\n'
             f' Start: {int(y_start)}, {int(x_start)}\n'
             f' End  : {int(y_end)}, {int(x_end)}\n'
@@ -135,24 +134,25 @@ class HVView(QGraphicsView):
         if (0 < x_start < self.parent.imgw and 0 < y_start < self.parent.imgh
                 and 0 < x_end < self.parent.imgw
                 and 0 < y_end < self.parent.imgh):
-            self.parent.qlabel_rect_pos.setStyleSheet(
+            self.parent.selection_pos_label.setStyleSheet(
                 'QLabel {color : black;}')
         else:
-            self.parent.qlabel_rect_pos.setStyleSheet('QLabel {color : red;}')
+            self.parent.selection_pos_label.setStyleSheet(
+                'QLabel {color : red;}')
 
     def zoom_in(self):
         self.zoom *= 1.05
-        self.parent.qlabel_info_zoom_ration.setText(f'Zoom: {self.zoom:.2f}')
+        self.parent.zoom_label.setText(f'Zoom: {self.zoom:.2f}')
         self.set_transform()
 
     def zoom_out(self):
         self.zoom /= 1.05
-        self.parent.qlabel_info_zoom_ration.setText(f'Zoom: {self.zoom:.2f}')
+        self.parent.zoom_label.setText(f'Zoom: {self.zoom:.2f}')
         self.set_transform()
 
     def set_zoom(self, ratio):
         self.zoom = ratio
-        self.parent.qlabel_info_zoom_ration.setText(f'Zoom: {self.zoom:.2f}')
+        self.parent.zoom_label.setText(f'Zoom: {self.zoom:.2f}')
         self.set_transform()
 
     def set_transform(self):
@@ -179,24 +179,23 @@ class HVScene(QGraphicsScene):
 
     def show_mouse_position(self, x_pos, y_pos):
         """Show mouse position under the scene position (ignore the zoom)."""
-        self.parent.qlabel_info_mouse_pos.setText(
+        self.parent.mouse_pos_label.setText(
             ('Cursor position:\n (ignore zoom)\n'
              f' Height(y): {y_pos:.1f}\n Width(x):  {x_pos:.1f}'))
 
         # if cursor is out of image, the text will be red
         if (0 < x_pos < self.parent.imgw and 0 < y_pos < self.parent.imgh):
-            self.parent.qlabel_info_mouse_pos.setStyleSheet(
+            self.parent.mouse_pos_label.setStyleSheet(
                 'QLabel {color : black;}')
         else:
-            self.parent.qlabel_info_mouse_pos.setStyleSheet(
-                'QLabel {color : red;}')
+            self.parent.mouse_pos_label.setStyleSheet('QLabel {color : red;}')
 
     def show_mouse_color(self, x_pos, y_pos):
         """Show mouse color with RGBA values."""
         pixel = self.parent.qimg.pixel(int(x_pos), int(y_pos))
         pixel_color = QColor(pixel)
-        self.parent.qlabel_color.fill(pixel_color)
+        self.parent.mouse_color_label.fill(pixel_color)
         rgba = pixel_color.getRgb()  # 8 bit RGBA
-        self.parent.qlabel_info_mouse_rgb_value.setText(
+        self.parent.mouse_rgb_label.setText(
             f' ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, '
             f'{rgba[3]:3d})')
