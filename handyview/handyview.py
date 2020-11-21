@@ -8,10 +8,9 @@ from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon, QImage, QPixmap
 from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog,
                              QGridLayout, QInputDialog, QLabel, QLineEdit,
-                             QMainWindow, QMessageBox, QPushButton, QToolBar,
-                             QWidget)
+                             QMainWindow, QPushButton, QToolBar, QWidget)
 from view_scene import HVScene, HVView
-from widgets import ColorLabel, HLine, HVLable
+from widgets import ColorLabel, HLine, HVLable, MessageDialog
 
 FORMATS = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM',
            '.bmp', '.BMP', '.gif', '.GIF', '.tiff')
@@ -334,6 +333,9 @@ class MainWindow(QMainWindow):
         self.toolbar.addAction(actions.exclude_file_name(self))
         self.toolbar.addAction(actions.compare(self))
         self.toolbar.addAction(actions.history(self))
+        self.toolbar.addSeparator()
+        self.toolbar.addSeparator()
+        self.toolbar.addAction(actions.show_instruction_msg(self))
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolbar)
 
     def init_statusbar(self):
@@ -455,15 +457,32 @@ class MainWindow(QMainWindow):
             self.canvas.get_img_list()
             self.canvas.show_image(init=False)
 
-    def show_instruction_msg():
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
+    def show_instruction_msg(self):
+        instruct_text = r'''
+        Mouse wheel : Previous/Next image
+        Ctrl + Mouse wheel: Zoom in/out
 
+        Direction key ← → : Previous/Next image
+        Direction key ↑ ↓ : Zoom in/out
+        F9 : Change background color (white or gray)
+        R : Reset zoom ration to 1
+        Space : Next image
+        Backspace: Previous image
+        '''
+        instruct_text_cn = r'''
+        鼠标滚轮 : 上一张/下一张 图像
+        Ctrl + 鼠标滚轮: 放大/缩小
+
+        方向键 ← → : 上一张/下一张 图像
+        方向键 ↑ ↓ : 放大/缩小
+        F9 : 切换背景颜色 (白色/灰色)
+        R : 重置放大比率为1
+        Space : 下一张 图像
+        Backspace: 上一张 图像
+        '''
+        msg = MessageDialog(self, instruct_text, instruct_text_cn)
+        msg.setStyleSheet("QLabel{min-width:500 px; font-size: 20px;}")
         msg.setWindowTitle('Instructions')
-        msg.setText('This is a message box')
-        msg.setInformativeText('This is additional information')
-        msg.setDetailedText('The details are as follows:')
-        msg.setStandardButtons(QMessageBox.Close)
         msg.exec_()
 
 
@@ -492,7 +511,6 @@ if __name__ == '__main__':
     print('Welcome to HandyView.')
 
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon('icon.icon'))
 
     screen = app.primaryScreen()
     size = screen.size()
