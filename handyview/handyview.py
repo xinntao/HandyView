@@ -251,7 +251,7 @@ class Canvas(QWidget):
         self.info_label.setText(
             'Info: \n'
             f' Height: {self.imgh:d}\n Width:  {self.imgw:d}\n'
-            f' Size: {self.file_size:.2f} MB\n Type: {self.color_type}')
+            f' Size: {self.file_size:.2f}\n Type: {self.color_type}')
 
         if init:
             if self.imgw < 500:
