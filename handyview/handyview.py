@@ -8,7 +8,8 @@ from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon, QImage, QPixmap
 from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog,
                              QGridLayout, QInputDialog, QLabel, QLineEdit,
-                             QMainWindow, QPushButton, QToolBar, QWidget)
+                             QMainWindow, QMessageBox, QPushButton, QToolBar,
+                             QWidget)
 from view_scene import HVScene, HVView
 from widgets import ColorLabel, HLine, HVLable
 
@@ -321,7 +322,8 @@ class MainWindow(QMainWindow):
         self.view_menu = menubar.addMenu('&View')
 
         # Help
-        help_menu = menubar.addMenu('&Help')  # noqa: F841
+        help_menu = menubar.addMenu('&Help')
+        help_menu.addAction(actions.show_instruction_msg(self))
 
     def init_toolbar(self):
         self.toolbar = QToolBar(self)
@@ -336,6 +338,9 @@ class MainWindow(QMainWindow):
 
     def init_statusbar(self):
         self.statusBar().showMessage('Welcome to HandyView.')
+
+    def set_statusbar(self, text):
+        self.statusBar().showMessage(text)
 
     def init_central_window(self):
         self.canvas = Canvas(self)
@@ -411,7 +416,6 @@ class MainWindow(QMainWindow):
             current_exclude_names = ''
         else:
             current_exclude_names = ', '.join(current_exclude_names)
-            current_exclude_names += ', '
 
         exclude_names, ok = QInputDialog.getText(self, 'Exclude file name',
                                                  'Key word (seperate by ,):',
@@ -435,7 +439,6 @@ class MainWindow(QMainWindow):
             current_include_names = ''
         else:
             current_include_names = ', '.join(current_include_names)
-            current_include_names += ', '
 
         include_names, ok = QInputDialog.getText(self, 'Include file name',
                                                  'Key word (seperate by ,):',
@@ -452,8 +455,16 @@ class MainWindow(QMainWindow):
             self.canvas.get_img_list()
             self.canvas.show_image(init=False)
 
-    def set_statusbar(self, text):
-        self.statusBar().showMessage(text)
+    def show_instruction_msg():
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+
+        msg.setWindowTitle('Instructions')
+        msg.setText('This is a message box')
+        msg.setInformativeText('This is additional information')
+        msg.setDetailedText('The details are as follows:')
+        msg.setStandardButtons(QMessageBox.Close)
+        msg.exec_()
 
 
 def sizeof_fmt(size, suffix='B'):
