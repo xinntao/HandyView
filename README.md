@@ -2,6 +2,11 @@
 
 [English](README.md) **|** [简体中文](README_CN.md) &emsp; [GitHub](https://github.com/xinntao/HandyView) **|** [Gitee码云](https://gitee.com/xinntao/HandyView)
 
+<img src="https://github.com/xinntao/HandyView/blob/master/handyview/icon.png" alt="HandyView Icon" width="18" height="18"> [HandyView](https://github.com/xinntao/HandyView) **|** <img src="https://github.com/xinntao/HandyFigure/blob/master/icon.png" alt="HandyFigure Icon" width="18" height="18"> [HandyFigure](https://github.com/xinntao/HandyFigure) **|** <img src="https://github.com/xinntao/HandyCrawler/blob/master/icon.png" alt="HandyCrawler Icon" width="18" height="18"> [HandyCrawler](https://github.com/xinntao/HandyCrawler)
+**|** <img src="https://github.com/xinntao/HandyWriting/blob/master/icon.png" alt="HandyWriting Icon" width="18" height="18"> [HandyWriting](https://github.com/xinntao/HandyWriting)
+
+---
+
 HandyView is a handy image viewer based on PyQt5. It provided convenient ways for viewing and comparing.
 
 ## :sparkles: Features
