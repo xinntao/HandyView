@@ -27,7 +27,7 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
 
 I have now tested it on Windows. It should also work on Ubuntu (but may with some modifications).
 
-### Windows
+### <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg" alt="Windows Logo" height="36"> Windows
 
 #### Dependencies
 
