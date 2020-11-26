@@ -2,10 +2,10 @@
 
 [English](README.md) **|** [简体中文](README_CN.md) &emsp; [GitHub](https://github.com/xinntao/HandyView) **|** [Gitee码云](https://gitee.com/xinntao/HandyView)
 
-*Handy Series*:
+```Handy``` *Series*:
 
-<img src="https://github.com/xinntao/HandyView/blob/master/handyview/icon.png" alt="HandyView Icon" width="40" height="40"> [HandyView](https://github.com/xinntao/HandyView) &emsp; <img src="https://github.com/xinntao/HandyFigure/blob/master/icon.png" alt="HandyFigure Icon" width="40" height="40"> [HandyFigure](https://github.com/xinntao/HandyFigure) &emsp; <img src="https://github.com/xinntao/HandyCrawler/blob/master/icon.png" alt="HandyCrawler Icon" width="40" height="40"> [HandyCrawler](https://github.com/xinntao/HandyCrawler)
-&emsp; <img src="https://github.com/xinntao/HandyWriting/blob/master/icon.png" alt="HandyWriting Icon" width="40" height="40"> [HandyWriting](https://github.com/xinntao/HandyWriting)
+<img src="https://github.com/xinntao/HandyView/blob/master/handyview/icon.png" alt="HandyView Icon" width="36" height="36"> [HandyView](https://github.com/xinntao/HandyView) &emsp; <img src="https://github.com/xinntao/HandyFigure/blob/master/icon.png" alt="HandyFigure Icon" width="36" height="36"> [HandyFigure](https://github.com/xinntao/HandyFigure) &emsp; <img src="https://github.com/xinntao/HandyCrawler/blob/master/icon.png" alt="HandyCrawler Icon" width="36" height="36"> [HandyCrawler](https://github.com/xinntao/HandyCrawler)
+&emsp; <img src="https://github.com/xinntao/HandyWriting/blob/master/icon.png" alt="HandyWriting Icon" width="36" height="36"> [HandyWriting](https://github.com/xinntao/HandyWriting)
 
 ---
 
