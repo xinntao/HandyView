@@ -27,7 +27,7 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
 
 I have now tested it on Windows. It should also work on Ubuntu (but may with some modifications).
 
-### Windows <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg" alt="Windows Logo" height="20">
+### <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg" alt="Windows" height="20">
 
 #### Dependencies
 
@@ -59,7 +59,7 @@ Use `pyinstaller` to compile to executable program, so that you can **double-cli
 1. Copy the `handyview/icons` folder and the `handyview/icon.png` image to the `dist` folder
 1. Choose the `dist/handyview/handyview.exe` as the default image viewer.
 
-### Ubuntu <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Logo-ubuntu_no%28r%29-black_orange-hex.svg" alt="Ubuntu Logo" height="20">
+### <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Logo-ubuntu_no%28r%29-black_orange-hex.svg" alt="Ubuntu" height="20">
 
 I used Ubuntu in the previous versions. Now I switch to Windows (with wsl) for development.
 So this is not tested on Ubuntu and may be out-of-date.
