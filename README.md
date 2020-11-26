@@ -108,4 +108,4 @@ I have used the icons from [flaticon](www.flaticon.com). The following are the s
 
 ## :e-mail: Contact
 
-If you have any question, please email `xintao.wang@outlook.com`.
+If you have any question, please open an issue or email `xintao.wang@outlook.com`.
