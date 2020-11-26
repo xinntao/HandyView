@@ -4,8 +4,8 @@
 
 ```Handy``` *Series*:
 
-<img src="https://gitee.com/xinntao/HandyView/blob/master/handyview/icon.png" alt="HandyView Icon" width="36" height="36"> [HandyView](https://gitee.com/xinntao/HandyView) &emsp; <img src="https://gitee.com/xinntao/HandyFigure/blob/master/icon.png" alt="HandyFigure Icon" width="36" height="36"> [HandyFigure](https://gitee.com/xinntao/HandyFigure) &emsp; <img src="https://gitee.com/xinntao/HandyCrawler/blob/master/icon.png" alt="HandyCrawler Icon" width="36" height="36"> [HandyCrawler](https://gitee.com/xinntao/HandyCrawler)
-&emsp; <img src="https://gitee.com/xinntao/HandyWriting/blob/master/icon.png" alt="HandyWriting Icon" width="36" height="36"> [HandyWriting](https://gitee.com/xinntao/HandyWriting)
+<img src="https://gitee.com/xinntao/HandyView/raw/master/handyview/icon.png" alt="HandyView Icon" width="36" height="36"> [HandyView](https://gitee.com/xinntao/HandyView) &emsp; <img src="https://gitee.com/xinntao/HandyFigure/raw/master/icon.png" alt="HandyFigure Icon" width="36" height="36"> [HandyFigure](https://gitee.com/xinntao/HandyFigure) &emsp; <img src="https://gitee.com/xinntao/HandyCrawler/raw/master/icon.png" alt="HandyCrawler Icon" width="36" height="36"> [HandyCrawler](https://gitee.com/xinntao/HandyCrawler)
+&emsp; <img src="https://gitee.com/xinntao/HandyWriting/raw/master/icon.png" alt="HandyWriting Icon" width="36" height="36"> [HandyWriting](https://gitee.com/xinntao/HandyWriting)
 
 ---
 
