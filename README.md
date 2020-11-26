@@ -9,21 +9,21 @@
 
 ---
 
-HandyView is a handy image viewer based on PyQt5. It provided convenient ways for viewing and comparing.
+HandyView is a **handy image viewer** for convenient viewing and comparing. It is developed with PyQt5.
 
 ## :sparkles: Features
 
-- Switch among images **with fixed zoom ration**, which is useful when comparing image details. (Unfortunately, I cannot find such a image viewer and this is the initial motivation to write HandyView).
+- Switch among images **with fixed zoom ration**, which is useful when comparing image details. (Unfortunately, I cannot find such a image viewer and this is the initial motivation to develop HandyView).
 - Show basic image information, for example, image path, shape, size, color type, zoom ration, etc.
 - Show the position and color in the current mouse cursor.
 
-### Current screenshot
+## :eyes: Screenshot
 
 <p align="center">
   <img src="assets/screenshot.png">
 </p>
 
-## Usage
+## :wrench: Usage
 
 I have now tested it on Windows. It should also work on Ubuntu (but may with some modifications).
 
@@ -73,7 +73,7 @@ So this is not tested on Ubuntu and may be out-of-date.
     1. Go to `Properties` -> `Open With`
     1. Choose *HandyView*
 
-## TODO list
+## :hourglass_flowing_sand: TODO list
 
 ### Compare operations
 
@@ -85,17 +85,19 @@ So this is not tested on Ubuntu and may be out-of-date.
 - [ ] Draw rectangular and enlarged this area.
 - [ ] Make gif easily.
 
-## Reference
+## :books: References
 
 - [Qt5 doc](https://doc.qt.io/qt-5/)
 - [PyQt5 doc](https://doc.qt.io/qtforpython/api.html)
-- [Key name](https://doc.qt.io/archives/qtjambi-4.5.2_01/com/trolltech/qt/core/Qt.Key.html)
+- [Qt Key](https://doc.qt.io/archives/qtjambi-4.5.2_01/com/trolltech/qt/core/Qt.Key.html)
 
-## Acknowledgement
+## :scroll: License and Acknowledgement
+
+This project is released under the [MIT license](./LICENSE).
 
 ### Icons
 
-I have used the icons from [www.flaticon.com](www.flaticon.com) The following are the source links.
+I have used the icons from [flaticon](www.flaticon.com). The following are the source links.
 
 - [Open icon](https://www.flaticon.com/free-icon/open_3143203?term=file%20open&page=1&position=1)
 - [Refresh icon](https://www.flaticon.com/free-icon/reuse_3299869?term=refresh&page=1&position=16)
