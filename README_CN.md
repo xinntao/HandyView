@@ -19,6 +19,8 @@ HandyView 是一款基于 PyQt5 开发的方便的图像查看器. It provided c
 
 ## :eyes: Screenshot
 
+[To be updated]
+
 <p align="center">
   <img src="assets/screenshot.png">
 </p>
@@ -91,9 +93,9 @@ So this is not tested on Ubuntu and may be out-of-date.
 - [PyQt5 doc](https://doc.qt.io/qtforpython/api.html)
 - [Key name](https://doc.qt.io/archives/qtjambi-4.5.2_01/com/trolltech/qt/core/Qt.Key.html)
 
-## :scroll: License and Acknowledgement
+## :scroll: 许可和致谢
 
-This project is released under the [MIT license](./LICENSE).
+本项目使用 [MIT license](./LICENSE).
 
 ### Icons
 
@@ -106,6 +108,6 @@ I have used the icons from [flaticon](www.flaticon.com). The following are the s
 - [Compare icon](https://www.flaticon.com/free-icon/file-sharing_1037325?term=file%20compare&page=1&position=2)
 - [History icon](https://www.flaticon.com/free-icon/timer_2921268)
 
-## :e-mail: Contact
+## :e-mail: 联系
 
-If you have any question, please open an issue or email `xintao.wang@outlook.com`.
+若有任何问题, 请提 issue 或者电邮 `xintao.wang@outlook.com`.

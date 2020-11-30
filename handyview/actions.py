@@ -88,3 +88,11 @@ def include_file_name(parent):
         'Include',
         icon_name='include.png',
         slot=parent.include_file_name)
+
+
+def show_instruction_msg(parent):
+    return new_action(
+        parent,
+        'Instruct',
+        icon_name='instructions.png',
+        slot=parent.show_instruction_msg)

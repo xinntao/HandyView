@@ -19,6 +19,8 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
 
 ## :eyes: Screenshot
 
+[To be updated]
+
 <p align="center">
   <img src="assets/screenshot.png">
 </p>
