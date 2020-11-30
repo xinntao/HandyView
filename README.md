@@ -19,6 +19,8 @@ HandyView is a handy image viewer based on PyQt5. It provided convenient ways fo
 
 ### Current screenshot
 
+[To be updated]
+
 <p align="center">
   <img src="assets/screenshot.png">
 </p>
