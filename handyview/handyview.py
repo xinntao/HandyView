@@ -29,6 +29,7 @@ class Canvas(QWidget):
 
     def __init__(self, parent):
         super(Canvas, self).__init__()
+        self.parent = parent
         try:
             self.key = sys.argv[1]
         except IndexError:
@@ -93,9 +94,6 @@ class Canvas(QWidget):
         self.include_names_label = HVLable('', self, 'black', 'Times', 12)
         self.exclude_names_label = HVLable('', self, 'black', 'Times', 12)
 
-        # show the full image path at the bottom
-        self.img_path_label = HVLable('', self, 'black', 'Times', 12)
-
         # ---------
         # layouts
         # ---------
@@ -110,7 +108,9 @@ class Canvas(QWidget):
         main_layout.addLayout(name_grid, 1, 0, 1, 10)
 
         main_layout.addWidget(self.qview, 0, 0, -1, 50)
-        main_layout.addWidget(self.img_path_label, 61, 0, 1, 50)
+        # blank label for layout
+        blank_label = HVLable('', self, 'black', 'Times', 12)
+        main_layout.addWidget(blank_label, 61, 0, 1, 1)
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_F9:
@@ -121,17 +121,26 @@ class Canvas(QWidget):
             self.dir_browse(1)
         elif event.key() == QtCore.Qt.Key_Backspace:
             self.dir_browse(-1)
-
-    def keyReleaseEvent(self, event):
-        # there is a key focus problem, so we use KeyReleaseEvent
-        if event.key() == QtCore.Qt.Key_Right:
+        elif event.key() == QtCore.Qt.Key_D:
             self.dir_browse(1)
-        elif event.key() == QtCore.Qt.Key_Left:
+        elif event.key() == QtCore.Qt.Key_A:
             self.dir_browse(-1)
-        elif event.key() == QtCore.Qt.Key_Up:
+        elif event.key() == QtCore.Qt.Key_W:
             self.qview.zoom_in()
-        elif event.key() == QtCore.Qt.Key_Down:
+        elif event.key() == QtCore.Qt.Key_S:
             self.qview.zoom_out()
+
+    # Avoid ambiguity for scroll bar
+    # def keyReleaseEvent(self, event):
+    #     # there is a key focus problem, so we use KeyReleaseEvent
+    #     if event.key() == QtCore.Qt.Key_Right:
+    #         self.dir_browse(1)
+    #     elif event.key() == QtCore.Qt.Key_Left:
+    #         self.dir_browse(-1)
+    #     elif event.key() == QtCore.Qt.Key_Up:
+    #         self.qview.zoom_in()
+    #     elif event.key() == QtCore.Qt.Key_Down:
+    #         self.qview.zoom_out()
 
     def goto_button_clicked(self):
         goto_str = self.goto_edit.text()
@@ -233,7 +242,8 @@ class Canvas(QWidget):
         # put image always in the center of a QGraphicsView
         self.qscene.setSceneRect(0, 0, self.imgw, self.imgh)
         self.key = self.key.replace('\\', '/')
-        self.img_path_label.setText(f'{self.key}')
+        # show image path in the statusbar
+        self.parent.set_statusbar(f'{self.key}')
 
         try:
             with Image.open(self.key) as lazy_img:
