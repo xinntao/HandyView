@@ -51,7 +51,6 @@ class HVView(QGraphicsView):
         x_scene, y_scene = scene_pos.x(), scene_pos.y()
         self.show_rect_position(x_scene, y_scene, x_scene, y_scene)
 
-
     def mouseMoveEvent(self, event):
         """Only works when mouse button is pressed.
         TODO: how to work when there is no mouse button is pressed.
@@ -72,7 +71,6 @@ class HVView(QGraphicsView):
                 self.rubber_band.setGeometry(
                     QRect(self.rubber_band_origin, event.pos()).normalized())
                 # self.rectChanged.emit(self.rubber_band.geometry())
-
 
     def mouseReleaseEvent(self, event):
         self.rubber_band_changable = False
@@ -169,7 +167,6 @@ class HVScene(QGraphicsScene):
         x_pos, y_pos = event.scenePos().x(), event.scenePos().y()
         self.show_mouse_position(x_pos, y_pos)
         self.show_mouse_color(x_pos, y_pos)
-
 
     def show_mouse_position(self, x_pos, y_pos):
         """Show mouse position under the scene position (ignore the zoom)."""
