@@ -84,7 +84,9 @@ So this is not tested on Ubuntu and may be out-of-date.
 - [PyQt5 doc](https://doc.qt.io/qtforpython/api.html)
 - [Key name](https://doc.qt.io/archives/qtjambi-4.5.2_01/com/trolltech/qt/core/Qt.Key.html)
 
-## Acknowledgement
+## :scroll: 许可和致谢
+
+本项目使用 [MIT license](./LICENSE).
 
 ### Icons
 
@@ -96,3 +98,7 @@ I have used the icons from [www.flaticon.com](www.flaticon.com) The following ar
 - [Exclude icon](https://www.flaticon.com/free-icon/remove_2921203)
 - [Compare icon](https://www.flaticon.com/free-icon/file-sharing_1037325?term=file%20compare&page=1&position=2)
 - [History icon](https://www.flaticon.com/free-icon/timer_2921268)
+
+## :e-mail: 联系
+
+若有任何问题, 请提 issue 或者电邮 `xintao.wang@outlook.com`.
