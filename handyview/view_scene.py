@@ -43,13 +43,15 @@ class HVView(QGraphicsView):
         if modifiers == QtCore.Qt.ShiftModifier:
             # Show rubber band
             self.rubber_band_origin = event.pos()
-            self.rubber_band.setGeometry(QRect(self.rubber_band_origin, QSize()))
+            self.rubber_band.setGeometry(
+                QRect(self.rubber_band_origin, QSize()))
             # self.rectChanged.emit(self.rubber_band.geometry())
             self.rubber_band.show()
             self.rubber_band_changable = True
 
             # Show selection rect position
-            scene_pos = self.mapToScene(event.pos())  # convert to scene position
+            scene_pos = self.mapToScene(
+                event.pos())  # convert to scene position
             x_scene, y_scene = scene_pos.x(), scene_pos.y()
             self.show_rect_position(x_scene, y_scene, x_scene, y_scene)
         else:
@@ -71,11 +73,13 @@ class HVView(QGraphicsView):
                 # Show selection rect position
                 ori_scene_pos = self.mapToScene(self.rubber_band_origin)
                 ori_x_scene, ori_y_scene = ori_scene_pos.x(), ori_scene_pos.y()
-                self.show_rect_position(ori_x_scene, ori_y_scene, x_scene, y_scene)
+                self.show_rect_position(ori_x_scene, ori_y_scene, x_scene,
+                                        y_scene)
                 # Show rubber band
                 if self.rubber_band_changable:
                     self.rubber_band.setGeometry(
-                        QRect(self.rubber_band_origin, event.pos()).normalized())
+                        QRect(self.rubber_band_origin,
+                              event.pos()).normalized())
                     # self.rectChanged.emit(self.rubber_band.geometry())
         else:
             QGraphicsView.mouseMoveEvent(self, event)
