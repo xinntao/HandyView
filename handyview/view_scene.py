@@ -39,17 +39,23 @@ class HVView(QGraphicsView):
         self.rect_top_left = (0, 0)
 
     def mousePressEvent(self, event):
-        # Show rubber band
-        self.rubber_band_origin = event.pos()
-        self.rubber_band.setGeometry(QRect(self.rubber_band_origin, QSize()))
-        # self.rectChanged.emit(self.rubber_band.geometry())
-        self.rubber_band.show()
-        self.rubber_band_changable = True
+        modifiers = QApplication.keyboardModifiers()
+        if modifiers == QtCore.Qt.ShiftModifier:
+            # Show rubber band
+            self.rubber_band_origin = event.pos()
+            self.rubber_band.setGeometry(
+                QRect(self.rubber_band_origin, QSize()))
+            # self.rectChanged.emit(self.rubber_band.geometry())
+            self.rubber_band.show()
+            self.rubber_band_changable = True
 
-        # Show selection rect position
-        scene_pos = self.mapToScene(event.pos())  # convert to scene position
-        x_scene, y_scene = scene_pos.x(), scene_pos.y()
-        self.show_rect_position(x_scene, y_scene, x_scene, y_scene)
+            # Show selection rect position
+            scene_pos = self.mapToScene(
+                event.pos())  # convert to scene position
+            x_scene, y_scene = scene_pos.x(), scene_pos.y()
+            self.show_rect_position(x_scene, y_scene, x_scene, y_scene)
+        else:
+            QGraphicsView.mousePressEvent(self, event)
 
     def mouseMoveEvent(self, event):
         """Only works when mouse button is pressed.
@@ -61,19 +67,29 @@ class HVView(QGraphicsView):
         self.show_mouse_position(x_scene, y_scene)
         self.show_mouse_color(x_scene, y_scene)
 
-        if event.buttons() == QtCore.Qt.LeftButton:
-            # Show selection rect position
-            ori_scene_pos = self.mapToScene(self.rubber_band_origin)
-            ori_x_scene, ori_y_scene = ori_scene_pos.x(), ori_scene_pos.y()
-            self.show_rect_position(ori_x_scene, ori_y_scene, x_scene, y_scene)
-            # Show rubber band
-            if self.rubber_band_changable:
-                self.rubber_band.setGeometry(
-                    QRect(self.rubber_band_origin, event.pos()).normalized())
-                # self.rectChanged.emit(self.rubber_band.geometry())
+        modifiers = QApplication.keyboardModifiers()
+        if modifiers == QtCore.Qt.ShiftModifier:
+            if event.buttons() == QtCore.Qt.LeftButton:
+                # Show selection rect position
+                ori_scene_pos = self.mapToScene(self.rubber_band_origin)
+                ori_x_scene, ori_y_scene = ori_scene_pos.x(), ori_scene_pos.y()
+                self.show_rect_position(ori_x_scene, ori_y_scene, x_scene,
+                                        y_scene)
+                # Show rubber band
+                if self.rubber_band_changable:
+                    self.rubber_band.setGeometry(
+                        QRect(self.rubber_band_origin,
+                              event.pos()).normalized())
+                    # self.rectChanged.emit(self.rubber_band.geometry())
+        else:
+            QGraphicsView.mouseMoveEvent(self, event)
 
     def mouseReleaseEvent(self, event):
-        self.rubber_band_changable = False
+        modifiers = QApplication.keyboardModifiers()
+        if modifiers == QtCore.Qt.ShiftModifier:
+            self.rubber_band_changable = False
+        else:
+            QGraphicsView.mouseReleaseEvent(self, event)
 
     def wheelEvent(self, event):
         mouse = event.angleDelta().y() / 120
@@ -84,6 +100,8 @@ class HVView(QGraphicsView):
                 self.zoom_in()
             elif mouse < 0:
                 self.zoom_out()
+        elif modifiers == QtCore.Qt.ShiftModifier:
+            QGraphicsView.wheelEvent(self, event)
         else:
             # Otherwise, show the next or previous image
             if mouse > 0:
@@ -160,6 +178,15 @@ class HVScene(QGraphicsScene):
     def __init__(self, parent=None):
         super(HVScene, self).__init__()
         self.parent = parent
+
+    def keyPressEvent(self, event):
+        modifiers = QApplication.keyboardModifiers()
+        if modifiers == QtCore.Qt.ControlModifier:
+            # scroll bar
+            QGraphicsScene.keyPressEvent(self, event)
+        else:
+            # use canvas keyPressEvent for direction keys
+            self.parent.keyPressEvent(event)
 
     def mouseMoveEvent(self, event):
         """It only works when NO mouse button is pressed."""
