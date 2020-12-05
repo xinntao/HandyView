@@ -121,26 +121,14 @@ class Canvas(QWidget):
             self.dir_browse(1)
         elif event.key() == QtCore.Qt.Key_Backspace:
             self.dir_browse(-1)
-        elif event.key() == QtCore.Qt.Key_D:
-            self.dir_browse(1)
-        elif event.key() == QtCore.Qt.Key_A:
+        elif event.key() == QtCore.Qt.Key_Right:
+                self.dir_browse(1)
+        elif event.key() == QtCore.Qt.Key_Left:
             self.dir_browse(-1)
-        elif event.key() == QtCore.Qt.Key_W:
+        elif event.key() == QtCore.Qt.Key_Up:
             self.qview.zoom_in()
-        elif event.key() == QtCore.Qt.Key_S:
+        elif event.key() == QtCore.Qt.Key_Down:
             self.qview.zoom_out()
-
-    # Avoid ambiguity for scroll bar
-    # def keyReleaseEvent(self, event):
-    #     # there is a key focus problem, so we use KeyReleaseEvent
-    #     if event.key() == QtCore.Qt.Key_Right:
-    #         self.dir_browse(1)
-    #     elif event.key() == QtCore.Qt.Key_Left:
-    #         self.dir_browse(-1)
-    #     elif event.key() == QtCore.Qt.Key_Up:
-    #         self.qview.zoom_in()
-    #     elif event.key() == QtCore.Qt.Key_Down:
-    #         self.qview.zoom_out()
 
     def goto_button_clicked(self):
         goto_str = self.goto_edit.text()
