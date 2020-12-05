@@ -191,7 +191,6 @@ class HVScene(QGraphicsScene):
         self.show_mouse_position(x_pos, y_pos)
         self.show_mouse_color(x_pos, y_pos)
 
-
     def show_mouse_position(self, x_pos, y_pos):
         """Show mouse position under the scene position (ignore the zoom)."""
         self.parent.mouse_pos_label.setText(
