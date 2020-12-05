@@ -122,7 +122,7 @@ class Canvas(QWidget):
         elif event.key() == QtCore.Qt.Key_Backspace:
             self.dir_browse(-1)
         elif event.key() == QtCore.Qt.Key_Right:
-                self.dir_browse(1)
+            self.dir_browse(1)
         elif event.key() == QtCore.Qt.Key_Left:
             self.dir_browse(-1)
         elif event.key() == QtCore.Qt.Key_Up:
@@ -483,7 +483,7 @@ class MainWindow(QMainWindow):
         Backspace: 上一张 图像
         '''
         msg = MessageDialog(self, instruct_text, instruct_text_cn)
-        msg.setStyleSheet("QLabel{min-width:500 px; font-size: 20px;}")
+        msg.setStyleSheet('QLabel{min-width:500 px; font-size: 20px;}')
         msg.setWindowTitle('Instructions')
         msg.exec_()
 
