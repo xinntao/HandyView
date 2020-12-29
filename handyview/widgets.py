@@ -4,8 +4,34 @@ Include customized widgets used in HandyView.
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QColor, QFont, QPixmap
-from PyQt5.QtWidgets import (QDialog, QFrame, QHBoxLayout, QLabel, QPushButton,
-                             QVBoxLayout)
+from PyQt5.QtWidgets import (QDialog, QFrame, QHBoxLayout, QLabel, QMessageBox,
+                             QPushButton, QVBoxLayout)
+
+
+def show_msg(icon='Information', title='Title', msg='Message'):
+    """
+    QMessageBox::NoIcon
+    QMessageBox::Question
+    QMessageBox::Information
+    QMessageBox::Warning
+    QMessageBox::Critical
+    """
+    if icon == 'NoIcon':
+        icon = QMessageBox.NoIcon
+    elif icon == 'Question':
+        icon = QMessageBox.Question
+    elif icon == 'Information':
+        icon = QMessageBox.Information
+    elif icon == 'Warning':
+        icon = QMessageBox.warning
+    elif icon == 'Critical':
+        icon = QMessageBox.Critical
+
+    msg = QMessageBox()
+    msg.setIcon(icon)
+    msg.setWindowTitle(title)
+    msg.setText(msg)
+    msg.exec_()
 
 
 class ColorLabel(QLabel):

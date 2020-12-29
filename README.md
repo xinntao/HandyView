@@ -105,7 +105,7 @@ I have used the icons from [flaticon](www.flaticon.com). The following are the s
 - [Refresh icon](https://www.flaticon.com/free-icon/reuse_3299869?term=refresh&page=1&position=16)
 - [Include icon](https://www.flaticon.com/free-icon/add_2921226)
 - [Exclude icon](https://www.flaticon.com/free-icon/remove_2921203)
-- [Compare icon](https://www.flaticon.com/free-icon/file-sharing_1037325?term=file%20compare&page=1&position=2)
+- [Compare icon](https://www.flaticon.com/free-icon/file_748614?term=compare&page=1&position=17)
 - [History icon](https://www.flaticon.com/free-icon/timer_2921268)
 
 ## :e-mail: Contact

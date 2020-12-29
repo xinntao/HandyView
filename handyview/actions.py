@@ -63,7 +63,7 @@ def compare(parent):
         'Compare',
         icon_name='compare.png',
         shortcut='F6',
-        slot=parent.refresh_img_list)
+        slot=parent.compare_folder)
 
 
 def history(parent):

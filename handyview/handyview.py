@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog,
                              QGridLayout, QInputDialog, QLabel, QLineEdit,
                              QMainWindow, QPushButton, QToolBar, QWidget)
 from view_scene import HVScene, HVView
-from widgets import ColorLabel, HLine, HVLable, MessageDialog
+from widgets import ColorLabel, HLine, HVLable, MessageDialog, show_msg
 
 FORMATS = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM',
            '.bmp', '.BMP', '.gif', '.GIF', '.tiff')
@@ -22,6 +22,36 @@ if getattr(sys, 'frozen', False):
     CURRENT_PATH = sys._MEIPASS
 else:
     CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
+
+
+def get_img_list(path, include_names=None, exclude_names=None):
+    img_list = []
+    if path == '':
+        path = './'
+    # deal with include and exclude names
+    for img_path in sorted(glob.glob(os.path.join(path, '*'))):
+        img_name = os.path.split(img_path)[-1]
+        base, ext = os.path.splitext(img_name)
+        if ext in FORMATS:
+            if include_names is not None:
+                flag_add = False
+                for include_name in include_names:
+                    if include_name in base:
+                        flag_add = True
+            elif exclude_names is not None:
+                flag_add = True
+                for exclude_name in exclude_names:
+                    if exclude_name in base:
+                        flag_add = False
+            else:
+                flag_add = True
+            if flag_add:
+                img_list.append(img_name)
+    # natural sort for numbers in name
+    img_list.sort(
+        key=lambda s:
+        [int(t) if t.isdigit() else t.lower() for t in re.split(r'(\d+)', s)])
+    return img_list
 
 
 class Canvas(QWidget):
@@ -48,9 +78,13 @@ class Canvas(QWidget):
         self.include_names = None
         self.exclude_names = None
         self.qview_bg_color = 'white'
+        # list of image list
+        # the first list is the main list, the others are for comparisons
+        self.img_list = [[]]
+        self.img_list_idx = 0
 
         if self.key.endswith(FORMATS):
-            self.get_img_list()
+            self.get_main_img_list()
             self.show_image(init=True)
         else:
             print('Unsupported file format.')
@@ -138,71 +172,31 @@ class Canvas(QWidget):
             self.dirpos = int(goto_str) - 1
         else:
             return
-        self.key = os.path.join(self.path, self.imgfiles[self.dirpos])
+        self.key = os.path.join(self.path,
+                                self.img_list[self.img_list_idx][self.dirpos])
         self.show_image()
 
-    def get_img_list(self):
+    def get_main_img_list(self):
         # if key is a folder, get the first image path
         if os.path.isdir(self.key):
             self.key = sorted(glob.glob(os.path.join(self.key, '*')))[0]
 
-        # show exclude and include names
-        if isinstance(self.exclude_names, list):
-            show_str = 'Exclude:\n\t' + '\n\t'.join(self.exclude_names)
-            self.exclude_names_label.setStyleSheet('QLabel {color : red;}')
-        else:
-            show_str = 'Exclude: None'
-            self.exclude_names_label.setStyleSheet('QLabel {color : black;}')
-        self.exclude_names_label.setText(show_str)
-        if isinstance(self.include_names, list):
-            show_str = 'Include:\n\t' + '\n\t'.join(self.include_names)
-            self.include_names_label.setStyleSheet('QLabel {color : blue;}')
-        else:
-            show_str = 'Include: None'
-            self.include_names_label.setStyleSheet('QLabel {color : black;}')
-        self.include_names_label.setText(show_str)
-
         if self.key.endswith(FORMATS):
             # get image list
             self.path, self.img_name = os.path.split(self.key)
-            self.imgfiles = []
-            if self.path == '': self.path = './'  # noqa: E701
-            # deal with include and exclude names
-            for img_path in sorted(glob.glob(os.path.join(self.path, '*'))):
-                img_name = os.path.split(img_path)[1]
-                base, ext = os.path.splitext(img_name)
-                if ext in FORMATS:
-                    if self.include_names is not None:
-                        flag_add = False
-                        for include_name in self.include_names:
-                            if include_name in base:
-                                flag_add = True
-                    elif self.exclude_names is not None:
-                        flag_add = True
-                        for exclude_name in self.exclude_names:
-                            if exclude_name in base:
-                                flag_add = False
-                    else:
-                        flag_add = True
-                    if flag_add:
-                        self.imgfiles.append(img_name)
-            # natural sort for numbers in name
-            self.imgfiles.sort(key=lambda s: [
-                int(t) if t.isdigit() else t.lower()
-                for t in re.split(r'(\d+)', s)
-            ])
+            self.img_list[self.img_list_idx] = get_img_list(
+                self.path, self.include_names, self.exclude_names)
             # get current position
             try:
-                self.dirpos = self.imgfiles.index(self.img_name)
+                self.dirpos = self.img_list[self.img_list_idx].index(
+                    self.img_name)
             except ValueError:
-                # self.img_name may not in self.imgfiles after refreshing
+                # self.img_name may not in self.img_list after refreshing
                 self.dirpos = 0
-
             # save open file history
             self.save_open_history()
         else:
-            raise ValueError('Wrong key!')
-            exit(-1)
+            show_msg('Critical', 'Critical', f'Wrong key! {self.key}')
 
     def save_open_history(self):
         try:
@@ -237,15 +231,14 @@ class Canvas(QWidget):
             with Image.open(self.key) as lazy_img:
                 self.color_type = lazy_img.mode
         except FileNotFoundError:
-            print(f'Cannot open {self.key}')
-            return 1
+            show_msg('Critical', 'Critical', f'Cannot open {self.key}')
 
         # update information panel
         self.path, self.img_name = os.path.split(self.key)
         self.file_size = sizeof_fmt(os.path.getsize(self.key))
-        self.name_label.setText(
-            f'[{self.dirpos + 1:d} / {len(self.imgfiles):d}] '
-            f'{self.img_name}')
+        self.name_label.setText(f'[{self.dirpos + 1:d} / '
+                                f'{len(self.img_list[self.img_list_idx]):d}] '
+                                f'{self.img_name}')
         self.info_label.setText(
             'Info: \n'
             f' Height: {self.imgh:d}\n Width:  {self.imgw:d}\n'
@@ -259,13 +252,14 @@ class Canvas(QWidget):
         self.qview.set_transform()
 
     def dir_browse(self, direction):
-        if len(self.imgfiles) > 1:
+        if len(self.img_list[self.img_list_idx]) > 1:
             self.dirpos += direction
-            if self.dirpos > (len(self.imgfiles) - 1):
+            if self.dirpos > (len(self.img_list[self.img_list_idx]) - 1):
                 self.dirpos = 0
             elif self.dirpos < 0:
-                self.dirpos = (len(self.imgfiles) - 1)
-            self.key = os.path.join(self.path, self.imgfiles[self.dirpos])
+                self.dirpos = (len(self.img_list[self.img_list_idx]) - 1)
+            self.key = os.path.join(
+                self.path, self.img_list[self.img_list_idx][self.dirpos])
             self.show_image()
 
     def toggle_bg_color(self):
@@ -392,11 +386,14 @@ class MainWindow(QMainWindow):
         key, ok = QFileDialog.getOpenFileName(self, 'Select an image', history)
         if ok:
             self.canvas.key = key
-            self.canvas.get_img_list()
+            self.canvas.get_main_img_list()
             self.canvas.show_image(init=True)
 
     def refresh_img_list(self):
-        self.canvas.get_img_list()
+        self.canvas.get_main_img_list()
+
+    def compare_folder(self):
+        show_msg('Information', 'Comparison', 'Main text')
 
     def open_history(self):
         with open(os.path.join(CURRENT_PATH, 'history.txt'), 'r') as f:
@@ -406,7 +403,7 @@ class MainWindow(QMainWindow):
                                          lines, 0, True)
         if ok:
             self.canvas.key = key
-            self.canvas.get_img_list()
+            self.canvas.get_main_img_list()
             self.canvas.show_image(init=True)
 
     def exclude_file_name(self):
@@ -429,8 +426,19 @@ class MainWindow(QMainWindow):
                 self.canvas.include_names = None
             else:
                 self.canvas.exclude_names = None
-            self.canvas.get_img_list()
+            self.canvas.get_main_img_list()
             self.canvas.show_image(init=False)
+
+        # show exclude names in the information panel
+        if isinstance(self.canvas.exclude_names, list):
+            show_str = 'Exclude:\n\t' + '\n\t'.join(self.canvas.exclude_names)
+            self.canvas.exclude_names_label.setStyleSheet(
+                'QLabel {color : red;}')
+        else:
+            show_str = 'Exclude: None'
+            self.canvas.exclude_names_label.setStyleSheet(
+                'QLabel {color : black;}')
+        self.canvas.exclude_names_label.setText(show_str)
 
     def include_file_name(self):
         # show current include names as the default values
@@ -452,8 +460,19 @@ class MainWindow(QMainWindow):
                 self.canvas.exclude_names = None
             else:
                 self.canvas.include_names = None
-            self.canvas.get_img_list()
+            self.canvas.get_main_img_list()
             self.canvas.show_image(init=False)
+
+        # show include names in the information panel
+        if isinstance(self.canvas.include_names, list):
+            show_str = 'Include:\n\t' + '\n\t'.join(self.canvas.include_names)
+            self.canvas.include_names_label.setStyleSheet(
+                'QLabel {color : blue;}')
+        else:
+            show_str = 'Include: None'
+            self.canvas.include_names_label.setStyleSheet(
+                'QLabel {color : black;}')
+        self.canvas.include_names_label.setText(show_str)
 
     def show_instruction_msg(self):
         instruct_text = r'''
