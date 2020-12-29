@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (QDialog, QFrame, QHBoxLayout, QLabel, QMessageBox,
                              QPushButton, QVBoxLayout)
 
 
-def show_msg(icon='Information', title='Title', msg='Message'):
+def show_msg(icon='Information', title='Title', text='Message'):
     """
     QMessageBox::NoIcon
     QMessageBox::Question
@@ -23,14 +23,14 @@ def show_msg(icon='Information', title='Title', msg='Message'):
     elif icon == 'Information':
         icon = QMessageBox.Information
     elif icon == 'Warning':
-        icon = QMessageBox.warning
+        icon = QMessageBox.Warning
     elif icon == 'Critical':
         icon = QMessageBox.Critical
 
     msg = QMessageBox()
     msg.setIcon(icon)
     msg.setWindowTitle(title)
-    msg.setText(msg)
+    msg.setText(text)
     msg.exec_()
 
 

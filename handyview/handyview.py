@@ -46,7 +46,7 @@ def get_img_list(path, include_names=None, exclude_names=None):
             else:
                 flag_add = True
             if flag_add:
-                img_list.append(img_name)
+                img_list.append(img_path)
     # natural sort for numbers in name
     img_list.sort(
         key=lambda s:
@@ -127,6 +127,8 @@ class Canvas(QWidget):
         # include and exclude names
         self.include_names_label = HVLable('', self, 'black', 'Times', 12)
         self.exclude_names_label = HVLable('', self, 'black', 'Times', 12)
+        # comparison folders
+        self.comparison_label = HVLable('', self, 'red', 'Times', 12)
 
         # ---------
         # layouts
@@ -151,6 +153,10 @@ class Canvas(QWidget):
             self.toggle_bg_color()
         elif event.key() == QtCore.Qt.Key_R:
             self.qview.set_zoom(1)
+        elif event.key() == QtCore.Qt.Key_C:
+            self.compare_folders(1)
+        elif event.key() == QtCore.Qt.Key_V:
+            self.compare_folders(-1)
         elif event.key() == QtCore.Qt.Key_Space:
             self.dir_browse(1)
         elif event.key() == QtCore.Qt.Key_Backspace:
@@ -172,8 +178,7 @@ class Canvas(QWidget):
             self.dirpos = int(goto_str) - 1
         else:
             return
-        self.key = os.path.join(self.path,
-                                self.img_list[self.img_list_idx][self.dirpos])
+        self.key = self.img_list[self.img_list_idx][self.dirpos]
         self.show_image()
 
     def get_main_img_list(self):
@@ -197,6 +202,45 @@ class Canvas(QWidget):
             self.save_open_history()
         else:
             show_msg('Critical', 'Critical', f'Wrong key! {self.key}')
+
+    def update_cmp_img_list(self, cmp_path):
+        path, _ = os.path.split(cmp_path)
+        self.img_list.append(
+            get_img_list(path, self.include_names, self.exclude_names))
+        # all the image list should have the same length
+        all_same_len = True
+        lens_img_list = [len(self.img_list[0])]
+        for img_list in self.img_list[1:]:
+            lens_img_list.append(len(img_list))
+            if len(img_list) != lens_img_list[0]:
+                all_same_len = False
+
+        show_str = 'Number for each folder:\n\t' + '\n\t'.join(
+            map(str, lens_img_list))
+        self.comparison_label.setText(show_str)
+        if all_same_len is False:
+            msg = ('Comparison folders have differnet number of images.\n'
+                   f'{show_str}')
+            show_msg('Warning', 'Warning!', msg)
+
+    def compare_folders(self, direction):
+        if len(self.img_list) > 1:
+            self.img_list_idx += direction
+            if self.img_list_idx > (len(self.img_list) - 1):
+                self.img_list_idx = 0
+            elif self.img_list_idx < 0:
+                self.img_list_idx = (len(self.img_list) - 1)
+            try:
+                self.key = self.img_list[self.img_list_idx][self.dirpos]
+            except IndexError:
+                self.dirpos = len(self.img_list[self.img_list_idx]) - 1
+                self.key = self.img_list[self.img_list_idx][self.dirpos]
+            self.show_image()
+            # when in main folder (1st folder), show red color
+            if self.img_list_idx == 0:
+                self.comparison_label.setStyleSheet('QLabel {color : red;}')
+            else:
+                self.comparison_label.setStyleSheet('QLabel {color : black;}')
 
     def save_open_history(self):
         try:
@@ -258,8 +302,7 @@ class Canvas(QWidget):
                 self.dirpos = 0
             elif self.dirpos < 0:
                 self.dirpos = (len(self.img_list[self.img_list_idx]) - 1)
-            self.key = os.path.join(
-                self.path, self.img_list[self.img_list_idx][self.dirpos])
+            self.key = self.img_list[self.img_list_idx][self.dirpos]
             self.show_image()
 
     def toggle_bg_color(self):
@@ -364,6 +407,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(HLine(), 6, 0, 1, 3)
         layout.addWidget(self.canvas.include_names_label, 7, 0, 1, 3)
         layout.addWidget(self.canvas.exclude_names_label, 8, 0, 1, 3)
+        layout.addWidget(self.canvas.comparison_label, 9, 0, 1, 3)
 
         # for compact space
         blank_qlabel = QLabel()
@@ -391,9 +435,14 @@ class MainWindow(QMainWindow):
 
     def refresh_img_list(self):
         self.canvas.get_main_img_list()
+        self.canvas.show_image(init=False)
+        # TODO: update comparison image list
 
     def compare_folder(self):
-        show_msg('Information', 'Comparison', 'Main text')
+        key, ok = QFileDialog.getOpenFileName(
+            self, 'Select an image', os.path.join(self.canvas.path, '../'))
+        if ok:
+            self.canvas.update_cmp_img_list(key)
 
     def open_history(self):
         with open(os.path.join(CURRENT_PATH, 'history.txt'), 'r') as f:
@@ -426,8 +475,7 @@ class MainWindow(QMainWindow):
                 self.canvas.include_names = None
             else:
                 self.canvas.exclude_names = None
-            self.canvas.get_main_img_list()
-            self.canvas.show_image(init=False)
+            self.refresh_img_list()
 
         # show exclude names in the information panel
         if isinstance(self.canvas.exclude_names, list):
@@ -460,8 +508,7 @@ class MainWindow(QMainWindow):
                 self.canvas.exclude_names = None
             else:
                 self.canvas.include_names = None
-            self.canvas.get_main_img_list()
-            self.canvas.show_image(init=False)
+            self.refresh_img_list()
 
         # show include names in the information panel
         if isinstance(self.canvas.include_names, list):
