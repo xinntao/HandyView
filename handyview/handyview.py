@@ -30,6 +30,7 @@ def get_img_list(path, include_names=None, exclude_names=None):
         path = './'
     # deal with include and exclude names
     for img_path in sorted(glob.glob(os.path.join(path, '*'))):
+        img_path = img_path.replace('\\', '/')
         img_name = os.path.split(img_path)[-1]
         base, ext = os.path.splitext(img_name)
         if ext in FORMATS:
@@ -193,10 +194,9 @@ class Canvas(QWidget):
                 self.path, self.include_names, self.exclude_names)
             # get current position
             try:
-                self.dirpos = self.img_list[self.img_list_idx].index(
-                    self.img_name)
+                self.dirpos = self.img_list[self.img_list_idx].index(self.key)
             except ValueError:
-                # self.img_name may not in self.img_list after refreshing
+                # self.key may not in self.img_list after refreshing
                 self.dirpos = 0
             # save open file history
             self.save_open_history()
@@ -267,7 +267,6 @@ class Canvas(QWidget):
         self.imgw, self.imgh = self.qpixmap.width(), self.qpixmap.height()
         # put image always in the center of a QGraphicsView
         self.qscene.setSceneRect(0, 0, self.imgw, self.imgh)
-        self.key = self.key.replace('\\', '/')
         # show image path in the statusbar
         self.parent.set_statusbar(f'{self.key}')
 
