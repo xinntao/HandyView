@@ -31,7 +31,9 @@ def show_msg(icon='Information', title='Title', text='Message'):
     msg.setIcon(icon)
     msg.setWindowTitle(title)
     msg.setText(text)
-    msg.exec_()
+    msg.addButton(QMessageBox.Ok)
+    msg.addButton(QMessageBox.No)
+    return msg.exec_()
 
 
 class ColorLabel(QLabel):

@@ -2,13 +2,15 @@ import actions as actions
 import glob
 import os
 import re
+import shutil
 import sys
 from PIL import Image
 from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon, QImage, QPixmap
 from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog,
                              QGridLayout, QInputDialog, QLabel, QLineEdit,
-                             QMainWindow, QPushButton, QToolBar, QWidget)
+                             QMainWindow, QMessageBox, QPushButton, QToolBar,
+                             QWidget)
 from view_scene import HVScene, HVView
 from widgets import ColorLabel, HLine, HVLable, MessageDialog, show_msg
 
@@ -90,10 +92,31 @@ class Canvas(QWidget):
             print('Unsupported file format.')
             sys.exit(1)
 
+        blur_predict_path = 'CelebB_blur_predictor9502_scores.txt'
+        with open(blur_predict_path, 'r') as fin:
+            blur_predicts = fin.readlines()
+        blur_predicts = [v.strip() for v in blur_predicts]
+        self.blur_predict_dict = {}
+        for v in blur_predicts:
+            name, value = v.split(' ')
+            self.blur_predict_dict[name] = float(value)
+        disc_predict_path = 'CelebB_discriminator_scores.txt'
+        with open(disc_predict_path, 'r') as fin:
+            disc_predicts = fin.readlines()
+        disc_predicts = [v.strip() for v in disc_predicts]
+        self.disc_predict_dict = {}
+        for v in disc_predicts:
+            name, value = v.split(' ')
+            self.disc_predict_dict[name] = -float(value)
+        print('Finish loading txt')
+
     def init_widgets_layout(self):
         # QGraphicsView - QGraphicsScene - QPixmap
         self.qscene = HVScene(self)
         self.qview = HVView(self.qscene, self)
+        # qview2 showns the img with face landmark
+        self.qscene2 = HVScene(self)
+        self.qview2 = HVView(self.qscene2, self)
 
         # name label showing image index and image path
         self.name_label = HVLable('', self, 'green', 'Times', 15)
@@ -129,6 +152,8 @@ class Canvas(QWidget):
         self.exclude_names_label = HVLable('', self, 'black', 'Times', 12)
         # comparison folders
         self.comparison_label = HVLable('', self, 'red', 'Times', 12)
+        self.blur_label = HVLable('Blur: ', self, 'black', 'Times', 18)
+        self.disc_label = HVLable('Disc: ', self, 'black', 'Times', 18)
 
         # ---------
         # layouts
@@ -143,7 +168,8 @@ class Canvas(QWidget):
         name_grid.addWidget(goto_btn, 0, 1, 1, 1)
         main_layout.addLayout(name_grid, 1, 0, 1, 10)
 
-        main_layout.addWidget(self.qview, 0, 0, -1, 50)
+        main_layout.addWidget(self.qview, 0, 0, -1, 35)
+        main_layout.addWidget(self.qview2, 0, 35, -1, 15)
         # blank label for layout
         blank_label = HVLable('', self, 'black', 'Times', 12)
         main_layout.addWidget(blank_label, 61, 0, 1, 1)
@@ -157,6 +183,22 @@ class Canvas(QWidget):
             self.compare_folders(1)
         elif event.key() == QtCore.Qt.Key_V:
             self.compare_folders(-1)
+        elif event.key() == QtCore.Qt.Key_L:
+            result = show_msg('Warning', 'Warning', f'Remove {self.key}')
+            if result == QMessageBox.Ok:
+                new_path = self.key.replace('CelebB_align512',
+                                            'CelebB_align512_delete')
+                shutil.move(self.key, new_path)
+                self.dir_browse(1)
+                self.path, self.img_name = os.path.split(self.key)
+                self.img_list[self.img_list_idx] = get_img_list(
+                    self.path, self.include_names, self.exclude_names)
+                # get current position
+                self.dirpos -= 1
+                self.show_image(init=False)
+            else:
+                show_msg('Information', 'Information',
+                         'Lucky! You have gone back.')
         elif event.key() == QtCore.Qt.Key_Space:
             self.dir_browse(1)
         elif event.key() == QtCore.Qt.Key_Backspace:
@@ -193,8 +235,7 @@ class Canvas(QWidget):
                 self.path, self.include_names, self.exclude_names)
             # get current position
             try:
-                self.dirpos = self.img_list[self.img_list_idx].index(
-                    self.img_name)
+                self.dirpos = self.img_list[self.img_list_idx].index(self.key)
             except ValueError:
                 # self.img_name may not in self.img_list after refreshing
                 self.dirpos = 0
@@ -267,6 +308,22 @@ class Canvas(QWidget):
         self.imgw, self.imgh = self.qpixmap.width(), self.qpixmap.height()
         # put image always in the center of a QGraphicsView
         self.qscene.setSceneRect(0, 0, self.imgw, self.imgh)
+
+        # show image with face landmark
+        self.qscene2.clear()
+        # try:
+        self.qimg2 = QImage(
+            self.key.replace('CelebB_align512',
+                             'CelebB_align512_lm').replace('.png', '_lm.png'))
+        self.qpixmap2 = QPixmap.fromImage(self.qimg2)
+        # except Exception:
+        #     self.qimg2 = self.qimg
+        #     self.qpixmap2 = self.qpixmap
+        self.qscene2.addPixmap(self.qpixmap2)
+        self.imgw2, self.imgh2 = self.qpixmap2.width(), self.qpixmap2.height()
+        # put image always in the center of a QGraphicsView
+        self.qscene2.setSceneRect(0, 0, self.imgw2, self.imgh2)
+
         self.key = self.key.replace('\\', '/')
         # show image path in the statusbar
         self.parent.set_statusbar(f'{self.key}')
@@ -276,6 +333,27 @@ class Canvas(QWidget):
                 self.color_type = lazy_img.mode
         except FileNotFoundError:
             show_msg('Critical', 'Critical', f'Cannot open {self.key}')
+            return -1
+
+        try:
+            blur_val = self.blur_predict_dict[self.img_name]
+        except Exception:
+            blur_val = 1234
+        if blur_val > 0.1:
+            self.blur_label.setStyleSheet('QLabel {color : red;}')
+        else:
+            self.blur_label.setStyleSheet('QLabel {color : black;}')
+        self.blur_label.setText(f'Blur: \n\t {blur_val:.01f}')
+
+        try:
+            disc_val = self.disc_predict_dict[self.img_name]
+        except Exception:
+            disc_val = 1234
+        if disc_val > 3:
+            self.disc_label.setStyleSheet('QLabel {color : red;}')
+        else:
+            self.disc_label.setStyleSheet('QLabel {color : black;}')
+        self.disc_label.setText(f'Disc: \n\t {disc_val:.01f}')
 
         # update information panel
         self.path, self.img_name = os.path.split(self.key)
@@ -408,6 +486,8 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.canvas.include_names_label, 7, 0, 1, 3)
         layout.addWidget(self.canvas.exclude_names_label, 8, 0, 1, 3)
         layout.addWidget(self.canvas.comparison_label, 9, 0, 1, 3)
+        layout.addWidget(self.canvas.blur_label, 10, 0, 1, 3)
+        layout.addWidget(self.canvas.disc_label, 11, 0, 1, 3)
 
         # for compact space
         blank_qlabel = QLabel()
