@@ -187,6 +187,9 @@ class Canvas(QWidget):
         if os.path.isdir(self.key):
             self.key = sorted(glob.glob(os.path.join(self.key, '*')))[0]
 
+        # fix the key pattern passed from windows system when double click
+        self.key = self.key.replace('\\', '/')
+
         if self.key.endswith(FORMATS):
             # get image list
             self.path, self.img_name = os.path.split(self.key)
