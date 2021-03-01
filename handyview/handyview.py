@@ -67,11 +67,8 @@ class Canvas(QWidget):
             # show the icon image
             self.key = os.path.join(CURRENT_PATH, 'icon.png')
 
-        try:
-            open(self.key, 'r')
-        except IOError:
-            print(f'There was an error opening {self.key}')
-            sys.exit(1)
+        if os.path.isdir(self.key):
+            self.key = sorted(glob.glob(os.path.join(self.key, '*')))[0]
 
         # initialize widgets and layout
         self.init_widgets_layout()
@@ -84,12 +81,8 @@ class Canvas(QWidget):
         self.img_list = [[]]
         self.img_list_idx = 0
 
-        if self.key.endswith(FORMATS):
-            self.get_main_img_list()
-            self.show_image(init=True)
-        else:
-            print('Unsupported file format.')
-            sys.exit(1)
+        self.get_main_img_list()
+        self.show_image(init=True)
 
     def init_widgets_layout(self):
         # QGraphicsView - QGraphicsScene - QPixmap
@@ -150,6 +143,7 @@ class Canvas(QWidget):
         main_layout.addWidget(blank_label, 61, 0, 1, 1)
 
     def keyPressEvent(self, event):
+        modifiers = QApplication.keyboardModifiers()
         if event.key() == QtCore.Qt.Key_F9:
             self.toggle_bg_color()
         elif event.key() == QtCore.Qt.Key_R:
@@ -159,13 +153,25 @@ class Canvas(QWidget):
         elif event.key() == QtCore.Qt.Key_V:
             self.compare_folders(-1)
         elif event.key() == QtCore.Qt.Key_Space:
-            self.dir_browse(1)
+            if modifiers == QtCore.Qt.ShiftModifier:
+                self.dir_browse(10)
+            else:
+                self.dir_browse(1)
         elif event.key() == QtCore.Qt.Key_Backspace:
-            self.dir_browse(-1)
+            if modifiers == QtCore.Qt.ShiftModifier:
+                self.dir_browse(-10)
+            else:
+                self.dir_browse(-1)
         elif event.key() == QtCore.Qt.Key_Right:
-            self.dir_browse(1)
+            if modifiers == QtCore.Qt.ShiftModifier:
+                self.dir_browse(10)
+            else:
+                self.dir_browse(1)
         elif event.key() == QtCore.Qt.Key_Left:
-            self.dir_browse(-1)
+            if modifiers == QtCore.Qt.ShiftModifier:
+                self.dir_browse(-10)
+            else:
+                self.dir_browse(-1)
         elif event.key() == QtCore.Qt.Key_Up:
             self.qview.zoom_in()
         elif event.key() == QtCore.Qt.Key_Down:
