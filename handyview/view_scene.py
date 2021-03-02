@@ -19,9 +19,10 @@ class HVView(QGraphicsView):
     # used for sending QRect position. Now we skip it.
     # rectChanged = QtCore.pyqtSignal(QRect)
 
-    def __init__(self, scene, parent=None):
+    def __init__(self, scene, parent=None, show_info=True):
         super(HVView, self).__init__(scene, parent)
         self.parent = parent
+        self.show_info = show_info
         self.setDragMode(QGraphicsView.ScrollHandDrag)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
@@ -50,10 +51,11 @@ class HVView(QGraphicsView):
             self.rubber_band_changable = True
 
             # Show selection rect position
-            scene_pos = self.mapToScene(
-                event.pos())  # convert to scene position
-            x_scene, y_scene = scene_pos.x(), scene_pos.y()
-            self.show_rect_position(x_scene, y_scene, x_scene, y_scene)
+            if self.show_info:
+                scene_pos = self.mapToScene(
+                    event.pos())  # convert to scene position
+                x_scene, y_scene = scene_pos.x(), scene_pos.y()
+                self.show_rect_position(x_scene, y_scene, x_scene, y_scene)
         else:
             QGraphicsView.mousePressEvent(self, event)
 
@@ -62,19 +64,22 @@ class HVView(QGraphicsView):
         TODO: how to work when there is no mouse button is pressed.
         """
         # Show mouse position and color when mouse move with button pressed
-        scene_pos = self.mapToScene(event.pos())
-        x_scene, y_scene = scene_pos.x(), scene_pos.y()
-        self.show_mouse_position(x_scene, y_scene)
-        self.show_mouse_color(x_scene, y_scene)
+        if self.show_info:
+            scene_pos = self.mapToScene(event.pos())
+            x_scene, y_scene = scene_pos.x(), scene_pos.y()
+            self.show_mouse_position(x_scene, y_scene)
+            self.show_mouse_color(x_scene, y_scene)
 
         modifiers = QApplication.keyboardModifiers()
         if modifiers == QtCore.Qt.ShiftModifier:
             if event.buttons() == QtCore.Qt.LeftButton:
                 # Show selection rect position
-                ori_scene_pos = self.mapToScene(self.rubber_band_origin)
-                ori_x_scene, ori_y_scene = ori_scene_pos.x(), ori_scene_pos.y()
-                self.show_rect_position(ori_x_scene, ori_y_scene, x_scene,
-                                        y_scene)
+                if self.show_info:
+                    ori_scene_pos = self.mapToScene(self.rubber_band_origin)
+                    ori_x_scene, ori_y_scene = ori_scene_pos.x(
+                    ), ori_scene_pos.y()
+                    self.show_rect_position(ori_x_scene, ori_y_scene, x_scene,
+                                            y_scene)
                 # Show rubber band
                 if self.rubber_band_changable:
                     self.rubber_band.setGeometry(
@@ -153,17 +158,20 @@ class HVView(QGraphicsView):
 
     def zoom_in(self):
         self.zoom *= 1.05
-        self.parent.zoom_label.setText(f'Zoom: {self.zoom:.2f}')
+        if self.show_info:
+            self.parent.zoom_label.setText(f'Zoom: {self.zoom:.2f}')
         self.set_transform()
 
     def zoom_out(self):
         self.zoom /= 1.05
-        self.parent.zoom_label.setText(f'Zoom: {self.zoom:.2f}')
+        if self.show_info:
+            self.parent.zoom_label.setText(f'Zoom: {self.zoom:.2f}')
         self.set_transform()
 
     def set_zoom(self, ratio):
         self.zoom = ratio
-        self.parent.zoom_label.setText(f'Zoom: {self.zoom:.2f}')
+        if self.show_info:
+            self.parent.zoom_label.setText(f'Zoom: {self.zoom:.2f}')
         self.set_transform()
 
     def set_transform(self):
@@ -175,9 +183,10 @@ class HVScene(QGraphicsScene):
     """A customized QGraphicsScene for HandyView.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, show_info=True):
         super(HVScene, self).__init__()
         self.parent = parent
+        self.show_info = show_info
 
     def keyPressEvent(self, event):
         modifiers = QApplication.keyboardModifiers()
@@ -191,9 +200,10 @@ class HVScene(QGraphicsScene):
     def mouseMoveEvent(self, event):
         """It only works when NO mouse button is pressed."""
         # Show mouse position and color when mouse move without button pressed
-        x_pos, y_pos = event.scenePos().x(), event.scenePos().y()
-        self.show_mouse_position(x_pos, y_pos)
-        self.show_mouse_color(x_pos, y_pos)
+        if self.show_info:
+            x_pos, y_pos = event.scenePos().x(), event.scenePos().y()
+            self.show_mouse_position(x_pos, y_pos)
+            self.show_mouse_color(x_pos, y_pos)
 
     def show_mouse_position(self, x_pos, y_pos):
         """Show mouse position under the scene position (ignore the zoom)."""

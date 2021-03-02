@@ -1,7 +1,7 @@
 import actions as actions
 import os
 import sys
-from canvas import Canvas
+from canvas import Canvas, CanvasCompare
 from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog,
@@ -135,10 +135,13 @@ class MainWindow(QMainWindow):
 
     def switch_compare_canvas(self):
         self.dock_info.close()
-        self.setCentralWidget(self.canvas)
+        self.canvas_compare = CanvasCompare(self, num_scene=2)
+        self.setCentralWidget(self.canvas_compare)
 
     def switch_preview_canvas(self):
-        self.setCentralWidget(self.canvas)
+        self.dock_info.close()
+        self.canvas_compare = CanvasCompare(self, num_scene=3)
+        self.setCentralWidget(self.canvas_compare)
 
     # --------
     # Slots

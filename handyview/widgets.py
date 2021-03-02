@@ -81,7 +81,13 @@ class HVLable(QLabel):
                  font_size=12):
         super(HVLable, self).__init__(text, parent)
         self.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
-        self.setStyleSheet('QLabel {color : ' + color + ';}')
+        if isinstance(color, str):
+            self.setStyleSheet('QLabel {color : ' + color + ';}')
+        else:
+            # example: (0, 255, 0, 100)
+            r, g, b, a = color
+            rgba_str = f'{r}, {g}, {b}, {a}'
+            self.setStyleSheet('QLabel {color : rgba(' + rgba_str + ');}')
         self.setFont(QFont(font, font_size))
 
 
