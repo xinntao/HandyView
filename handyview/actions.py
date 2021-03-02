@@ -96,3 +96,32 @@ def show_instruction_msg(parent):
         'Instruct',
         icon_name='instructions.png',
         slot=parent.show_instruction_msg)
+
+
+# ---------------------------------------
+# Canvas
+# ---------------------------------------
+
+
+def switch_main_canvas(parent):
+    return new_action(
+        parent,
+        'Main',
+        icon_name='main_canvas.png',
+        slot=parent.switch_main_canvas)
+
+
+def switch_compare_canvas(parent):
+    return new_action(
+        parent,
+        'Compare',
+        icon_name='compare_canvas.png',
+        slot=parent.switch_compare_canvas)
+
+
+def switch_preview_canvas(parent):
+    return new_action(
+        parent,
+        'Preview',
+        icon_name='preview_canvas.png',
+        slot=parent.switch_preview_canvas)

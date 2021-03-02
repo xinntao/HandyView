@@ -107,6 +107,9 @@ I have used the icons from [flaticon](www.flaticon.com). The following are the s
 - [Exclude icon](https://www.flaticon.com/free-icon/remove_2921203)
 - [Compare icon](https://www.flaticon.com/free-icon/file_748614?term=compare&page=1&position=17)
 - [History icon](https://www.flaticon.com/free-icon/timer_2921268)
+- [Main canvas icon](https://www.flaticon.com/free-icon/image_3603103)
+- [Compare canvas icon](https://www.flaticon.com/free-icon/portraits_3603402)
+- [Preview canvas icon](https://www.flaticon.com/free-icon/pieces_3603403)
 
 ## :e-mail: Contact
 
