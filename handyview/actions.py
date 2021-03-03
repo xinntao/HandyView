@@ -66,6 +66,15 @@ def compare(parent):
         slot=parent.compare_folder)
 
 
+def clear_compare(parent):
+    """Clear comparison."""
+    return new_action(
+        parent,
+        'Clear comparison',
+        icon_name='clear_comparison.png',
+        slot=parent.clear_compare)
+
+
 def history(parent):
     """History."""
     return new_action(

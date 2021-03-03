@@ -189,11 +189,12 @@ class Canvas(QWidget):
         self.db.folder_browse(step)
         self.show_image()
 
-        # when in main folder (1st folder), show red color
-        if self.db.fidx == 0:
-            self.comparison_label.setStyleSheet('QLabel {color : red;}')
-        else:
-            self.comparison_label.setStyleSheet('QLabel {color : black;}')
+        if self.num_view == 1:
+            # when in main folder (1st folder), show red color
+            if self.db.fidx == 0:
+                self.comparison_label.setStyleSheet('QLabel {color : red;}')
+            else:
+                self.comparison_label.setStyleSheet('QLabel {color : black;}')
 
     def show_image(self, init=False):
         interval_mode = (self.db.get_folder_len() == 1)
@@ -203,7 +204,7 @@ class Canvas(QWidget):
                 img_path = self.db.get_path(pidx=pidx)
                 width, height = self.db.get_shape(pidx=pidx)
             else:
-                fidx = idx  # always has the same folder order
+                fidx = self.db.fidx + idx
                 img_path = self.db.get_path(fidx=fidx)
                 width, height = self.db.get_shape(fidx=fidx)
             qimg = QImage(img_path)
@@ -211,6 +212,8 @@ class Canvas(QWidget):
                 # for HVView, HVScene show_mouse_color.
                 # only work on first qimg (main canvas mode)
                 self.qimg = qimg
+                # show image path in the statusbar
+                self.parent.set_statusbar(f'{img_path}')
 
             qpixmap = QPixmap.fromImage(qimg)
 
@@ -219,9 +222,6 @@ class Canvas(QWidget):
             qscene.set_width_height(width, height)
             # put image always in the center of a QGraphicsView
             qscene.setSceneRect(0, 0, width, height)
-
-        # show image path in the statusbar
-        self.parent.set_statusbar(f'{img_path}')
 
         # update information panel
         basename = os.path.basename(img_path)

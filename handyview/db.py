@@ -148,13 +148,13 @@ class HVDB():
                 pidx = self._pidx
             # check out of boundary
             if fidx > (self.get_folder_len() - 1):
-                fidx = self.get_folder_len() - 1
-            elif fidx < 0:
                 fidx = 0
+            elif fidx < 0:
+                fidx = self.get_folder_len() - 1
             if pidx > (self.get_path_len() - 1):
-                pidx = self.get_path_len() - 1
-            elif pidx < 0:
                 pidx = 0
+            elif pidx < 0:
+                pidx = self.get_path_len() - 1
 
             path = self.path_list[fidx][pidx]
         return path

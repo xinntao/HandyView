@@ -59,6 +59,7 @@ class MainWindow(QMainWindow):
         # Compare
         compare_menu = menubar.addMenu('&Compare')
         compare_menu.addAction(actions.compare(self))
+        compare_menu.addAction(actions.clear_compare(self))
 
         # View
         self.view_menu = menubar.addMenu('&View')
@@ -174,6 +175,7 @@ class MainWindow(QMainWindow):
                              ('Compare folders have different length, \n'
                               'Cannot enter compare canvas.'))
                     return
+                self.hvdb.fidx = 0
                 num_view = min(self.hvdb.get_folder_len(), 4)
                 show_msg(
                     'Information', 'Compare Canvas',
@@ -228,6 +230,15 @@ class MainWindow(QMainWindow):
                                                   '../'))
         if ok:
             self.canvas.add_cmp_folder(key)
+
+    def clear_compare(self):
+        # Compare folder should be set in Main Cavans
+        if self.canvas_type != 'main':
+            self.switch_main_canvas()
+
+        self.hvdb.folder_list = [self.hvdb.folder_list[0]]
+        self.hvdb.path_list = [self.hvdb.path_list[0]]
+        self.hvdb.fidx = 0
 
     def open_history(self):
         # should be used in Main Cavans
