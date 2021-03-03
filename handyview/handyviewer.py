@@ -134,17 +134,19 @@ class MainWindow(QMainWindow):
     # Canvas Slots
     # ---------------------------------------
     def switch_main_canvas(self):
+        self.canvas = Canvas(self, self.hvdb)
         self.setCentralWidget(self.canvas)
+        self.add_dock_window()
 
     def switch_compare_canvas(self):
         self.dock_info.close()
-        self.canvas_compare = Canvas(self, self.hvdb)
-        self.setCentralWidget(self.canvas_compare)
+        self.canvas = Canvas(self, self.hvdb, num_view=2)
+        self.setCentralWidget(self.canvas)
 
     def switch_preview_canvas(self):
         self.dock_info.close()
-        self.canvas_compare = Canvas(self, self.hvdb)
-        self.setCentralWidget(self.canvas_compare)
+        self.canvas = Canvas(self, self.hvdb, num_view=3)
+        self.setCentralWidget(self.canvas)
 
     # --------
     # Slots
