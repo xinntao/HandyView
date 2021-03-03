@@ -121,7 +121,7 @@ class HVView(QGraphicsView):
              f' Height(y): {y_pos:.1f}\n Width(x):  {x_pos:.1f}'))
 
         # if cursor is out of image, the text will be red
-        if (0 < x_pos < self.parent.imgw and 0 < y_pos < self.parent.imgh):
+        if (0 < x_pos < self.parent.width and 0 < y_pos < self.parent.height):
             self.parent.mouse_pos_label.setStyleSheet(
                 'QLabel {color : black;}')
         else:
@@ -147,9 +147,10 @@ class HVView(QGraphicsView):
             f' End  : {int(y_end)}, {int(x_end)}\n'
             f' Len  : {int(y_len)}, {int(x_len)}')
 
-        if (0 < x_start < self.parent.imgw and 0 < y_start < self.parent.imgh
-                and 0 < x_end < self.parent.imgw
-                and 0 < y_end < self.parent.imgh):
+        if (0 < x_start < self.parent.width
+                and 0 < y_start < self.parent.height
+                and 0 < x_end < self.parent.width
+                and 0 < y_end < self.parent.height):
             self.parent.selection_pos_label.setStyleSheet(
                 'QLabel {color : black;}')
         else:
@@ -212,7 +213,7 @@ class HVScene(QGraphicsScene):
              f' Height(y): {y_pos:.1f}\n Width(x):  {x_pos:.1f}'))
 
         # if cursor is out of image, the text will be red
-        if (0 < x_pos < self.parent.imgw and 0 < y_pos < self.parent.imgh):
+        if (0 < x_pos < self.parent.width and 0 < y_pos < self.parent.height):
             self.parent.mouse_pos_label.setStyleSheet(
                 'QLabel {color : black;}')
         else:

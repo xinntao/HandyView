@@ -3,7 +3,7 @@ import os
 import re
 
 FORMATS = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM',
-           '.bmp', '.BMP', '.gif', '.GIF', '.tiff')
+           '.bmp', '.BMP', '.gif', '.GIF', '.tiff', '.TIFF')
 
 
 def sizeof_fmt(size, suffix='B'):
@@ -21,15 +21,25 @@ def sizeof_fmt(size, suffix='B'):
     return f'{size:3.1f} Y{suffix}'
 
 
-def get_img_list(path, include_names=None, exclude_names=None):
+def get_img_list(folder, include_names=None, exclude_names=None):
+    """Get the image list in a folder.
+    It also considers 'include' and 'exclude' strings.
+
+    Args:
+        folder (str): Folder path.
+        include_names (list[str]): Included strings in image base names.
+        exclude_names: (list[str]): Excluded strings in image base names.
+
+    Returns:
+        list[str]: Image list.
+    """
     img_list = []
-    if path == '':
-        path = './'
+    if folder == '':
+        folder = './'
     # deal with include and exclude names
-    for img_path in sorted(glob.glob(os.path.join(path, '*'))):
+    for img_path in sorted(glob.glob(os.path.join(folder, '*'))):
         img_path = img_path.replace('\\', '/')
-        img_name = os.path.split(img_path)[-1]
-        base, ext = os.path.splitext(img_name)
+        base, ext = os.path.splitext(os.path.basename(img_path))
         if ext in FORMATS:
             if include_names is not None:
                 flag_add = False
@@ -45,7 +55,7 @@ def get_img_list(path, include_names=None, exclude_names=None):
                 flag_add = True
             if flag_add:
                 img_list.append(img_path)
-    # natural sort for numbers in name
+    # natural sort for numbers in names
     img_list.sort(
         key=lambda s:
         [int(t) if t.isdigit() else t.lower() for t in re.split(r'(\d+)', s)])

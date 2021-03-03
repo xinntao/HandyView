@@ -1,7 +1,8 @@
 import actions as actions
 import os
 import sys
-from canvas import Canvas, CanvasCompare
+from canvas import Canvas
+from db import HVDB
 from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog,
@@ -23,9 +24,17 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.init_ui()
+        # get initial path
+        try:
+            init_path = sys.argv[1]
+        except IndexError:
+            # show the icon image
+            init_path = os.path.join(CURRENT_PATH, 'icon.png')
+        # initialize HVDB (handyview database), which stores the path
+        # information
+        self.hvdb = HVDB(init_path)
 
-    def init_ui(self):
+        # initialize UI
         self.setWindowTitle('HandyView')
         self.init_menubar()
         self.init_toolbar()
@@ -90,7 +99,7 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(text)
 
     def init_central_window(self):
-        self.canvas = Canvas(self)
+        self.canvas = Canvas(self, self.hvdb)
         self.setCentralWidget(self.canvas)
 
     def add_dock_window(self):
@@ -135,12 +144,12 @@ class MainWindow(QMainWindow):
 
     def switch_compare_canvas(self):
         self.dock_info.close()
-        self.canvas_compare = CanvasCompare(self, num_scene=2)
+        self.canvas_compare = Canvas(self, self.hvdb)
         self.setCentralWidget(self.canvas_compare)
 
     def switch_preview_canvas(self):
         self.dock_info.close()
-        self.canvas_compare = CanvasCompare(self, num_scene=3)
+        self.canvas_compare = Canvas(self, self.hvdb)
         self.setCentralWidget(self.canvas_compare)
 
     # --------
@@ -156,20 +165,21 @@ class MainWindow(QMainWindow):
             history = '.'
         key, ok = QFileDialog.getOpenFileName(self, 'Select an image', history)
         if ok:
-            self.canvas.key = key
-            self.canvas.get_main_img_list()
+            self.hvdb.init_path = key
+            self.hvdb.get_init_path_list()
             self.canvas.show_image(init=True)
 
     def refresh_img_list(self):
-        self.canvas.get_main_img_list()
+        self.hvdb.get_init_path_list()
         self.canvas.show_image(init=False)
         # TODO: update comparison image list
 
     def compare_folder(self):
         key, ok = QFileDialog.getOpenFileName(
-            self, 'Select an image', os.path.join(self.canvas.path, '../'))
+            self, 'Select an image', os.path.join(self.hvdb.get_folder(),
+                                                  '../'))
         if ok:
-            self.canvas.update_cmp_img_list(key)
+            self.hvdb.update_cmp_path_list(key)
 
     def open_history(self):
         with open(os.path.join(CURRENT_PATH, 'history.txt'), 'r') as f:
@@ -178,13 +188,13 @@ class MainWindow(QMainWindow):
         key, ok = QInputDialog().getItem(self, 'Open File History', 'History:',
                                          lines, 0, True)
         if ok:
-            self.canvas.key = key
-            self.canvas.get_main_img_list()
+            self.hvdb.init_path = key
+            self.hvdb.get_init_path_list()
             self.canvas.show_image(init=True)
 
     def exclude_file_name(self):
         # show current exclude names as the default values
-        current_exclude_names = self.canvas.exclude_names
+        current_exclude_names = self.hvdb.exclude_names
         if current_exclude_names is None:
             current_exclude_names = ''
         else:
@@ -196,18 +206,18 @@ class MainWindow(QMainWindow):
                                                  current_exclude_names)
         if ok:
             if exclude_names != '':
-                self.canvas.exclude_names = [
+                self.hvdb.exclude_names = [
                     v.strip() for v in exclude_names.split(',')
                 ]
-                self.canvas.include_names = None
+                self.hvdb.include_names = None
             else:
-                self.canvas.exclude_names = None
+                self.hvdb.exclude_names = None
             self.refresh_img_list()
 
         # show exclude names in the information panel
-        if isinstance(self.canvas.exclude_names, list):
-            show_str = 'Exclude:\n\t' + '\n\t'.join(self.canvas.exclude_names)
-            self.canvas.exclude_names_label.setStyleSheet(
+        if isinstance(self.hvdb.exclude_names, list):
+            show_str = 'Exclude:\n\t' + '\n\t'.join(self.hvdb.exclude_names)
+            self.hvdb.exclude_names_label.setStyleSheet(
                 'QLabel {color : red;}')
         else:
             show_str = 'Exclude: None'
@@ -217,7 +227,7 @@ class MainWindow(QMainWindow):
 
     def include_file_name(self):
         # show current include names as the default values
-        current_include_names = self.canvas.include_names
+        current_include_names = self.hvdb.include_names
         if current_include_names is None:
             current_include_names = ''
         else:
@@ -229,17 +239,17 @@ class MainWindow(QMainWindow):
                                                  current_include_names)
         if ok:
             if include_names != '':
-                self.canvas.include_names = [
+                self.hvdb.include_names = [
                     v.strip() for v in include_names.split(',')
                 ]
-                self.canvas.exclude_names = None
+                self.hvdb.exclude_names = None
             else:
-                self.canvas.include_names = None
+                self.hvdb.include_names = None
             self.refresh_img_list()
 
         # show include names in the information panel
-        if isinstance(self.canvas.include_names, list):
-            show_str = 'Include:\n\t' + '\n\t'.join(self.canvas.include_names)
+        if isinstance(self.hvdb.include_names, list):
+            show_str = 'Include:\n\t' + '\n\t'.join(self.hvdb.include_names)
             self.canvas.include_names_label.setStyleSheet(
                 'QLabel {color : blue;}')
         else:
