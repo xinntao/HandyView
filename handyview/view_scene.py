@@ -121,7 +121,8 @@ class HVView(QGraphicsView):
              f' Height(y): {y_pos:.1f}\n Width(x):  {x_pos:.1f}'))
 
         # if cursor is out of image, the text will be red
-        if (0 < x_pos < self.parent.width and 0 < y_pos < self.parent.height):
+        if (0 < x_pos < self.scene().width
+                and 0 < y_pos < self.scene().height):
             self.parent.mouse_pos_label.setStyleSheet(
                 'QLabel {color : black;}')
         else:
@@ -146,11 +147,9 @@ class HVView(QGraphicsView):
             f' Start: {int(y_start)}, {int(x_start)}\n'
             f' End  : {int(y_end)}, {int(x_end)}\n'
             f' Len  : {int(y_len)}, {int(x_len)}')
-
-        if (0 < x_start < self.parent.width
-                and 0 < y_start < self.parent.height
-                and 0 < x_end < self.parent.width
-                and 0 < y_end < self.parent.height):
+        width, height = self.scene().width, self.scene().height
+        if (0 < x_start < width and 0 < y_start < height and 0 < x_end < width
+                and 0 < y_end < height):
             self.parent.selection_pos_label.setStyleSheet(
                 'QLabel {color : black;}')
         else:
@@ -188,6 +187,12 @@ class HVScene(QGraphicsScene):
         super(HVScene, self).__init__()
         self.parent = parent
         self.show_info = show_info
+        self.width = None
+        self.height = None
+
+    def set_width_height(self, width, height):
+        self.width = width
+        self.height = height
 
     def keyPressEvent(self, event):
         modifiers = QApplication.keyboardModifiers()
@@ -213,7 +218,7 @@ class HVScene(QGraphicsScene):
              f' Height(y): {y_pos:.1f}\n Width(x):  {x_pos:.1f}'))
 
         # if cursor is out of image, the text will be red
-        if (0 < x_pos < self.parent.width and 0 < y_pos < self.parent.height):
+        if (0 < x_pos < self.width and 0 < y_pos < self.height):
             self.parent.mouse_pos_label.setStyleSheet(
                 'QLabel {color : black;}')
         else:

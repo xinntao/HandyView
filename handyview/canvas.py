@@ -100,16 +100,16 @@ class Canvas(QWidget):
             main_layout.addWidget(self.qviews[0], 0, 0, -1, 50)
         elif self.num_view == 2:
             main_layout.addWidget(self.qviews[0], 0, 0, -1, 30)
-            main_layout.addWidget(self.qviews[1], 0, 29.9, -1, 30)
+            main_layout.addWidget(self.qviews[1], 0, 30, -1, 30)
         elif self.num_view == 3:
-            main_layout.addWidget(self.qviews[0], 0, 0, -1, 20)
-            main_layout.addWidget(self.qviews[1], 0, 19.9, -1, 20)
-            main_layout.addWidget(self.qviews[2], 0, 39.9, -1, 20)
+            main_layout.addWidget(self.qviews[0], 0, 0, -1, 30)
+            main_layout.addWidget(self.qviews[1], 0, 30, -1, 30)
+            main_layout.addWidget(self.qviews[2], 0, 60, -1, 30)
         elif self.num_view == 4:
-            # TODO
-            main_layout.addWidget(self.qviews[0], 0, 0, -1, 17)
-            main_layout.addWidget(self.qviews[1], 0, 16.99, -1, 17)
-            main_layout.addWidget(self.qviews[2], 0, 33.99, -1, 17)
+            main_layout.addWidget(self.qviews[0], 0, 0, 25, 30)
+            main_layout.addWidget(self.qviews[1], 0, 30, 25, 30)
+            main_layout.addWidget(self.qviews[2], 25, 0, 25, 30)
+            main_layout.addWidget(self.qviews[3], 25, 30, 25, 30)
 
         # blank label for layout
         blank_label = HVLable('', self, 'black', 'Times', 12)
@@ -185,17 +185,29 @@ class Canvas(QWidget):
             self.comparison_label.setStyleSheet('QLabel {color : black;}')
 
     def show_image(self, init=False):
-        img_path = self.db.get_path()
-        self.qimg = QImage(img_path)
-        self.qpixmap = QPixmap.fromImage(self.qimg)
-        self.width, self.height = self.db.get_shape(
-        )  # TODO, should for each image
+        interval_mode = (self.db.get_folder_len() == 1)
+        for idx, qscene in enumerate(self.qscenes):
+            if interval_mode:
+                pidx = self.db.pidx + idx
+                img_path = self.db.get_path(pidx=pidx)
+                width, height = self.db.get_shape(pidx=pidx)
+            else:
+                fidx = self.db.fidx + idx
+                img_path = self.db.get_path(fidx=fidx)
+                width, height = self.db.get_shape(fidx=fidx)
+            qimg = QImage(img_path)
+            if idx == 0:
+                # for HVView, HVScene show_mouse_color.
+                # only work on first qimg (main canvas mode)
+                self.qimg = qimg
 
-        for qscene in self.qscenes:
+            qpixmap = QPixmap.fromImage(qimg)
+
             qscene.clear()
-            qscene.addPixmap(self.qpixmap)
+            qscene.addPixmap(qpixmap)
+            qscene.set_width_height(width, height)
             # put image always in the center of a QGraphicsView
-            qscene.setSceneRect(0, 0, self.width, self.height)
+            qscene.setSceneRect(0, 0, width, height)
 
         # show image path in the statusbar
         self.parent.set_statusbar(f'{img_path}')
@@ -209,13 +221,13 @@ class Canvas(QWidget):
         if self.num_view == 1:
             self.info_label.setText(
                 'Info: \n'
-                f' Height: {self.height:d}\n Width:  {self.width:d}\n'
+                f' Height: {height:d}\n Width:  {width:d}\n'
                 f' Size: {self.db.get_file_size()}\n'
                 f' Type: {self.db.get_color_type()}')
 
         if init:
-            if self.width < 500:
-                self.qviews[0].set_zoom(500 // self.height)
+            if width < 500:
+                self.qviews[0].set_zoom(500 // height)
             else:
                 self.qviews[0].set_zoom(1)
         for qview in self.qviews:

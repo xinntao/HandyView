@@ -10,7 +10,7 @@ import handyview.actions as actions
 from handyview.canvas import Canvas
 from handyview.db import HVDB
 from handyview.utils import ROOT_DIR
-from handyview.widgets import HLine, MessageDialog
+from handyview.widgets import HLine, MessageDialog, show_msg
 
 
 class MainWindow(QMainWindow):
@@ -27,6 +27,8 @@ class MainWindow(QMainWindow):
         # initialize HVDB (handyview database), which stores the path
         # information
         self.hvdb = HVDB(init_path)
+
+        self.canvas_type = 'main'
 
         # initialize UI
         self.setWindowTitle('HandyView')
@@ -134,19 +136,57 @@ class MainWindow(QMainWindow):
     # Canvas Slots
     # ---------------------------------------
     def switch_main_canvas(self):
-        self.canvas = Canvas(self, self.hvdb)
-        self.setCentralWidget(self.canvas)
-        self.add_dock_window()
+        if self.canvas_type != 'main':
+            self.hvdb.interval = 0
+            self.canvas = Canvas(self, self.hvdb)
+            self.setCentralWidget(self.canvas)
+            self.add_dock_window()
+            self.canvas_type = 'main'
 
     def switch_compare_canvas(self):
-        self.dock_info.close()
-        self.canvas = Canvas(self, self.hvdb, num_view=2)
-        self.setCentralWidget(self.canvas)
+        if self.canvas_type != 'compare':
+            num_compare = self.hvdb.get_folder_len()
+            if num_compare == 1:
+                num_view, ok = QInputDialog.getText(
+                    self, 'Compare Canvas',
+                    '# Compare Columns: (options: 2, 3, 4)', QLineEdit.Normal,
+                    '2')
+                if ok:
+                    try:
+                        num_view = int(num_view)
+                    except Exception:
+                        show_msg(
+                            icon='Warning',
+                            title='Warning',
+                            text='# Compare Columns should be int.')
+                    if num_view > 4 or num_view < 2:
+                        show_msg(
+                            icon='Warning',
+                            title='Warning',
+                            text='# Compare Columns should be 2, 3, 4.')
+                    self.hvdb.interval = num_view - 1
+                else:  # default value
+                    self.hvdb.interval = 1
+                    num_view = 2
+            else:
+                num_view = min(self.hvdb.get_folder_len(), 4)
+                show_msg(
+                    'Information', 'Compare Canvas',
+                    f'Comparsion folder mode.\n # Compare Columns: {num_view}.'
+                )
+
+            self.dock_info.close()
+            self.canvas = Canvas(self, self.hvdb, num_view=num_view)
+            self.setCentralWidget(self.canvas)
+            self.canvas_type = 'compare'
 
     def switch_preview_canvas(self):
-        self.dock_info.close()
-        self.canvas = Canvas(self, self.hvdb, num_view=3)
-        self.setCentralWidget(self.canvas)
+        show_msg(
+            'Information',
+            '^_^',
+            text=('Has not implemented yet.\n'
+                  'Contributions are welcome!\n'
+                  '尚未实现, 欢迎贡献!'))
 
     # --------
     # Slots
@@ -171,6 +211,10 @@ class MainWindow(QMainWindow):
         # TODO: update comparison image list
 
     def compare_folder(self):
+        # Compare folder should be set in Main Cavans
+        if self.canvas_type != 'main':
+            self.switch_main_canvas()
+
         key, ok = QFileDialog.getOpenFileName(
             self, 'Select an image', os.path.join(self.hvdb.get_folder(),
                                                   '../'))

@@ -22,6 +22,7 @@ class HVDB():
         self._pidx = 0  # path index
         self._include_names = None
         self._exclude_names = None
+        self._interval = 0  # for compare canvas
 
         self.folder_list = [None]
         # list of image path list
@@ -83,7 +84,7 @@ class HVDB():
 
     def path_browse(self, step):
         if self.get_path_len() > 1:
-            self._pidx += step
+            self._pidx += step * (self._interval + 1)
             if self._pidx > (self.get_path_len() - 1):
                 self._pidx = 0
             elif self._pidx < 0:
@@ -129,6 +130,16 @@ class HVDB():
                 fidx = self._fidx
             if pidx is None:
                 pidx = self._pidx
+            # check out of boundary
+            if fidx > (self.get_folder_len() - 1):
+                fidx = self.get_folder_len() - 1
+            elif fidx < 0:
+                fidx = 0
+            if pidx > (self.get_path_len() - 1):
+                pidx = self.get_path_len() - 1
+            elif pidx < 0:
+                pidx = 0
+
             path = self.path_list[fidx][pidx]
         return path
 
@@ -207,3 +218,11 @@ class HVDB():
     def exclude_names(self, value):
         self._exclude_names = value
         # TODO: out of boundary check
+
+    @property
+    def interval(self):
+        return self._interval
+
+    @interval.setter
+    def interval(self, value):
+        self._interval = value
