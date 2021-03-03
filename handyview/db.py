@@ -24,6 +24,9 @@ class HVDB():
         self._exclude_names = None
         self._interval = 0  # for compare canvas
 
+        # whether path lists in compare folders have the same length
+        self.is_same_len = True
+
         self.folder_list = [None]
         # list of image path list
         # the first list is the main list
@@ -103,19 +106,32 @@ class HVDB():
             except IndexError:
                 self._pidx = self.get_path_len() - 1
 
-    def update_cmp_path_list(self, cmp_path):
+    def add_cmp_folder(self, cmp_path):
         folder = os.path.dirname(cmp_path)
         self.folder_list.append(folder)
         self.path_list.append(
             get_img_list(folder, self._include_names, self._exclude_names))
         # all the path list should have the same length
-        is_same_len = True
+        self.is_same_len = True
         img_len_list = [len(self.path_list[0])]
         for img_list in self.path_list[1:]:
             img_len_list.append(len(img_list))
             if len(img_list) != img_len_list[0]:
-                is_same_len = False
-        return is_same_len, img_len_list
+                self.is_same_len = False
+        return self.is_same_len, img_len_list
+
+    def update_path_list(self):
+        for idx, folder in enumerate(self.folder_list):
+            self.path_list[idx] = get_img_list(folder, self._include_names,
+                                               self._exclude_names)
+        # all the path list should have the same length
+        self.is_same_len = True
+        img_len_list = [len(self.path_list[0])]
+        for img_list in self.path_list[1:]:
+            img_len_list.append(len(img_list))
+            if len(img_list) != img_len_list[0]:
+                self.is_same_len = False
+        return self.is_same_len, img_len_list
 
     def get_folder(self, folder=None, fidx=None):
         if folder is None:

@@ -163,8 +163,8 @@ class Canvas(QWidget):
             return
         self.show_image()
 
-    def update_cmp_path_list(self, cmp_path):
-        is_same_len, img_len_list = self.db.update_cmp_path_list(cmp_path)
+    def add_cmp_folder(self, cmp_path):
+        is_same_len, img_len_list = self.db.add_cmp_folder(cmp_path)
 
         show_str = 'Number for each folder:\n\t' + '\n\t'.join(
             map(str, img_len_list))
@@ -173,6 +173,17 @@ class Canvas(QWidget):
             msg = ('Comparison folders have differnet number of images.\n'
                    f'{show_str}')
             show_msg('Warning', 'Warning!', msg)
+
+    def update_path_list(self):
+        is_same_len, img_len_list = self.db.update_path_list()
+        if len(img_len_list) > 1:
+            show_str = 'Number for each folder:\n\t' + '\n\t'.join(
+                map(str, img_len_list))
+            self.comparison_label.setText(show_str)
+            if is_same_len is False:
+                msg = ('Comparison folders have differnet number of images.\n'
+                       f'{show_str}')
+                show_msg('Warning', 'Warning!', msg)
 
     def compare_folders(self, step):
         self.db.folder_browse(step)
@@ -192,7 +203,7 @@ class Canvas(QWidget):
                 img_path = self.db.get_path(pidx=pidx)
                 width, height = self.db.get_shape(pidx=pidx)
             else:
-                fidx = self.db.fidx + idx
+                fidx = idx  # always has the same folder order
                 img_path = self.db.get_path(fidx=fidx)
                 width, height = self.db.get_shape(fidx=fidx)
             qimg = QImage(img_path)

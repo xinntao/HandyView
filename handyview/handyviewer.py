@@ -169,6 +169,11 @@ class MainWindow(QMainWindow):
                     self.hvdb.interval = 1
                     num_view = 2
             else:
+                if not self.hvdb.is_same_len:
+                    show_msg('Critical', 'Error',
+                             ('Compare folders have different length, \n'
+                              'Cannot enter compare canvas.'))
+                    return
                 num_view = min(self.hvdb.get_folder_len(), 4)
                 show_msg(
                     'Information', 'Compare Canvas',
@@ -206,9 +211,12 @@ class MainWindow(QMainWindow):
             self.canvas.show_image(init=True)
 
     def refresh_img_list(self):
-        self.hvdb.get_init_path_list()
+        # should be used in Main Cavans
+        if self.canvas_type != 'main':
+            self.switch_main_canvas()
+
+        self.canvas.update_path_list()
         self.canvas.show_image(init=False)
-        # TODO: update comparison image list
 
     def compare_folder(self):
         # Compare folder should be set in Main Cavans
@@ -219,9 +227,13 @@ class MainWindow(QMainWindow):
             self, 'Select an image', os.path.join(self.hvdb.get_folder(),
                                                   '../'))
         if ok:
-            self.hvdb.update_cmp_path_list(key)
+            self.canvas.add_cmp_folder(key)
 
     def open_history(self):
+        # should be used in Main Cavans
+        if self.canvas_type != 'main':
+            self.switch_main_canvas()
+
         with open(os.path.join(ROOT_DIR, 'history.txt'), 'r') as f:
             lines = f.readlines()
             lines = [line.strip() for line in lines]
