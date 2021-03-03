@@ -1,4 +1,6 @@
-pyinstaller -D handyview/handyview.py -i icon.ico --windowed --noconfirm
+echo 'Step 1: PYINSTALL'
+pyinstaller -D handyview/handyviewer.py -i icon.ico --windowed --noconfirm
 
-cp -r handyview/icons dist/handyview/
-cp handyview/icon.png dist/handyview/
+echo 'Step 2: COPY FILES'
+cp -r handyview/icons dist/handyviewer/
+cp handyview/icon.png dist/handyviewer/
