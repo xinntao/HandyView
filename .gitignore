@@ -1,6 +1,7 @@
 .vscode
 history.txt
 *.png
+version.py
 
 # template
 
