@@ -1,18 +1,10 @@
 import glob
 # import itertools
 import os
-import sys
 from PIL import Image
-from utils import FORMATS, get_img_list, sizeof_fmt
-from widgets import show_msg
 
-if getattr(sys, 'frozen', False):
-    # If the application is run as a bundle, the PyInstaller bootloader
-    # extends the sys module by a flag frozen=True and sets the app
-    # path into variable _MEIPASS'.
-    CURRENT_PATH = sys._MEIPASS
-else:
-    CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
+from handyview.utils import FORMATS, ROOT_DIR, get_img_list, sizeof_fmt
+from handyview.widgets import show_msg
 
 
 class HVDB():
@@ -74,7 +66,7 @@ class HVDB():
 
     def save_open_history(self):
         try:
-            with open(os.path.join(CURRENT_PATH, 'history.txt'), 'r') as f:
+            with open(os.path.join(ROOT_DIR, 'history.txt'), 'r') as f:
                 lines = f.readlines()
                 lines = [line.strip() for line in lines]
                 if len(lines) == 5:
@@ -85,7 +77,7 @@ class HVDB():
         if self.init_path not in ['icon.png', './icon.png'] and (self.init_path
                                                                  not in lines):
             lines.insert(0, self.init_path)
-        with open(os.path.join(CURRENT_PATH, 'history.txt'), 'w') as f:
+        with open(os.path.join(ROOT_DIR, 'history.txt'), 'w') as f:
             for line in lines:
                 f.write(f'{line}\n')
 

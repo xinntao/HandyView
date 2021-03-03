@@ -1,22 +1,16 @@
-import actions as actions
 import os
 import sys
-from canvas import Canvas
-from db import HVDB
 from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog,
                              QGridLayout, QInputDialog, QLabel, QLineEdit,
                              QMainWindow, QToolBar, QWidget)
-from widgets import HLine, MessageDialog
 
-if getattr(sys, 'frozen', False):
-    # If the application is run as a bundle, the PyInstaller bootloader
-    # extends the sys module by a flag frozen=True and sets the app
-    # path into variable _MEIPASS'.
-    CURRENT_PATH = sys._MEIPASS
-else:
-    CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
+import handyview.actions as actions
+from handyview.canvas import Canvas
+from handyview.db import HVDB
+from handyview.utils import ROOT_DIR
+from handyview.widgets import HLine, MessageDialog
 
 
 class MainWindow(QMainWindow):
@@ -29,7 +23,7 @@ class MainWindow(QMainWindow):
             init_path = sys.argv[1]
         except IndexError:
             # show the icon image
-            init_path = os.path.join(CURRENT_PATH, 'icon.png')
+            init_path = os.path.join(ROOT_DIR, 'icon.png')
         # initialize HVDB (handyview database), which stores the path
         # information
         self.hvdb = HVDB(init_path)
@@ -158,7 +152,7 @@ class MainWindow(QMainWindow):
 
     def open_file_dialog(self):
         try:
-            with open(os.path.join(CURRENT_PATH, 'history.txt'), 'r') as f:
+            with open(os.path.join(ROOT_DIR, 'history.txt'), 'r') as f:
                 history = f.readlines()[0]
                 history = history.strip()
         except Exception:
@@ -182,7 +176,7 @@ class MainWindow(QMainWindow):
             self.hvdb.update_cmp_path_list(key)
 
     def open_history(self):
-        with open(os.path.join(CURRENT_PATH, 'history.txt'), 'r') as f:
+        with open(os.path.join(ROOT_DIR, 'history.txt'), 'r') as f:
             lines = f.readlines()
             lines = [line.strip() for line in lines]
         key, ok = QInputDialog().getItem(self, 'Open File History', 'History:',

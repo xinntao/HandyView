@@ -2,7 +2,7 @@ from os import path as osp
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
 
-ROOT_DIR = osp.dirname(osp.abspath(__file__))
+from handyview.utils import ROOT_DIR
 
 
 def new_action(parent,

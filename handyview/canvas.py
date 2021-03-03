@@ -1,19 +1,11 @@
 import os
-import sys
 from PyQt5 import QtCore
 from PyQt5.QtGui import QColor, QImage, QPixmap
 from PyQt5.QtWidgets import (QApplication, QGridLayout, QLineEdit, QPushButton,
                              QWidget)
-from view_scene import HVScene, HVView
-from widgets import ColorLabel, HVLable, show_msg
 
-if getattr(sys, 'frozen', False):
-    # If the application is run as a bundle, the PyInstaller bootloader
-    # extends the sys module by a flag frozen=True and sets the app
-    # path into variable _MEIPASS'.
-    CURRENT_PATH = sys._MEIPASS
-else:
-    CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
+from handyview.view_scene import HVScene, HVView
+from handyview.widgets import ColorLabel, HVLable, show_msg
 
 
 class Canvas(QWidget):

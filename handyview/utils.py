@@ -1,9 +1,18 @@
 import glob
 import os
 import re
+import sys
 
 FORMATS = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM',
            '.bmp', '.BMP', '.gif', '.GIF', '.tiff', '.TIFF')
+
+if getattr(sys, 'frozen', False):
+    # If the application is run as a bundle, the PyInstaller bootloader
+    # extends the sys module by a flag frozen=True and sets the app
+    # path into variable _MEIPASS'.
+    ROOT_DIR = sys._MEIPASS
+else:
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def sizeof_fmt(size, suffix='B'):
