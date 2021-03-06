@@ -46,6 +46,16 @@ def open(parent):
         slot=parent.open_file_dialog)
 
 
+def goto_index(parent):
+    """Jump to the desired index."""
+    return new_action(
+        parent,
+        'Index',
+        icon_name='index.png',
+        shortcut='Ctrl+I',
+        slot=parent.goto_index)
+
+
 def refresh(parent):
     """Refresh the image list."""
     return new_action(
@@ -70,7 +80,7 @@ def clear_compare(parent):
     """Clear comparison."""
     return new_action(
         parent,
-        'Clear comparison',
+        'Clear Comp',
         icon_name='clear_comparison.png',
         slot=parent.clear_compare)
 
@@ -102,7 +112,7 @@ def include_file_name(parent):
 def show_instruction_msg(parent):
     return new_action(
         parent,
-        'Instruct',
+        'Help',
         icon_name='instructions.png',
         slot=parent.show_instruction_msg)
 

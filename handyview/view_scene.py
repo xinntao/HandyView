@@ -4,7 +4,7 @@ for our HandyView.
 """
 from PyQt5 import QtCore
 from PyQt5.QtCore import QPoint, QRect, QSize
-from PyQt5.QtGui import QColor, QTransform
+from PyQt5.QtGui import QColor, QFont, QTransform
 from PyQt5.QtWidgets import (QApplication, QGraphicsScene, QGraphicsView,
                              QRubberBand)
 
@@ -18,6 +18,7 @@ class HVView(QGraphicsView):
 
     # used for sending QRect position. Now we skip it.
     # rectChanged = QtCore.pyqtSignal(QRect)
+    zoom_signal = QtCore.pyqtSignal(float)
 
     def __init__(self, scene, parent=None, show_info=True):
         super(HVView, self).__init__(scene, parent)
@@ -38,6 +39,15 @@ class HVView(QGraphicsView):
         # indicate whether rubber band could be changed under mouseMoveEvent
         self.rubber_band_changable = False
         self.rect_top_left = (0, 0)
+
+    def set_shown_text(self, text):
+        self.shown_text = text
+
+    def drawForeground(self, painter, rect):
+        painter.resetTransform()  # not scale shown text
+        painter.setFont(QFont('times', 15))
+        painter.setPen(QColor(0, 128, 0))
+        painter.drawText(2, 40, self.shown_text)
 
     def mousePressEvent(self, event):
         modifiers = QApplication.keyboardModifiers()
@@ -100,13 +110,23 @@ class HVView(QGraphicsView):
         mouse = event.angleDelta().y() / 120
         modifiers = QApplication.keyboardModifiers()
         if modifiers == QtCore.Qt.ControlModifier:
-            # When Ctrl pressed, zoom in/ out
+            # When Ctrl pressed, zoom in / out
             if mouse > 0:
-                self.zoom_in()
+                self.zoom_in(emit_signal=True)
             elif mouse < 0:
-                self.zoom_out()
+                self.zoom_out(emit_signal=True)
+        elif modifiers == (QtCore.Qt.ControlModifier
+                           | QtCore.Qt.ShiftModifier):
+            # only modify the current view zoom ration
+            if mouse > 0:
+                self.zoom_in(emit_signal=False)
+            elif mouse < 0:
+                self.zoom_out(emit_signal=False)
         elif modifiers == QtCore.Qt.ShiftModifier:
-            QGraphicsView.wheelEvent(self, event)
+            if mouse > 0:
+                self.parent.dir_browse(-10)
+            elif mouse < 0:
+                self.parent.dir_browse(10)
         else:
             # Otherwise, show the next or previous image
             if mouse > 0:
@@ -156,14 +176,18 @@ class HVView(QGraphicsView):
             self.parent.selection_pos_label.setStyleSheet(
                 'QLabel {color : red;}')
 
-    def zoom_in(self):
-        self.zoom *= 1.05
+    def zoom_in(self, scale=1.05, emit_signal=False):
+        self.zoom *= scale
+        if emit_signal:
+            self.zoom_signal.emit(self.zoom)
         if self.show_info:
             self.parent.zoom_label.setText(f'Zoom: {self.zoom:.2f}')
         self.set_transform()
 
-    def zoom_out(self):
-        self.zoom /= 1.05
+    def zoom_out(self, scale=1.05, emit_signal=False):
+        self.zoom /= scale
+        if emit_signal:
+            self.zoom_signal.emit(self.zoom)
         if self.show_info:
             self.parent.zoom_label.setText(f'Zoom: {self.zoom:.2f}')
         self.set_transform()

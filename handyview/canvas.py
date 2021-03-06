@@ -1,8 +1,7 @@
 import os
 from PyQt5 import QtCore
 from PyQt5.QtGui import QColor, QImage, QPixmap
-from PyQt5.QtWidgets import (QApplication, QGridLayout, QLineEdit, QPushButton,
-                             QWidget)
+from PyQt5.QtWidgets import QApplication, QGridLayout, QSplitter, QWidget
 
 from handyview.view_scene import HVScene, HVView
 from handyview.widgets import ColorLabel, HVLable, show_msg
@@ -43,14 +42,6 @@ class Canvas(QWidget):
         # Basic info, TODO: for each view
         # ---------------------------------------
 
-        # name label showing image index and image path
-        self.name_label = HVLable('', self, 'green', 'Times', 15)
-        # goto edit and botton for indexing
-        self.goto_edit = QLineEdit()
-        self.goto_edit.setPlaceholderText('Index. Default: 1')
-        goto_btn = QPushButton('GO', self)
-        goto_btn.clicked.connect(self.goto_button_clicked)
-
         # ---------------------------------------
         # Dock window
         # ---------------------------------------
@@ -89,27 +80,34 @@ class Canvas(QWidget):
         main_layout = QGridLayout(self)
         # QGridLayout:
         # int row, int column, int rowSpan, int columnSpan
-        main_layout.addWidget(self.name_label, 0, 0, 1, 50)
-
-        name_grid = QGridLayout()
-        name_grid.addWidget(self.goto_edit, 0, 0, 1, 1)
-        name_grid.addWidget(goto_btn, 0, 1, 1, 1)
-        main_layout.addLayout(name_grid, 1, 0, 1, 10)
 
         if self.num_view == 1:
             main_layout.addWidget(self.qviews[0], 0, 0, -1, 50)
         elif self.num_view == 2:
-            main_layout.addWidget(self.qviews[0], 0, 0, -1, 30)
-            main_layout.addWidget(self.qviews[1], 0, 30, -1, 30)
+            splitter = QSplitter(QtCore.Qt.Horizontal)
+            splitter.addWidget(self.qviews[0])
+            splitter.addWidget(self.qviews[1])
+            main_layout.addWidget(splitter, 0, 0, -1, 50)
+            self.qviews[0].zoom_signal.connect(self.qviews[1].set_zoom)
+            self.qviews[1].zoom_signal.connect(self.qviews[0].set_zoom)
+
         elif self.num_view == 3:
-            main_layout.addWidget(self.qviews[0], 0, 0, -1, 30)
-            main_layout.addWidget(self.qviews[1], 0, 30, -1, 30)
-            main_layout.addWidget(self.qviews[2], 0, 60, -1, 30)
+            splitter = QSplitter(QtCore.Qt.Horizontal)
+            splitter.addWidget(self.qviews[0])
+            splitter.addWidget(self.qviews[1])
+            splitter.addWidget(self.qviews[2])
+            main_layout.addWidget(splitter, 1, 0, -1, 50)
         elif self.num_view == 4:
-            main_layout.addWidget(self.qviews[0], 0, 0, 25, 30)
-            main_layout.addWidget(self.qviews[1], 0, 30, 25, 30)
-            main_layout.addWidget(self.qviews[2], 25, 0, 25, 30)
-            main_layout.addWidget(self.qviews[3], 25, 30, 25, 30)
+            splitter = QSplitter(QtCore.Qt.Vertical)
+            splitter_1 = QSplitter(QtCore.Qt.Horizontal)
+            splitter_2 = QSplitter(QtCore.Qt.Horizontal)
+            splitter_1.addWidget(self.qviews[0])
+            splitter_1.addWidget(self.qviews[1])
+            splitter_2.addWidget(self.qviews[2])
+            splitter_2.addWidget(self.qviews[3])
+            splitter.addWidget(splitter_1)
+            splitter.addWidget(splitter_2)
+            main_layout.addWidget(splitter, 0, 0, -1, 50)
 
         # blank label for layout
         blank_label = HVLable('', self, 'black', 'Times', 12)
@@ -147,20 +145,22 @@ class Canvas(QWidget):
             else:
                 self.dir_browse(-1)
         elif event.key() == QtCore.Qt.Key_Up:
+            if modifiers == QtCore.Qt.ShiftModifier:
+                scale = 1.2
+            else:
+                scale = 1.05
             for qview in self.qviews:
-                qview.zoom_in()
+                qview.zoom_in(scale=scale)
         elif event.key() == QtCore.Qt.Key_Down:
+            if modifiers == QtCore.Qt.ShiftModifier:
+                scale = 1.2
+            else:
+                scale = 1.05
             for qview in self.qviews:
-                qview.zoom_out()
+                qview.zoom_out(scale=scale)
 
-    def goto_button_clicked(self):
-        goto_str = self.goto_edit.text()
-        if goto_str == '':
-            self.db.pidx = 0
-        elif goto_str.isdigit():
-            self.db.pidx = int(goto_str) - 1
-        else:
-            return
+    def goto_index(self, index):
+        self.db.pidx = index
         self.show_image()
 
     def add_cmp_folder(self, cmp_path):
@@ -215,6 +215,15 @@ class Canvas(QWidget):
                 # show image path in the statusbar
                 self.parent.set_statusbar(f'{img_path}')
 
+            basename = os.path.basename(img_path)
+            if interval_mode:
+                shown_idx = self.db.pidx + 1 + idx
+            else:
+                shown_idx = self.db.pidx + 1
+            self.qviews[idx].set_shown_text(f'[{shown_idx:d} / '
+                                            f'{self.db.get_path_len():d}] '
+                                            f'{basename}')
+            self.qviews[idx].viewport().update()
             qpixmap = QPixmap.fromImage(qimg)
 
             qscene.clear()
@@ -224,11 +233,6 @@ class Canvas(QWidget):
             qscene.setSceneRect(0, 0, width, height)
 
         # update information panel
-        basename = os.path.basename(img_path)
-        self.name_label.setText(f'[{self.db.pidx + 1:d} / '
-                                f'{self.db.get_path_len():d}] '
-                                f'{basename}')
-
         if self.num_view == 1:
             self.info_label.setText(
                 'Info: \n'

@@ -69,24 +69,37 @@ class MainWindow(QMainWindow):
         help_menu.addAction(actions.show_instruction_msg(self))
 
     def init_toolbar(self):
-        self.toolbar = QToolBar(self)
+        self.toolbar = QToolBar('ToolBar', self)
         self.toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        # open and history
         self.toolbar.addAction(actions.open(self))
+        self.toolbar.addAction(actions.history(self))
+        self.toolbar.addSeparator()
+        # refresh and index
         self.toolbar.addAction(actions.refresh(self))
+        self.toolbar.addAction(actions.goto_index(self))
+        self.toolbar.addSeparator()
+        # include and exclude names
         self.toolbar.addAction(actions.include_file_name(self))
         self.toolbar.addAction(actions.exclude_file_name(self))
+        self.toolbar.addSeparator()
+        # compare and clear compare
         self.toolbar.addAction(actions.compare(self))
-        self.toolbar.addAction(actions.history(self))
+        self.toolbar.addAction(actions.clear_compare(self))
+
         # canvas layout
+        self.toolbar.addSeparator()
         self.toolbar.addSeparator()
         self.toolbar.addAction(actions.switch_main_canvas(self))
         self.toolbar.addAction(actions.switch_compare_canvas(self))
         self.toolbar.addAction(actions.switch_preview_canvas(self))
-        # instructions
+
+        # help
         self.toolbar.addSeparator()
         self.toolbar.addSeparator()
         self.toolbar.addAction(actions.show_instruction_msg(self))
 
+        self.toolbar.setIconSize(QtCore.QSize(60, 60))
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolbar)
 
     def init_statusbar(self):
@@ -211,6 +224,18 @@ class MainWindow(QMainWindow):
             self.hvdb.init_path = key
             self.hvdb.get_init_path_list()
             self.canvas.show_image(init=True)
+
+    def goto_index(self):
+        index, ok = QInputDialog.getText(self, 'Go to index', 'Index:',
+                                         QLineEdit.Normal, 'Defaut: 1')
+        if ok:
+            if index == '':
+                index = 0
+            elif index.isdigit():
+                index = int(index) - 1
+            else:
+                return
+            self.canvas.goto_index(index)
 
     def refresh_img_list(self):
         # should be used in Main Cavans
