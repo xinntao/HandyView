@@ -86,6 +86,7 @@ class Canvas(QWidget):
             splitter.addWidget(self.qviews[0])
             splitter.addWidget(self.qviews[1])
             main_layout.addWidget(splitter, 0, 0, -1, 50)
+            # link zoom operation
             self.qviews[0].zoom_signal.connect(self.qviews[1].set_zoom)
             self.qviews[1].zoom_signal.connect(self.qviews[0].set_zoom)
 
@@ -95,6 +96,12 @@ class Canvas(QWidget):
             splitter.addWidget(self.qviews[1])
             splitter.addWidget(self.qviews[2])
             main_layout.addWidget(splitter, 1, 0, -1, 50)
+            # link zoom operation
+            for i in range(self.num_view):
+                for j in range(self.num_view):
+                    if i != j:
+                        self.qviews[i].zoom_signal.connect(
+                            self.qviews[j].set_zoom)
         elif self.num_view == 4:
             splitter = QSplitter(QtCore.Qt.Vertical)
             splitter_1 = QSplitter(QtCore.Qt.Horizontal)
@@ -106,6 +113,12 @@ class Canvas(QWidget):
             splitter.addWidget(splitter_1)
             splitter.addWidget(splitter_2)
             main_layout.addWidget(splitter, 0, 0, -1, 50)
+            # link zoom operation
+            for i in range(self.num_view):
+                for j in range(self.num_view):
+                    if i != j:
+                        self.qviews[i].zoom_signal.connect(
+                            self.qviews[j].set_zoom)
 
         # blank label for layout
         blank_label = HVLable('', self, 'black', 'Times', 12)
