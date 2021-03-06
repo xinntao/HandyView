@@ -45,10 +45,13 @@ class MainWindow(QMainWindow):
         # File
         file_menu = menubar.addMenu('&File')
         file_menu.addAction(actions.open(self))
+        file_menu.addAction(actions.history(self))
+        file_menu.addSeparator()
         file_menu.addAction(actions.refresh(self))
+        file_menu.addAction(actions.goto_index(self))
+        file_menu.addSeparator()
         file_menu.addAction(actions.include_file_name(self))
         file_menu.addAction(actions.exclude_file_name(self))
-        file_menu.addAction(actions.history(self))
 
         # Edit
         edit_menu = menubar.addMenu('&Edit')  # noqa: F841
@@ -61,8 +64,11 @@ class MainWindow(QMainWindow):
         compare_menu.addAction(actions.compare(self))
         compare_menu.addAction(actions.clear_compare(self))
 
-        # View
-        self.view_menu = menubar.addMenu('&View')
+        # Layouts
+        layout_menu = menubar.addMenu('&Layout')
+        layout_menu.addAction(actions.switch_main_canvas(self))
+        layout_menu.addAction(actions.switch_compare_canvas(self))
+        layout_menu.addAction(actions.switch_preview_canvas(self))
 
         # Help
         help_menu = menubar.addMenu('&Help')
@@ -71,6 +77,7 @@ class MainWindow(QMainWindow):
     def init_toolbar(self):
         self.toolbar = QToolBar('ToolBar', self)
         self.toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+
         # open and history
         self.toolbar.addAction(actions.open(self))
         self.toolbar.addAction(actions.history(self))

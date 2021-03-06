@@ -33,7 +33,9 @@ def new_action(parent,
     return action
 
 
-# Actions for Menu bar and Tool bar
+# ---------------------------------------
+# open and history
+# ---------------------------------------
 
 
 def open(parent):
@@ -46,8 +48,29 @@ def open(parent):
         slot=parent.open_file_dialog)
 
 
+def history(parent):
+    """Show open history."""
+    return new_action(
+        parent, 'History', icon_name='history.png', slot=parent.open_history)
+
+
+# ---------------------------------------
+# refresh and index
+# ---------------------------------------
+
+
+def refresh(parent):
+    """Refresh image lists."""
+    return new_action(
+        parent,
+        'Refresh',
+        icon_name='refresh',
+        shortcut='F5',
+        slot=parent.refresh_img_list)
+
+
 def goto_index(parent):
-    """Jump to the desired index."""
+    """Jump to the input index of images."""
     return new_action(
         parent,
         'Index',
@@ -56,14 +79,32 @@ def goto_index(parent):
         slot=parent.goto_index)
 
 
-def refresh(parent):
-    """Refresh the image list."""
+# ---------------------------------------
+# include and exclude names
+# ---------------------------------------
+
+
+def include_file_name(parent):
+    """Include file name."""
     return new_action(
         parent,
-        'Refresh',
-        icon_name='refresh',
-        shortcut='F5',
-        slot=parent.refresh_img_list)
+        'Include',
+        icon_name='include.png',
+        slot=parent.include_file_name)
+
+
+def exclude_file_name(parent):
+    """Exclude file name."""
+    return new_action(
+        parent,
+        'Exclude',
+        icon_name='exclude.png',
+        slot=parent.exclude_file_name)
+
+
+# ---------------------------------------
+# compare and clear compare
+# ---------------------------------------
 
 
 def compare(parent):
@@ -85,40 +126,8 @@ def clear_compare(parent):
         slot=parent.clear_compare)
 
 
-def history(parent):
-    """History."""
-    return new_action(
-        parent, 'History', icon_name='history.png', slot=parent.open_history)
-
-
-def exclude_file_name(parent):
-    """Exclude file name."""
-    return new_action(
-        parent,
-        'Exclude',
-        icon_name='exclude.png',
-        slot=parent.exclude_file_name)
-
-
-def include_file_name(parent):
-    """Include file name."""
-    return new_action(
-        parent,
-        'Include',
-        icon_name='include.png',
-        slot=parent.include_file_name)
-
-
-def show_instruction_msg(parent):
-    return new_action(
-        parent,
-        'Help',
-        icon_name='instructions.png',
-        slot=parent.show_instruction_msg)
-
-
 # ---------------------------------------
-# Canvas
+# canvas layouts
 # ---------------------------------------
 
 
@@ -144,3 +153,13 @@ def switch_preview_canvas(parent):
         'Preview',
         icon_name='preview_canvas.png',
         slot=parent.switch_preview_canvas)
+
+
+# ---------------------------------------
+# help
+# ---------------------------------------
+
+
+def show_instruction_msg(parent):
+    return new_action(
+        parent, 'Help', icon_name='help.png', slot=parent.show_instruction_msg)
