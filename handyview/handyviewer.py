@@ -197,7 +197,7 @@ class MainWindow(QMainWindow):
 
     def goto_index(self):
         index, ok = QInputDialog.getText(self, 'Go to index', 'Index:',
-                                         QLineEdit.Normal, 'Defaut: 1')
+                                         QLineEdit.Normal, '1')
         if ok:
             if index == '':
                 index = 0
