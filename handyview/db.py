@@ -1,5 +1,5 @@
 import glob
-# import itertools
+import itertools
 import os
 from PIL import Image
 
@@ -12,8 +12,6 @@ class HVDB():
 
     fidx: folder list
     pidx: path list
-
-
     """
 
     def __init__(self, init_path):
@@ -31,6 +29,7 @@ class HVDB():
         # list of image path list
         # the first list is the main list
         self.path_list = [[]]
+        self.file_size_list = [[]]
 
         self.get_init_path_list()
 
@@ -38,17 +37,14 @@ class HVDB():
         """get path list when first launch (double click or from cmd)"""
         # if init_path is a folder, try to get the first image
         if os.path.isdir(self.init_path):
-            # self.init_path = sorted(
-            #     list(
-            #         itertools.chain(
-            #             *(glob.glob(os.path.join(self.init_path, f'*.{ext}'))
-            #               for ext in FORMATS))))
             self.init_path = sorted(
-                glob.glob(os.path.join(self.init_path, '*')))[0]
-        # TODO: update
+                list(
+                    itertools.chain(
+                        *(glob.glob(os.path.join(self.init_path, f'*{ext}'))
+                          for ext in FORMATS))))[0]
 
         # fix the path pattern passed from windows system when double click
-        self.init_path = self.init_path.replace('\\', '/')  # TODO: remove?
+        self.init_path = self.init_path.replace('\\', '/')
 
         if self.init_path.endswith(FORMATS):
             folder = os.path.dirname(self.init_path)
@@ -56,6 +52,7 @@ class HVDB():
             # get path list
             self.path_list[0] = get_img_list(folder, self._include_names,
                                              self._exclude_names)
+            self.file_size_list[0] = [None] * len(self.path_list[0])
             # get current pidx
             try:
                 self._pidx = self.path_list[0].index(self.init_path)
@@ -109,8 +106,9 @@ class HVDB():
     def add_cmp_folder(self, cmp_path):
         folder = os.path.dirname(cmp_path)
         self.folder_list.append(folder)
-        self.path_list.append(
-            get_img_list(folder, self._include_names, self._exclude_names))
+        paths = get_img_list(folder, self._include_names, self._exclude_names)
+        self.path_list.append(paths)
+        self.file_size_list.append([None] * len(paths))
         # all the path list should have the same length
         self.is_same_len = True
         img_len_list = [len(self.path_list[0])]
@@ -122,8 +120,11 @@ class HVDB():
 
     def update_path_list(self):
         for idx, folder in enumerate(self.folder_list):
-            self.path_list[idx] = get_img_list(folder, self._include_names,
-                                               self._exclude_names)
+            paths = get_img_list(folder, self._include_names,
+                                 self._exclude_names)
+            self.path_list[idx] = paths
+            self.file_size_list[idx] = [None] * len(paths)
+
         # all the path list should have the same length
         self.is_same_len = True
         img_len_list = [len(self.path_list[0])]
@@ -157,10 +158,10 @@ class HVDB():
                 pidx = self.get_path_len() - 1
 
             path = self.path_list[fidx][pidx]
-        return path
+        return path, fidx, pidx
 
     def get_shape(self, path=None, fidx=None, pidx=None):
-        path = self.get_path(path, fidx, pidx)
+        path = self.get_path(path, fidx, pidx)[0]
         try:
             with Image.open(path) as lazy_img:
                 width, height = lazy_img.size
@@ -169,7 +170,7 @@ class HVDB():
         return width, height
 
     def get_color_type(self, path=None, fidx=None, pidx=None):
-        path = self.get_path(path, fidx, pidx)
+        path = self.get_path(path, fidx, pidx)[0]
         try:
             with Image.open(path) as lazy_img:
                 color_type = lazy_img.mode
@@ -178,9 +179,11 @@ class HVDB():
         return color_type
 
     def get_file_size(self, path=None, fidx=None, pidx=None):
-        # TODO: use a list for cache
-        path = self.get_path(path, fidx, pidx)
-        file_size = sizeof_fmt(os.path.getsize(path))
+        path, fidx, pidx = self.get_path(path, fidx, pidx)
+        file_size = self.file_size_list[fidx][pidx]
+        if file_size is None:
+            file_size = sizeof_fmt(os.path.getsize(path))
+            self.file_size_list[fidx][pidx] = file_size
         return file_size
 
     def get_folder_len(self):

@@ -15,9 +15,6 @@ class HVView(QGraphicsView):
     Ref:
     Selection Rect: https://stackoverflow.com/questions/47102224/pyqt-draw-selection-rectangle-over-picture  # noqa: E501
     """
-
-    # used for sending QRect position. Now we skip it.
-    # rectChanged = QtCore.pyqtSignal(QRect)
     zoom_signal = QtCore.pyqtSignal(float)
 
     def __init__(self, scene, parent=None, show_info=True):
@@ -65,7 +62,6 @@ class HVView(QGraphicsView):
             self.rubber_band_origin = event.pos()
             self.rubber_band.setGeometry(
                 QRect(self.rubber_band_origin, QSize()))
-            # self.rectChanged.emit(self.rubber_band.geometry())
             self.rubber_band.show()
             self.rubber_band_changable = True
 
@@ -104,7 +100,6 @@ class HVView(QGraphicsView):
                     self.rubber_band.setGeometry(
                         QRect(self.rubber_band_origin,
                               event.pos()).normalized())
-                    # self.rectChanged.emit(self.rubber_band.geometry())
         else:
             QGraphicsView.mouseMoveEvent(self, event)
 

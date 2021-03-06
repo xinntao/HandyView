@@ -39,11 +39,7 @@ class Canvas(QWidget):
                 HVView(self.qscenes[i], self, show_info=show_info))
 
         # ---------------------------------------
-        # Basic info, TODO: for each view
-        # ---------------------------------------
-
-        # ---------------------------------------
-        # Dock window
+        # Dock window widgets
         # ---------------------------------------
         if self.num_view == 1:
             # zoom label showing zoom ratio
@@ -78,7 +74,6 @@ class Canvas(QWidget):
         main_layout = QGridLayout(self)
         # QGridLayout:
         # int row, int column, int rowSpan, int columnSpan
-
         if self.num_view == 1:
             main_layout.addWidget(self.qviews[0], 0, 0, -1, 50)
         elif self.num_view == 2:
@@ -86,22 +81,12 @@ class Canvas(QWidget):
             splitter.addWidget(self.qviews[0])
             splitter.addWidget(self.qviews[1])
             main_layout.addWidget(splitter, 0, 0, -1, 50)
-            # link zoom operation
-            self.qviews[0].zoom_signal.connect(self.qviews[1].set_zoom)
-            self.qviews[1].zoom_signal.connect(self.qviews[0].set_zoom)
-
         elif self.num_view == 3:
             splitter = QSplitter(QtCore.Qt.Horizontal)
             splitter.addWidget(self.qviews[0])
             splitter.addWidget(self.qviews[1])
             splitter.addWidget(self.qviews[2])
             main_layout.addWidget(splitter, 1, 0, -1, 50)
-            # link zoom operation
-            for i in range(self.num_view):
-                for j in range(self.num_view):
-                    if i != j:
-                        self.qviews[i].zoom_signal.connect(
-                            self.qviews[j].set_zoom)
         elif self.num_view == 4:
             splitter = QSplitter(QtCore.Qt.Vertical)
             splitter_1 = QSplitter(QtCore.Qt.Horizontal)
@@ -113,12 +98,12 @@ class Canvas(QWidget):
             splitter.addWidget(splitter_1)
             splitter.addWidget(splitter_2)
             main_layout.addWidget(splitter, 0, 0, -1, 50)
-            # link zoom operation
-            for i in range(self.num_view):
-                for j in range(self.num_view):
-                    if i != j:
-                        self.qviews[i].zoom_signal.connect(
-                            self.qviews[j].set_zoom)
+
+        # link zoom operation
+        for i in range(self.num_view):
+            for j in range(self.num_view):
+                if i != j:
+                    self.qviews[i].zoom_signal.connect(self.qviews[j].set_zoom)
 
         # blank label for layout
         blank_label = HVLable('', self, 'black', 'Times', 12)
@@ -135,6 +120,7 @@ class Canvas(QWidget):
             self.compare_folders(1)
         elif event.key() == QtCore.Qt.Key_V:
             self.compare_folders(-1)
+
         elif event.key() == QtCore.Qt.Key_Space:
             if modifiers == QtCore.Qt.ShiftModifier:
                 self.dir_browse(10)
@@ -155,6 +141,7 @@ class Canvas(QWidget):
                 self.dir_browse(-10)
             else:
                 self.dir_browse(-1)
+
         elif event.key() == QtCore.Qt.Key_Up:
             if modifiers == QtCore.Qt.ShiftModifier:
                 scale = 1.2
@@ -176,7 +163,6 @@ class Canvas(QWidget):
 
     def add_cmp_folder(self, cmp_path):
         is_same_len, img_len_list = self.db.add_cmp_folder(cmp_path)
-
         show_str = 'Number for each folder:\n\t' + '\n\t'.join(
             map(str, img_len_list))
         self.comparison_label.setText(show_str)
@@ -212,20 +198,21 @@ class Canvas(QWidget):
         for idx, qscene in enumerate(self.qscenes):
             if interval_mode:
                 pidx = self.db.pidx + idx
-                img_path = self.db.get_path(pidx=pidx)
+                img_path = self.db.get_path(pidx=pidx)[0]
                 width, height = self.db.get_shape(pidx=pidx)
                 file_size = self.db.get_file_size(pidx=pidx)
                 color_type = self.db.get_color_type(pidx=pidx)
             else:
                 fidx = self.db.fidx + idx
-                img_path = self.db.get_path(fidx=fidx)
+                img_path = self.db.get_path(fidx=fidx)[0]
                 width, height = self.db.get_shape(fidx=fidx)
                 file_size = self.db.get_file_size(fidx=fidx)
                 color_type = self.db.get_color_type(fidx=fidx)
+
             qimg = QImage(img_path)
             if idx == 0:
                 # for HVView, HVScene show_mouse_color.
-                # only work on first qimg (main canvas mode)
+                # only work on the first qimg (main canvas mode)
                 self.qimg = qimg
                 # show image path in the statusbar
                 self.parent.set_statusbar(f'{img_path}')
@@ -277,7 +264,7 @@ class Canvas(QWidget):
 
         if init:
             if width < 500:
-                self.qviews[0].set_zoom(500 // height)
+                self.qviews[0].set_zoom(500 // width)
             else:
                 self.qviews[0].set_zoom(1)
         for qview in self.qviews:
