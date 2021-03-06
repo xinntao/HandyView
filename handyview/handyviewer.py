@@ -24,8 +24,7 @@ class MainWindow(QMainWindow):
         except IndexError:
             # show the icon image
             init_path = os.path.join(ROOT_DIR, 'icon.png')
-        # initialize HVDB (handyview database), which stores the path
-        # information
+        # initialize HVDB (handyview database), which stores the path info
         self.hvdb = HVDB(init_path)
 
         self.canvas_type = 'main'
@@ -124,7 +123,6 @@ class MainWindow(QMainWindow):
         self.dock_info = QDockWidget('Information Panel', self)
         self.dock_info.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea
                                        | QtCore.Qt.RightDockWidgetArea)
-        # not show close button
         self.dock_info.setFeatures(QDockWidget.DockWidgetMovable
                                    | QDockWidget.DockWidgetFloatable
                                    | QDockWidget.DockWidgetClosable)
@@ -143,18 +141,146 @@ class MainWindow(QMainWindow):
         layout.addWidget(HLine(), 5, 0, 1, 3)
         layout.addWidget(self.canvas.include_names_label, 6, 0, 1, 3)
         layout.addWidget(self.canvas.exclude_names_label, 7, 0, 1, 3)
-        layout.addWidget(self.canvas.comparison_label, 8, 0, 1, 3)
+        layout.addWidget(HLine(), 8, 0, 1, 3)
+        layout.addWidget(self.canvas.comparison_label, 9, 0, 1, 3)
+        # update comparison info (for a second open)
+        _, img_len_list = self.hvdb.update_path_list()
+        show_str = 'Comparison:\n # for each folder:\n\t' + '\n\t'.join(
+            map(str, img_len_list))
+        if len(img_len_list) > 1:
+            self.canvas.comparison_label.setText(show_str)
 
         # for compact space
         blank_qlabel = QLabel()
-        layout.addWidget(blank_qlabel, 7, 0, 20, 3)
+        layout.addWidget(blank_qlabel, 10, 0, 20, 3)
         dockedWidget.setLayout(layout)
 
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.dock_info)
 
     # ---------------------------------------
-    # Canvas Slots
+    # slots: open and history
     # ---------------------------------------
+    def open_file_dialog(self):
+        try:
+            with open(os.path.join(ROOT_DIR, 'history.txt'), 'r') as f:
+                history = f.readlines()[0]
+                history = history.strip()
+        except Exception:
+            history = '.'
+        key, ok = QFileDialog.getOpenFileName(self, 'Select an image', history)
+        if ok:
+            self.hvdb.init_path = key
+            self.hvdb.get_init_path_list()
+            self.canvas.show_image(init=True)
+
+    def open_history(self):
+        with open(os.path.join(ROOT_DIR, 'history.txt'), 'r') as f:
+            lines = f.readlines()
+            lines = [line.strip() for line in lines]
+        key, ok = QInputDialog().getItem(self, 'Open File History', 'History:',
+                                         lines, 0, True)
+        if ok:
+            self.hvdb.init_path = key
+            self.hvdb.get_init_path_list()
+            self.canvas.show_image(init=True)
+
+    # ---------------------------------------
+    # slots: refresh and index
+    # ---------------------------------------
+    def refresh_img_list(self):
+        # should be used in Main Cavans
+        if self.canvas_type != 'main':
+            self.switch_main_canvas()
+
+        self.canvas.update_path_list()
+        self.canvas.show_image(init=False)
+
+    def goto_index(self):
+        index, ok = QInputDialog.getText(self, 'Go to index', 'Index:',
+                                         QLineEdit.Normal, 'Defaut: 1')
+        if ok:
+            if index == '':
+                index = 0
+            elif index.isdigit():
+                index = int(index) - 1
+            else:
+                return
+            self.canvas.goto_index(index)
+
+    # ---------------------------------------
+    # slots: include and exclude names
+    # ---------------------------------------
+    def include_file_name(self):
+        # show current include names as the default values
+        current_include_names = self.hvdb.include_names
+        if current_include_names is None:
+            current_include_names = ''
+        else:
+            current_include_names = ', '.join(current_include_names)
+
+        include_names, ok = QInputDialog.getText(self, 'Include file name',
+                                                 'Key word (seprate by ,):',
+                                                 QLineEdit.Normal,
+                                                 current_include_names)
+        if ok:
+            if include_names != '':
+                self.hvdb.include_names = [
+                    v.strip() for v in include_names.split(',')
+                ]
+                self.hvdb.exclude_names = None
+            else:
+                self.hvdb.include_names = None
+            self.refresh_img_list()
+
+    def exclude_file_name(self):
+        # show current exclude names as the default values
+        current_exclude_names = self.hvdb.exclude_names
+        if current_exclude_names is None:
+            current_exclude_names = ''
+        else:
+            current_exclude_names = ', '.join(current_exclude_names)
+
+        exclude_names, ok = QInputDialog.getText(self, 'Exclude file name',
+                                                 'Key word (seprate by ,):',
+                                                 QLineEdit.Normal,
+                                                 current_exclude_names)
+        if ok:
+            if exclude_names != '':
+                self.hvdb.exclude_names = [
+                    v.strip() for v in exclude_names.split(',')
+                ]
+                self.hvdb.include_names = None
+            else:
+                self.hvdb.exclude_names = None
+            self.refresh_img_list()
+
+    # ---------------------------------------
+    # slots: compare and clear compare
+    # ---------------------------------------
+    def compare_folder(self):
+        # Compare folder should be set in Main Cavans
+        if self.canvas_type != 'main':
+            self.switch_main_canvas()
+
+        key, ok = QFileDialog.getOpenFileName(
+            self, 'Select an image', os.path.join(self.hvdb.get_folder(),
+                                                  '../'))
+        if ok:
+            self.canvas.add_cmp_folder(key)
+
+    def clear_compare(self):
+        # Compare folder should be set in Main Cavans
+        if self.canvas_type != 'main':
+            self.switch_main_canvas()
+
+        self.hvdb.folder_list = [self.hvdb.folder_list[0]]
+        self.hvdb.path_list = [self.hvdb.path_list[0]]
+        self.hvdb.fidx = 0
+
+    # ---------------------------------------
+    # slots: canvas layouts
+    # ---------------------------------------
+
     def switch_main_canvas(self):
         if self.canvas_type != 'main':
             self.hvdb.interval = 0
@@ -214,143 +340,9 @@ class MainWindow(QMainWindow):
                   'Contributions are welcome!\n'
                   '尚未实现, 欢迎贡献!'))
 
-    # --------
-    # Slots
-    # --------
-
-    def open_file_dialog(self):
-        try:
-            with open(os.path.join(ROOT_DIR, 'history.txt'), 'r') as f:
-                history = f.readlines()[0]
-                history = history.strip()
-        except Exception:
-            history = '.'
-        key, ok = QFileDialog.getOpenFileName(self, 'Select an image', history)
-        if ok:
-            self.hvdb.init_path = key
-            self.hvdb.get_init_path_list()
-            self.canvas.show_image(init=True)
-
-    def goto_index(self):
-        index, ok = QInputDialog.getText(self, 'Go to index', 'Index:',
-                                         QLineEdit.Normal, 'Defaut: 1')
-        if ok:
-            if index == '':
-                index = 0
-            elif index.isdigit():
-                index = int(index) - 1
-            else:
-                return
-            self.canvas.goto_index(index)
-
-    def refresh_img_list(self):
-        # should be used in Main Cavans
-        if self.canvas_type != 'main':
-            self.switch_main_canvas()
-
-        self.canvas.update_path_list()
-        self.canvas.show_image(init=False)
-
-    def compare_folder(self):
-        # Compare folder should be set in Main Cavans
-        if self.canvas_type != 'main':
-            self.switch_main_canvas()
-
-        key, ok = QFileDialog.getOpenFileName(
-            self, 'Select an image', os.path.join(self.hvdb.get_folder(),
-                                                  '../'))
-        if ok:
-            self.canvas.add_cmp_folder(key)
-
-    def clear_compare(self):
-        # Compare folder should be set in Main Cavans
-        if self.canvas_type != 'main':
-            self.switch_main_canvas()
-
-        self.hvdb.folder_list = [self.hvdb.folder_list[0]]
-        self.hvdb.path_list = [self.hvdb.path_list[0]]
-        self.hvdb.fidx = 0
-
-    def open_history(self):
-        # should be used in Main Cavans
-        if self.canvas_type != 'main':
-            self.switch_main_canvas()
-
-        with open(os.path.join(ROOT_DIR, 'history.txt'), 'r') as f:
-            lines = f.readlines()
-            lines = [line.strip() for line in lines]
-        key, ok = QInputDialog().getItem(self, 'Open File History', 'History:',
-                                         lines, 0, True)
-        if ok:
-            self.hvdb.init_path = key
-            self.hvdb.get_init_path_list()
-            self.canvas.show_image(init=True)
-
-    def exclude_file_name(self):
-        # show current exclude names as the default values
-        current_exclude_names = self.hvdb.exclude_names
-        if current_exclude_names is None:
-            current_exclude_names = ''
-        else:
-            current_exclude_names = ', '.join(current_exclude_names)
-
-        exclude_names, ok = QInputDialog.getText(self, 'Exclude file name',
-                                                 'Key word (seperate by ,):',
-                                                 QLineEdit.Normal,
-                                                 current_exclude_names)
-        if ok:
-            if exclude_names != '':
-                self.hvdb.exclude_names = [
-                    v.strip() for v in exclude_names.split(',')
-                ]
-                self.hvdb.include_names = None
-            else:
-                self.hvdb.exclude_names = None
-            self.refresh_img_list()
-
-        # show exclude names in the information panel
-        if isinstance(self.hvdb.exclude_names, list):
-            show_str = 'Exclude:\n\t' + '\n\t'.join(self.hvdb.exclude_names)
-            self.hvdb.exclude_names_label.setStyleSheet(
-                'QLabel {color : red;}')
-        else:
-            show_str = 'Exclude: None'
-            self.canvas.exclude_names_label.setStyleSheet(
-                'QLabel {color : black;}')
-        self.canvas.exclude_names_label.setText(show_str)
-
-    def include_file_name(self):
-        # show current include names as the default values
-        current_include_names = self.hvdb.include_names
-        if current_include_names is None:
-            current_include_names = ''
-        else:
-            current_include_names = ', '.join(current_include_names)
-
-        include_names, ok = QInputDialog.getText(self, 'Include file name',
-                                                 'Key word (seperate by ,):',
-                                                 QLineEdit.Normal,
-                                                 current_include_names)
-        if ok:
-            if include_names != '':
-                self.hvdb.include_names = [
-                    v.strip() for v in include_names.split(',')
-                ]
-                self.hvdb.exclude_names = None
-            else:
-                self.hvdb.include_names = None
-            self.refresh_img_list()
-
-        # show include names in the information panel
-        if isinstance(self.hvdb.include_names, list):
-            show_str = 'Include:\n\t' + '\n\t'.join(self.hvdb.include_names)
-            self.canvas.include_names_label.setStyleSheet(
-                'QLabel {color : blue;}')
-        else:
-            show_str = 'Include: None'
-            self.canvas.include_names_label.setStyleSheet(
-                'QLabel {color : black;}')
-        self.canvas.include_names_label.setText(show_str)
+    # ---------------------------------------
+    # slots: help
+    # ---------------------------------------
 
     def show_instruction_msg(self):
         instruct_text = r'''
@@ -395,7 +387,7 @@ if __name__ == '__main__':
     print('Welcome to HandyView.')
 
     app = QApplication(sys.argv)
-
+    app.setWindowIcon(QIcon('icon.ico'))
     screen = app.primaryScreen()
     size = screen.size()
     # rect = screen.availableGeometry()

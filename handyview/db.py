@@ -224,7 +224,7 @@ class HVDB():
     @include_names.setter
     def include_names(self, value):
         self._include_names = value
-        # TODO: out of boundary check
+        # TODO: move check from handyviewer.py here
 
     @property
     def exclude_names(self):
@@ -233,7 +233,7 @@ class HVDB():
     @exclude_names.setter
     def exclude_names(self, value):
         self._exclude_names = value
-        # TODO: out of boundary check
+        # TODO: move check from handyviewer.py here
 
     @property
     def interval(self):

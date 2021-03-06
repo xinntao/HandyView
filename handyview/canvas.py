@@ -8,13 +8,13 @@ from handyview.widgets import ColorLabel, HVLable, show_msg
 
 
 class Canvas(QWidget):
-    """Main canvas showing a single view."""
+    """Main canvas"""
 
     def __init__(self, parent, db, num_view=1):
         super(Canvas, self).__init__()
         self.parent = parent
         self.db = db  # database
-        self.num_view = num_view
+        self.num_view = num_view  # number of views in layouts
 
         # initialize widgets and layout
         self.init_widgets_layout()
@@ -188,7 +188,7 @@ class Canvas(QWidget):
     def update_path_list(self):
         is_same_len, img_len_list = self.db.update_path_list()
         if len(img_len_list) > 1:
-            show_str = 'Number for each folder:\n\t' + '\n\t'.join(
+            show_str = 'Comparison:\n # for each folder:\n\t' + '\n\t'.join(
                 map(str, img_len_list))
             self.comparison_label.setText(show_str)
             if is_same_len is False:
@@ -251,6 +251,29 @@ class Canvas(QWidget):
             qscene.set_width_height(width, height)
             # put image always in the center of a QGraphicsView
             qscene.setSceneRect(0, 0, width, height)
+
+        # set include and exclude name info
+        if self.num_view == 1:
+            # show include names in the information panel
+            if isinstance(self.db.include_names, list):
+                show_str = 'Include:\n\t' + '\n\t'.join(self.db.include_names)
+                self.include_names_label.setStyleSheet(
+                    'QLabel {color : blue;}')
+            else:
+                show_str = 'Include: None'
+                self.include_names_label.setStyleSheet(
+                    'QLabel {color : black;}')
+            self.include_names_label.setText(show_str)
+            # show exclude names in the information panel
+            if isinstance(self.db.exclude_names, list):
+                show_str = 'Exclude:\n\t' + '\n\t'.join(self.db.exclude_names)
+                self.db.exclude_names_label.setStyleSheet(
+                    'QLabel {color : red;}')
+            else:
+                show_str = 'Exclude: None'
+                self.exclude_names_label.setStyleSheet(
+                    'QLabel {color : black;}')
+            self.exclude_names_label.setText(show_str)
 
         if init:
             if width < 500:
