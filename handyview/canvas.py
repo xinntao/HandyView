@@ -46,8 +46,6 @@ class Canvas(QWidget):
         # Dock window
         # ---------------------------------------
         if self.num_view == 1:
-            # info label showing image shape, size and color type
-            self.info_label = HVLable('', self, 'blue', 'Times', 12)
             # zoom label showing zoom ratio
             self.zoom_label = HVLable('1.00', self, 'green', 'Times', 12)
             # mouse position and mouse rgb value
@@ -203,10 +201,14 @@ class Canvas(QWidget):
                 pidx = self.db.pidx + idx
                 img_path = self.db.get_path(pidx=pidx)
                 width, height = self.db.get_shape(pidx=pidx)
+                file_size = self.db.get_file_size(pidx=pidx)
+                color_type = self.db.get_color_type(pidx=pidx)
             else:
                 fidx = self.db.fidx + idx
                 img_path = self.db.get_path(fidx=fidx)
                 width, height = self.db.get_shape(fidx=fidx)
+                file_size = self.db.get_file_size(fidx=fidx)
+                color_type = self.db.get_color_type(fidx=fidx)
             qimg = QImage(img_path)
             if idx == 0:
                 # for HVView, HVScene show_mouse_color.
@@ -215,15 +217,20 @@ class Canvas(QWidget):
                 # show image path in the statusbar
                 self.parent.set_statusbar(f'{img_path}')
 
+            # shown text
             basename = os.path.basename(img_path)
             if interval_mode:
                 shown_idx = self.db.pidx + 1 + idx
             else:
                 shown_idx = self.db.pidx + 1
-            self.qviews[idx].set_shown_text(f'[{shown_idx:d} / '
-                                            f'{self.db.get_path_len():d}] '
-                                            f'{basename}')
-            self.qviews[idx].viewport().update()
+            # TODO: add zoom ratio
+            shown_text = [
+                f'[{shown_idx:d} / {self.db.get_path_len():d}] {basename}',
+                f'{height:d} x {width:d}, {file_size}', f'{color_type}'
+            ]
+
+            self.qviews[idx].set_shown_text(shown_text)
+            # self.qviews[idx].viewport().update()
             qpixmap = QPixmap.fromImage(qimg)
 
             qscene.clear()
@@ -231,14 +238,6 @@ class Canvas(QWidget):
             qscene.set_width_height(width, height)
             # put image always in the center of a QGraphicsView
             qscene.setSceneRect(0, 0, width, height)
-
-        # update information panel
-        if self.num_view == 1:
-            self.info_label.setText(
-                'Info: \n'
-                f' Height: {height:d}\n Width:  {width:d}\n'
-                f' Size: {self.db.get_file_size()}\n'
-                f' Type: {self.db.get_color_type()}')
 
         if init:
             if width < 500:

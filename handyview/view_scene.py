@@ -4,7 +4,7 @@ for our HandyView.
 """
 from PyQt5 import QtCore
 from PyQt5.QtCore import QPoint, QRect, QSize
-from PyQt5.QtGui import QColor, QFont, QTransform
+from PyQt5.QtGui import QColor, QFont, QFontMetrics, QTransform
 from PyQt5.QtWidgets import (QApplication, QGraphicsScene, QGraphicsView,
                              QRubberBand)
 
@@ -32,6 +32,10 @@ class HVView(QGraphicsView):
         self.zoom = 1
         self.rotate = 0
 
+        self.font = QFont('times', 15)
+        font_metrics = QFontMetrics(self.font)
+        self.text_height = font_metrics.height()
+
         # For selection rect (using rubber band)
         self.rubber_band = QRubberBand(QRubberBand.Rectangle, self)
         # the origin position of rubber band
@@ -39,15 +43,20 @@ class HVView(QGraphicsView):
         # indicate whether rubber band could be changed under mouseMoveEvent
         self.rubber_band_changable = False
         self.rect_top_left = (0, 0)
+        self.setViewportUpdateMode(0)
 
     def set_shown_text(self, text):
+        # text is a list, each item will be shown in a line
         self.shown_text = text
 
     def drawForeground(self, painter, rect):
         painter.resetTransform()  # not scale shown text
-        painter.setFont(QFont('times', 15))
+        painter.setFont(self.font)
         painter.setPen(QColor(0, 128, 0))
-        painter.drawText(2, 40, self.shown_text)
+        margin = 2
+        for idx, text in enumerate(self.shown_text):
+            painter.drawText(margin, margin + self.text_height * (idx + 1),
+                             text)
 
     def mousePressEvent(self, event):
         modifiers = QApplication.keyboardModifiers()
