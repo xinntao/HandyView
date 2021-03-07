@@ -14,15 +14,41 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
 ## :sparkles: Features
 
 - Switch among images **with fixed zoom ration**, which is useful when comparing image details. (Unfortunately, I cannot find such a image viewer and this is the initial motivation to develop HandyView).
-- Show basic image information, for example, image path, shape, size, color type, zoom ration, etc.
+- Various comparison modes.
+- Show basic image information, *e.g.*, image path, shape, size, color type, zoom ration, etc.
 - Show the position and color in the current mouse cursor.
+- Draw rectangles on images and show the start and end position.
 
 ## :eyes: Screenshot
 
-[To be updated]
+- Current screenshot
 
 <p align="center">
   <img src="assets/screenshot.png">
+</p>
+
+- Switch among images with **fixed zoom ratio**
+
+<p align="center">
+  <img src="assets/hv_switch.gif">
+</p>
+
+- Compare images in two-column or three-column modes
+
+<p align="center">
+  <img src="assets/hv_cmp.gif">
+</p>
+
+- Show the position and color of the current mouse cursor.
+
+<p align="center">
+  <img src="assets/hv_mousemove.gif">
+</p>
+
+- Draw rectangles and show the start and end position.
+
+<p align="center">
+  <img src="assets/hv_rect.gif">
 </p>
 
 ## :wrench: Usage
@@ -31,7 +57,14 @@ I have now tested it on Windows. It should also work on Ubuntu (but may with som
 
 ### <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg" alt="Windows" height="28">
 
-#### Dependencies
+#### Option 1: exe zip file
+
+I have zipped a exe file with pyinstaller. [Download](). You can first have a try on it.
+
+1. Unzip the file
+2. Set HandyView as the default image viewer, so that you can **double-click the image to open** HandyView.
+
+#### Option 2: Python environment
 
 - Anaconda (Python >= 3.5)
 
@@ -50,20 +83,23 @@ I have now tested it on Windows. It should also work on Ubuntu (but may with som
 
 In the command line, run:
 
-> python handyview/handyview.py [image_path]
+> python handyview/handyviewer.py [image_path]
 
-#### Compile to executable program
+#### Option 3: Python environment + Compile to executable program
 
 Use `pyinstaller` to compile to executable program, so that you can **double-click the image to open** the HandyView.
 
 1. > pyinstaller -D handyview/handyview.py -i icon.ico --windowed
 1. You will see a `dist` folder containing the outputs (dll, exe, etc)
-1. Copy the `handyview/icons` folder and the `handyview/icon.png` image to the `dist` folder
-1. Choose the `dist/handyview/handyview.exe` as the default image viewer.
+1. Copy necessary files to the `dist` folder
+    > cp -r handyview/icons dist/handyviewer/
+    > cp handyview/icon.png dist/handyviewer/
+    > cp icon.ico dist/handyviewer/
+1. Choose the `dist/handyview/handyviewer.exe` as the default image viewer.
 
 ### <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Logo-ubuntu_no%28r%29-black_orange-hex.svg" alt="Ubuntu" height="24">
 
-I used Ubuntu in the previous versions. Now I switch to Windows (with wsl) for development.
+I used Ubuntu in the previous versions. Now I switch to Window for development.
 So this is not tested on Ubuntu and may be out-of-date.
 
 1. Clone this repo `git clone git@github.com:xinntao/HandyView.git`
@@ -75,17 +111,18 @@ So this is not tested on Ubuntu and may be out-of-date.
     1. Go to `Properties` -> `Open With`
     1. Choose *HandyView*
 
+## :book: Document (On the way)
+
 ## :hourglass_flowing_sand: TODO list
 
-### Compare operations
-
-- [ ] Given two directories, it can compare the corresponding images.
-
+- [ ] preview mode
+- [ ] show zoom info for each folder (db)
+- [ ] drag together in the multi-view comparison mode
 ### Editing operation
 
-- [ ] Simple image edit: crop, resize, color convertion, etc.
-- [ ] Draw rectangular and enlarged this area.
-- [ ] Make gif easily.
+- [ ] Simple image edit: crop, resize, color conversion, etc
+- [ ] Draw rectangular and enlarged the area
+- [ ] Make gif easily
 
 ## :books: References
 
@@ -102,14 +139,19 @@ This project is released under the [MIT license](./LICENSE).
 I have used the icons from [flaticon](www.flaticon.com). The following are the source links.
 
 - [Open icon](https://www.flaticon.com/free-icon/open_3143203?term=file%20open&page=1&position=1)
+- [History icon](https://www.flaticon.com/free-icon/timer_2921268)
 - [Refresh icon](https://www.flaticon.com/free-icon/reuse_3299869?term=refresh&page=1&position=16)
+- [Index icon](https://www.flaticon.com/free-icon/index_2807595?term=index&page=1&position=8)
 - [Include icon](https://www.flaticon.com/free-icon/add_2921226)
 - [Exclude icon](https://www.flaticon.com/free-icon/remove_2921203)
 - [Compare icon](https://www.flaticon.com/free-icon/file_748614?term=compare&page=1&position=17)
-- [History icon](https://www.flaticon.com/free-icon/timer_2921268)
+- [Clear comparison icon](https://www.flaticon.com/free-icon/eraser_3277337?term=clear&page=1&position=5)
+
 - [Main canvas icon](https://www.flaticon.com/free-icon/image_3603103)
 - [Compare canvas icon](https://www.flaticon.com/free-icon/portraits_3603402)
 - [Preview canvas icon](https://www.flaticon.com/free-icon/pieces_3603403)
+
+- [Help icon](https://www.flaticon.com/free-icon/information-point_4231321?term=help&page=1&position=87&page=1&position=87)
 
 ## :e-mail: Contact
 
