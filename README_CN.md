@@ -61,7 +61,7 @@ HandyView 目前实在Windows上测试的. 应该也可以在 Ubuntu 上使用, 
 
 #### Option 1: Pre-compiled executable zip file
 
-I have zipped an exe zip file with pyinstaller. [Download](). You can first have a try on it.
+I have zipped an exe zip file with pyinstaller in the release page ([Github](https://github.com/xinntao/HandyView/releases) | [Gitee](https://gitee.com/xinntao/HandyView/releases)). You can first have a try on it.
 
 1. Unzip the file
 2. Set HandyView as the default image viewer, so that you can **double-click the image to open** HandyView.
@@ -112,7 +112,9 @@ I used the early version of HandyView on Ubuntu. The current version is not test
     1. Go to `Properties` -> `Open With`
     1. Choose *HandyView*
 
-## :book: Document (On the way)
+## :book: 文档 (还在路上...)
+
+基本的操作可以通过 工具栏的 *Help* 按钮来查看
 
 ## :hourglass_flowing_sand: TODO list
 
