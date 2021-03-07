@@ -105,7 +105,7 @@ class MainWindow(QMainWindow):
         self.toolbar.addSeparator()
         self.toolbar.addAction(actions.show_instruction_msg(self))
 
-        self.toolbar.setIconSize(QtCore.QSize(60, 60))
+        self.toolbar.setIconSize(QtCore.QSize(45, 45))
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolbar)
 
     def init_statusbar(self):
@@ -345,34 +345,9 @@ class MainWindow(QMainWindow):
     # ---------------------------------------
 
     def show_instruction_msg(self):
-        instruct_text = r'''
-        Mouse wheel : Previous/Next image
-        Ctrl + Mouse wheel: Zoom in/out
-
-        A D: Previous/Next image
-        W S: Zoom in/out
-        Direction key ← → : Horizontal scrolling
-        Direction key ↑ ↓ : Vertical scrolling
-        F9 : Change background color (white or gray)
-        R : Reset zoom ration to 1
-        Space : Next image
-        Backspace: Previous image
-        '''
-        instruct_text_cn = r'''
-        鼠标滚轮 : 上一张/下一张 图像
-        Ctrl + 鼠标滚轮: 放大/缩小
-
-        A D: 上一张/下一张 图像
-        W S: 放大/缩小
-        方向键 ← → : 水平滚动
-        方向键 ↑ ↓ : 垂直滚动
-        F9 : 切换背景颜色 (白色/灰色)
-        R : 重置放大比率为1
-        Space : 下一张 图像
-        Backspace: 上一张 图像
-        '''
+        from handyview.instruction_text import instruct_text, instruct_text_cn
         msg = MessageDialog(self, instruct_text, instruct_text_cn)
-        msg.setStyleSheet('QLabel{min-width:500 px; font-size: 20px;}')
+        # msg.setStyleSheet('QLabel{min-width:500 px; font-size: 20px;}')
         msg.setWindowTitle('Instructions')
         msg.exec_()
 
