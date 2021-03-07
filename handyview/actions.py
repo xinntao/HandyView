@@ -2,7 +2,7 @@ from os import path as osp
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
 
-ROOT_DIR = osp.dirname(osp.abspath(__file__))
+from handyview.utils import ROOT_DIR
 
 
 def new_action(parent,
@@ -33,7 +33,9 @@ def new_action(parent,
     return action
 
 
-# Actions for Menu bar and Tool bar
+# ---------------------------------------
+# open and history
+# ---------------------------------------
 
 
 def open(parent):
@@ -46,14 +48,63 @@ def open(parent):
         slot=parent.open_file_dialog)
 
 
+def history(parent):
+    """Show open history."""
+    return new_action(
+        parent, 'History', icon_name='history.png', slot=parent.open_history)
+
+
+# ---------------------------------------
+# refresh and index
+# ---------------------------------------
+
+
 def refresh(parent):
-    """Refresh the image list."""
+    """Refresh image lists."""
     return new_action(
         parent,
         'Refresh',
         icon_name='refresh',
         shortcut='F5',
         slot=parent.refresh_img_list)
+
+
+def goto_index(parent):
+    """Jump to the input index of images."""
+    return new_action(
+        parent,
+        'Index',
+        icon_name='index.png',
+        shortcut='Ctrl+I',
+        slot=parent.goto_index)
+
+
+# ---------------------------------------
+# include and exclude names
+# ---------------------------------------
+
+
+def include_file_name(parent):
+    """Include file name."""
+    return new_action(
+        parent,
+        'Include',
+        icon_name='include.png',
+        slot=parent.include_file_name)
+
+
+def exclude_file_name(parent):
+    """Exclude file name."""
+    return new_action(
+        parent,
+        'Exclude',
+        icon_name='exclude.png',
+        slot=parent.exclude_file_name)
+
+
+# ---------------------------------------
+# compare and clear compare
+# ---------------------------------------
 
 
 def compare(parent):
@@ -66,33 +117,49 @@ def compare(parent):
         slot=parent.compare_folder)
 
 
-def history(parent):
-    """History."""
-    return new_action(
-        parent, 'History', icon_name='history.png', slot=parent.open_history)
-
-
-def exclude_file_name(parent):
-    """Exclude file name."""
+def clear_compare(parent):
+    """Clear comparison."""
     return new_action(
         parent,
-        'Exclude',
-        icon_name='exclude.png',
-        slot=parent.exclude_file_name)
+        'Clear Comp',
+        icon_name='clear_comparison.png',
+        slot=parent.clear_compare)
 
 
-def include_file_name(parent):
-    """Include file name."""
+# ---------------------------------------
+# canvas layouts
+# ---------------------------------------
+
+
+def switch_main_canvas(parent):
     return new_action(
         parent,
-        'Include',
-        icon_name='include.png',
-        slot=parent.include_file_name)
+        'Main',
+        icon_name='main_canvas.png',
+        slot=parent.switch_main_canvas)
+
+
+def switch_compare_canvas(parent):
+    return new_action(
+        parent,
+        'Compare',
+        icon_name='compare_canvas.png',
+        slot=parent.switch_compare_canvas)
+
+
+def switch_preview_canvas(parent):
+    return new_action(
+        parent,
+        'Preview',
+        icon_name='preview_canvas.png',
+        slot=parent.switch_preview_canvas)
+
+
+# ---------------------------------------
+# help
+# ---------------------------------------
 
 
 def show_instruction_msg(parent):
     return new_action(
-        parent,
-        'Instruct',
-        icon_name='instructions.png',
-        slot=parent.show_instruction_msg)
+        parent, 'Help', icon_name='help.png', slot=parent.show_instruction_msg)
