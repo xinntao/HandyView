@@ -37,10 +37,8 @@ HandyView 是一款基于 PyQt5 开发的方便的图像查看和比对工具.
 
 - 多视图比较, 双栏、三栏*肩并肩*比较
 
-![](assets/hv_cmp.gif)
-
 <p align="center">
-  <img src="assets/hv_cmp.gif" height="400">
+<a href="assets/hv_cmp.gif"><img src="assets/hv_cmp.gif" height="400" alt="hv_cmp">
 </p>
 
 - 当移动鼠标, 右侧会显示当前鼠标所在坐标及像素颜色值
