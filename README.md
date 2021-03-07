@@ -30,25 +30,25 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
 - Switch among images with **fixed zoom ratio**
 
 <p align="center">
-  <img src="assets/hv_switch.gif" height="300">
+  <img src="assets/hv_switch.gif" height="400">
 </p>
 
 - Compare images in two-column or three-column modes
 
 <p align="center">
-  <img src="assets/hv_cmp.gif" height="300">
+  <img src="assets/hv_cmp.gif" height="400">
 </p>
 
 - Show the position and color of the current mouse cursor
 
 <p align="center">
-  <img src="assets/hv_mousemove.gif" height="300">
+  <img src="assets/hv_mousemove.gif" height="400">
 </p>
 
 - Draw rectangles and show the start and end positions
 
 <p align="center">
-  <img src="assets/hv_rect.gif" height="300">
+  <img src="assets/hv_rect.gif" height="400">
 </p>
 
 ## :wrench: Usage
@@ -140,7 +140,7 @@ I have used the icons from [flaticon](www.flaticon.com). The following are the s
 | Icon | Link | Icon | Link | Icon |Link|
 | :--- | :---:        |     :---      | :---: | :---        |     :---:      |
 | <img src="handyview/icons/open.png" height="32" alt="Open">  | [Open](https://www.flaticon.com/free-icon/open_3143203?term=file%20open&page=1&position=1) | <img src="handyview/icons/history.png" height="32" alt="History">|[History](https://www.flaticon.com/free-icon/timer_2921268) | <img src="handyview/icons/refresh.png" height="32" alt="Refresh"> |[Refresh](https://www.flaticon.com/free-icon/reuse_3299869?term=refresh&page=1&position=16) |
-| <img src="handyview/icons/index.png" height="32" alt="Index">  | [Index](https://www.flaticon.com/free-icon/index_2807595?term=index&page=1&position=8) | <img src="handyview/icons/include.png" height="32" alt="Include"> |[Include](https://www.flaticon.com/free-icon/add_2921226) | <img src="handyview/icons/exclude.png" height="32" alt="Exclude">|[](https://www.flaticon.com/free-icon/remove_2921203) |
+| <img src="handyview/icons/index.png" height="32" alt="Index">  | [Index](https://www.flaticon.com/free-icon/index_2807595?term=index&page=1&position=8) | <img src="handyview/icons/include.png" height="32" alt="Include"> |[Include](https://www.flaticon.com/free-icon/add_2921226) | <img src="handyview/icons/exclude.png" height="32" alt="Exclude">|[Exclude](https://www.flaticon.com/free-icon/remove_2921203) |
 | <img src="handyview/icons/compare.png" height="32" alt="Compare">  | [Compare](https://www.flaticon.com/free-icon/file_748614?term=compare&page=1&position=17) | <img src="handyview/icons/clear_comparison.png" height="32" alt="Clear comparison"> |[Clear comparison](https://www.flaticon.com/free-icon/eraser_3277337?term=clear&page=1&position=5) |<img src="handyview/icons/instructions.png" height="32" alt="Help">  |[Help](https://www.flaticon.com/free-icon/information-point_4231321?term=help&page=1&position=87&page=1&position=87)|
 | <img src="handyview/icons/main_canvas.png" height="32" alt="Main canvas">  | [Main canvas](https://www.flaticon.com/free-icon/image_3603103) | <img src="handyview/icons/compare_canvas.png" height="32" alt="Compare canvas"> |[Compare canvas](https://www.flaticon.com/free-icon/portraits_3603402) |  <img src="handyview/icons/preview_canvas.png" height="32" alt="Preview canvas">  |[Preview canvas](https://www.flaticon.com/free-icon/pieces_3603403)|
 
