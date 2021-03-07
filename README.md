@@ -30,25 +30,25 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
 - Switch among images with **fixed zoom ratio**
 
 <p align="center">
-  <img src="assets/hv_switch.gif">
+  <img src="assets/hv_switch.gif" height="500">
 </p>
 
 - Compare images in two-column or three-column modes
 
 <p align="center">
-  <img src="assets/hv_cmp.gif">
+  <img src="assets/hv_cmp.gif" height="500">
 </p>
 
-- Show the position and color of the current mouse cursor.
+- Show the position and color of the current mouse cursor
 
 <p align="center">
-  <img src="assets/hv_mousemove.gif">
+  <img src="assets/hv_mousemove.gif" height="500">
 </p>
 
-- Draw rectangles and show the start and end position.
+- Draw rectangles and show the start and end positions
 
 <p align="center">
-  <img src="assets/hv_rect.gif">
+  <img src="assets/hv_rect.gif" height="500">
 </p>
 
 ## :wrench: Usage
@@ -57,9 +57,9 @@ I have now tested it on Windows. It should also work on Ubuntu (but may with som
 
 ### <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg" alt="Windows" height="28">
 
-#### Option 1: exe zip file
+#### Option 1: Pre-compiled executable zip file
 
-I have zipped a exe file with pyinstaller. [Download](). You can first have a try on it.
+I have zipped an exe zip file with pyinstaller. [Download](). You can first have a try on it.
 
 1. Unzip the file
 2. Set HandyView as the default image viewer, so that you can **double-click the image to open** HandyView.
@@ -92,15 +92,14 @@ Use `pyinstaller` to compile to executable program, so that you can **double-cli
 1. > pyinstaller -D handyview/handyview.py -i icon.ico --windowed
 1. You will see a `dist` folder containing the outputs (dll, exe, etc)
 1. Copy necessary files to the `dist` folder
-    > cp -r handyview/icons dist/handyviewer/
-    > cp handyview/icon.png dist/handyviewer/
-    > cp icon.ico dist/handyviewer/
+    > cp -r handyview/icons dist/handyviewer/ <br>
+    > cp handyview/icon.png dist/handyviewer/ <br>
+    > cp icon.ico dist/handyviewer/ <br>
 1. Choose the `dist/handyview/handyviewer.exe` as the default image viewer.
 
 ### <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Logo-ubuntu_no%28r%29-black_orange-hex.svg" alt="Ubuntu" height="24">
 
-I used Ubuntu in the previous versions. Now I switch to Window for development.
-So this is not tested on Ubuntu and may be out-of-date.
+I used the early version of HandyView on Ubuntu. The current version is not tested on Ubuntu and may be out-of-date.
 
 1. Clone this repo `git clone git@github.com:xinntao/HandyView.git`
 1. How to double click to open an image
@@ -116,13 +115,13 @@ So this is not tested on Ubuntu and may be out-of-date.
 ## :hourglass_flowing_sand: TODO list
 
 - [ ] preview mode
-- [ ] show zoom info for each folder (db)
+- [ ] show zoom info for each folder (store in database)
 - [ ] drag together in the multi-view comparison mode
 ### Editing operation
 
 - [ ] Simple image edit: crop, resize, color conversion, etc
 - [ ] Draw rectangular and enlarged the area
-- [ ] Make gif easily
+- [ ] Make GIF easily
 
 ## :books: References
 
@@ -138,20 +137,13 @@ This project is released under the [MIT license](./LICENSE).
 
 I have used the icons from [flaticon](www.flaticon.com). The following are the source links.
 
-- [Open icon](https://www.flaticon.com/free-icon/open_3143203?term=file%20open&page=1&position=1)
-- [History icon](https://www.flaticon.com/free-icon/timer_2921268)
-- [Refresh icon](https://www.flaticon.com/free-icon/reuse_3299869?term=refresh&page=1&position=16)
-- [Index icon](https://www.flaticon.com/free-icon/index_2807595?term=index&page=1&position=8)
-- [Include icon](https://www.flaticon.com/free-icon/add_2921226)
-- [Exclude icon](https://www.flaticon.com/free-icon/remove_2921203)
-- [Compare icon](https://www.flaticon.com/free-icon/file_748614?term=compare&page=1&position=17)
-- [Clear comparison icon](https://www.flaticon.com/free-icon/eraser_3277337?term=clear&page=1&position=5)
+| Icon | Link | Icon | Link | Icon |Link|
+| :--- | :---:        |     :---      | :---: | :---        |     :---:      |
+| ![Open](handyview/icons/open.png)   | [Open](https://www.flaticon.com/free-icon/open_3143203?term=file%20open&page=1&position=1) | ![History](handyview/icons/history.png) |[History](https://www.flaticon.com/free-icon/timer_2921268) | ![Refresh](handyview/icons/refresh.png) |[Refresh](https://www.flaticon.com/free-icon/reuse_3299869?term=refresh&page=1&position=16) |
+| ![Index](handyview/icons/index.png)   | [Index](https://www.flaticon.com/free-icon/index_2807595?term=index&page=1&position=8) | ![Include](handyview/icons/include.png) |[Include](https://www.flaticon.com/free-icon/add_2921226) | ![Exclude](handyview/icons/exclude.png) |[Exclude](https://www.flaticon.com/free-icon/remove_2921203) |
+| ![Compare](handyview/icons/compare.png)   | [Compare](https://www.flaticon.com/free-icon/file_748614?term=compare&page=1&position=17) | ![Clear comparison](handyview/icons/clear_comparison.png) |[Clear comparison](https://www.flaticon.com/free-icon/eraser_3277337?term=clear&page=1&position=5) | ![Help](handyview/icons/instructions.png)  |[Help](https://www.flaticon.com/free-icon/information-point_4231321?term=help&page=1&position=87&page=1&position=87)|
 
-- [Main canvas icon](https://www.flaticon.com/free-icon/image_3603103)
-- [Compare canvas icon](https://www.flaticon.com/free-icon/portraits_3603402)
-- [Preview canvas icon](https://www.flaticon.com/free-icon/pieces_3603403)
-
-- [Help icon](https://www.flaticon.com/free-icon/information-point_4231321?term=help&page=1&position=87&page=1&position=87)
+| ![Main canvas](handyview/icons/main_canvas.png)   | [Main canvas](https://www.flaticon.com/free-icon/image_3603103) | ![Compare canvas](handyview/icons/compare_canvas.png) |[Compare canvas](https://www.flaticon.com/free-icon/portraits_3603402) |  ![Preview canvas](handyview/icons/preview_canvas.png) |[Preview canvas](https://www.flaticon.com/free-icon/pieces_3603403)|
 
 ## :e-mail: Contact
 
