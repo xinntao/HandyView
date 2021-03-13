@@ -362,13 +362,12 @@ if __name__ == '__main__':
     print('Welcome to HandyView.')
 
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon('icon.ico'))
     screen = app.primaryScreen()
     size = screen.size()
     # rect = screen.availableGeometry()
 
     main = MainWindow()
-    main.setWindowIcon(QIcon('icon.ico'))
+    main.setWindowIcon(QIcon(os.path.join(ROOT_DIR, 'icon.ico')))
     main.setGeometry(0, 0, size.width(),
                      size.height())  # (left, top, width, height)
     main.showMaximized()
