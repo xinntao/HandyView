@@ -163,3 +163,11 @@ def switch_preview_canvas(parent):
 def show_instruction_msg(parent):
     return new_action(
         parent, 'Help', icon_name='help.png', slot=parent.show_instruction_msg)
+
+
+def set_fingerprint(parent):
+    return new_action(
+        parent,
+        'FingerPT',
+        icon_name='fingerprint.png',
+        slot=parent.set_fingerprint)

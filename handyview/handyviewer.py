@@ -62,6 +62,7 @@ class MainWindow(QMainWindow):
         compare_menu = menubar.addMenu('&Compare')
         compare_menu.addAction(actions.compare(self))
         compare_menu.addAction(actions.clear_compare(self))
+        compare_menu.addAction(actions.set_fingerprint(self))
 
         # Layouts
         layout_menu = menubar.addMenu('&Layout')
@@ -99,6 +100,10 @@ class MainWindow(QMainWindow):
         self.toolbar.addAction(actions.switch_main_canvas(self))
         self.toolbar.addAction(actions.switch_compare_canvas(self))
         self.toolbar.addAction(actions.switch_preview_canvas(self))
+
+        # others
+        self.toolbar.addSeparator()
+        self.toolbar.addAction(actions.set_fingerprint(self))
 
         # help
         self.toolbar.addSeparator()
@@ -350,6 +355,9 @@ class MainWindow(QMainWindow):
         # msg.setStyleSheet('QLabel{min-width:500 px; font-size: 20px;}')
         msg.setWindowTitle('Instructions')
         msg.exec_()
+
+    def set_fingerprint(self):
+        show_msg('Information', '^_^', text=('Test'))
 
 
 if __name__ == '__main__':
