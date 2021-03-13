@@ -2,10 +2,13 @@
 Include customized widgets used in HandyView.
 """
 
+import os
 from PyQt5 import QtCore
-from PyQt5.QtGui import QColor, QFont, QPixmap
+from PyQt5.QtGui import QColor, QFont, QIcon, QPixmap
 from PyQt5.QtWidgets import (QDialog, QFrame, QHBoxLayout, QLabel, QMessageBox,
                              QPushButton, QVBoxLayout)
+
+from handyview.utils import ROOT_DIR
 
 
 def show_msg(icon='Information', title='Title', text='Message'):
@@ -28,6 +31,7 @@ def show_msg(icon='Information', title='Title', text='Message'):
         icon = QMessageBox.Critical
 
     msg = QMessageBox()
+    msg.setWindowIcon(QIcon(os.path.join(ROOT_DIR, 'icon.ico')))
     msg.setIcon(icon)
     msg.setWindowTitle(title)
     msg.setText(text)
