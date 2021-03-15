@@ -12,7 +12,7 @@ if getattr(sys, 'frozen', False):
     # path into variable _MEIPASS'.
     ROOT_DIR = sys._MEIPASS
 else:
-    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def sizeof_fmt(size, suffix='B'):
