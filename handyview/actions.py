@@ -168,6 +168,6 @@ def show_instruction_msg(parent):
 def set_fingerprint(parent):
     return new_action(
         parent,
-        'FingerPT',
+        'Fingerprint',
         icon_name='fingerprint.png',
         slot=parent.set_fingerprint)

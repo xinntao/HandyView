@@ -19,6 +19,7 @@ class Canvas(QWidget):
         # initialize widgets and layout
         self.init_widgets_layout()
         self.qview_bg_color = 'white'
+        self.show_fingerprint = False
         self.show_image(init=True)
 
         # set bg color to light_gray when num_view > 1
@@ -202,12 +203,18 @@ class Canvas(QWidget):
                 width, height = self.db.get_shape(pidx=pidx)
                 file_size = self.db.get_file_size(pidx=pidx)
                 color_type = self.db.get_color_type(pidx=pidx)
+                if self.show_fingerprint:
+                    md5, phash = self.db.get_fingerprint(pidx=pidx)
+                    md5_0, phash_0 = self.db.get_fingerprint(pidx=self.db.pidx)
             else:
                 fidx = self.db.fidx + idx
                 img_path = self.db.get_path(fidx=fidx)[0]
                 width, height = self.db.get_shape(fidx=fidx)
                 file_size = self.db.get_file_size(fidx=fidx)
                 color_type = self.db.get_color_type(fidx=fidx)
+                if self.show_fingerprint:
+                    md5, phash = self.db.get_fingerprint(fidx=fidx)
+                    md5_0, phash_0 = self.db.get_fingerprint(fidx=self.db.fidx)
 
             qimg = QImage(img_path)
             if idx == 0:
@@ -223,11 +230,22 @@ class Canvas(QWidget):
                 shown_idx = self.db.pidx + 1 + idx
             else:
                 shown_idx = self.db.pidx + 1
+
             # TODO: add zoom ratio
             shown_text = [
                 f'[{shown_idx:d} / {self.db.get_path_len():d}] {basename}',
                 f'{height:d} x {width:d}, {file_size}', f'{color_type}'
             ]
+            # show fingerprint
+            if self.show_fingerprint:
+                if idx > 0:
+                    md5_diff = (md5 == md5_0)
+                    phash_diff = phash - phash_0
+                    shown_text.append(f'md5: {md5_diff} - {md5}')
+                    shown_text.append(f'phash: {phash_diff} - {phash}')
+                else:
+                    shown_text.append(f'md5: {md5}')
+                    shown_text.append(f'phash: {phash}')
 
             self.qviews[idx].set_shown_text(shown_text)
             # self.qviews[idx].viewport().update()

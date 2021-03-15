@@ -357,7 +357,11 @@ class MainWindow(QMainWindow):
         msg.exec_()
 
     def set_fingerprint(self):
-        show_msg('Information', '^_^', text=('Test'))
+        if self.canvas.show_fingerprint:
+            self.canvas.show_fingerprint = False
+        else:
+            self.canvas.show_fingerprint = True
+        self.canvas.show_image()
 
 
 if __name__ == '__main__':

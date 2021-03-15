@@ -1,4 +1,6 @@
 import glob
+import hashlib
+import imagehash
 import itertools
 import os
 from PIL import Image
@@ -30,6 +32,8 @@ class HVDB():
         # the first list is the main list
         self.path_list = [[]]
         self.file_size_list = [[]]
+        self.md5_list = [[]]
+        self.phash_list = [[]]
 
         self.get_init_path_list()
 
@@ -53,6 +57,8 @@ class HVDB():
             self.path_list[0] = get_img_list(folder, self._include_names,
                                              self._exclude_names)
             self.file_size_list[0] = [None] * len(self.path_list[0])
+            self.md5_list[0] = [None] * len(self.path_list[0])
+            self.phash_list[0] = [None] * len(self.path_list[0])
             # get current pidx
             try:
                 self._pidx = self.path_list[0].index(self.init_path)
@@ -109,6 +115,8 @@ class HVDB():
         paths = get_img_list(folder, self._include_names, self._exclude_names)
         self.path_list.append(paths)
         self.file_size_list.append([None] * len(paths))
+        self.md5_list.append([None] * len(paths))
+        self.phash_list.append([None] * len(paths))
         # all the path list should have the same length
         self.is_same_len = True
         img_len_list = [len(self.path_list[0])]
@@ -124,6 +132,8 @@ class HVDB():
                                  self._exclude_names)
             self.path_list[idx] = paths
             self.file_size_list[idx] = [None] * len(paths)
+            self.md5_list[idx] = [None] * len(paths)
+            self.phash_list[idx] = [None] * len(paths)
 
         # all the path list should have the same length
         self.is_same_len = True
@@ -141,27 +151,26 @@ class HVDB():
             folder = self.folder_list[fidx]
         return folder
 
-    def get_path(self, path=None, fidx=None, pidx=None):
-        if path is None:
-            if fidx is None:
-                fidx = self._fidx
-            if pidx is None:
-                pidx = self._pidx
-            # check out of boundary
-            if fidx > (self.get_folder_len() - 1):
-                fidx = 0
-            elif fidx < 0:
-                fidx = self.get_folder_len() - 1
-            if pidx > (self.get_path_len() - 1):
-                pidx = 0
-            elif pidx < 0:
-                pidx = self.get_path_len() - 1
+    def get_path(self, fidx=None, pidx=None):
+        if fidx is None:
+            fidx = self._fidx
+        if pidx is None:
+            pidx = self._pidx
+        # check out of boundary
+        if fidx > (self.get_folder_len() - 1):
+            fidx = 0
+        elif fidx < 0:
+            fidx = self.get_folder_len() - 1
+        if pidx > (self.get_path_len() - 1):
+            pidx = 0
+        elif pidx < 0:
+            pidx = self.get_path_len() - 1
 
-            path = self.path_list[fidx][pidx]
+        path = self.path_list[fidx][pidx]
         return path, fidx, pidx
 
-    def get_shape(self, path=None, fidx=None, pidx=None):
-        path = self.get_path(path, fidx, pidx)[0]
+    def get_shape(self, fidx=None, pidx=None):
+        path = self.get_path(fidx, pidx)[0]
         try:
             with Image.open(path) as lazy_img:
                 width, height = lazy_img.size
@@ -169,8 +178,8 @@ class HVDB():
             show_msg('Critical', 'Critical', f'Cannot open {path}')
         return width, height
 
-    def get_color_type(self, path=None, fidx=None, pidx=None):
-        path = self.get_path(path, fidx, pidx)[0]
+    def get_color_type(self, fidx=None, pidx=None):
+        path = self.get_path(fidx, pidx)[0]
         try:
             with Image.open(path) as lazy_img:
                 color_type = lazy_img.mode
@@ -178,13 +187,28 @@ class HVDB():
             show_msg('Critical', 'Critical', f'Cannot open {path}')
         return color_type
 
-    def get_file_size(self, path=None, fidx=None, pidx=None):
-        path, fidx, pidx = self.get_path(path, fidx, pidx)
+    def get_file_size(self, fidx=None, pidx=None):
+        path, fidx, pidx = self.get_path(fidx, pidx)
         file_size = self.file_size_list[fidx][pidx]
         if file_size is None:
             file_size = sizeof_fmt(os.path.getsize(path))
             self.file_size_list[fidx][pidx] = file_size
         return file_size
+
+    def get_fingerprint(self, fidx=None, pidx=None):
+        path, fidx, pidx = self.get_path(fidx, pidx)
+        # md5
+        md5 = self.md5_list[fidx][pidx]
+        if md5 is None:
+            data = open(path, 'rb').read()
+            md5 = hashlib.md5(data).hexdigest()
+            self.md5_list[fidx][pidx] = md5
+        # phash (perceptual hash)
+        phash = self.phash_list[fidx][pidx]
+        if phash is None:
+            phash = imagehash.phash(Image.open(path))
+            self.phash_list[fidx][pidx] = phash
+        return (md5, phash)
 
     def get_folder_len(self):
         return len(self.folder_list)
