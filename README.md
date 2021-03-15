@@ -1,4 +1,4 @@
-# ![icon](handyview/icon.png) HandyView
+# ![icon](icon.png) HandyView
 
 [English](README.md) **|** [简体中文](README_CN.md) &emsp; [GitHub](https://github.com/xinntao/HandyView) **|** [Gitee码云](https://gitee.com/xinntao/HandyView)
 
