@@ -272,8 +272,7 @@ class Canvas(QWidget):
             # show exclude names in the information panel
             if isinstance(self.db.exclude_names, list):
                 show_str = 'Exclude:\n\t' + '\n\t'.join(self.db.exclude_names)
-                self.db.exclude_names_label.setStyleSheet(
-                    'QLabel {color : red;}')
+                self.exclude_names_label.setStyleSheet('QLabel {color : red;}')
             else:
                 show_str = 'Exclude: None'
                 self.exclude_names_label.setStyleSheet(
