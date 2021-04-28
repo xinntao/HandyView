@@ -158,6 +158,9 @@ class Canvas(QWidget):
             for qview in self.qviews:
                 qview.zoom_out(scale=scale)
 
+        elif event.key() == QtCore.Qt.Key_F11:
+            self.parent.switch_fullscreen()
+
     def goto_index(self, index):
         self.db.pidx = index
         self.show_image()

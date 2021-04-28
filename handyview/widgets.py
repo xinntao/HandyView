@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (QDialog, QFrame, QHBoxLayout, QLabel, QMessageBox,
 from handyview.utils import ROOT_DIR
 
 
-def show_msg(icon='Information', title='Title', text='Message'):
+def show_msg(icon='Information', title='Title', text='Message', timeout=None):
     """
     QMessageBox::NoIcon
     QMessageBox::Question
@@ -35,6 +35,12 @@ def show_msg(icon='Information', title='Title', text='Message'):
     msg.setIcon(icon)
     msg.setWindowTitle(title)
     msg.setText(text)
+
+    if timeout is not None:
+        timer = QtCore.QTimer(msg)
+        timer.singleShot(timeout * 1000, msg.close)
+        timer.start()
+
     msg.exec_()
 
 

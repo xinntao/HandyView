@@ -30,7 +30,10 @@ def sizeof_fmt(size, suffix='B'):
     return f'{size:3.1f} Y{suffix}'
 
 
-def get_img_list(folder, include_names=None, exclude_names=None):
+def get_img_list(folder,
+                 include_names=None,
+                 exclude_names=None,
+                 exact_exclude_names=None):
     """Get the image list in a folder.
     It also considers 'include' and 'exclude' strings.
 
@@ -45,25 +48,34 @@ def get_img_list(folder, include_names=None, exclude_names=None):
     img_list = []
     if folder == '':
         folder = './'
-    # deal with include and exclude names
-    for img_path in sorted(glob.glob(os.path.join(folder, '*'))):
-        img_path = img_path.replace('\\', '/')
-        base, ext = os.path.splitext(os.path.basename(img_path))
-        if ext in FORMATS:
-            if include_names is not None:
-                flag_add = False
-                for include_name in include_names:
-                    if include_name in base:
-                        flag_add = True
-            elif exclude_names is not None:
-                flag_add = True
-                for exclude_name in exclude_names:
-                    if exclude_name in base:
-                        flag_add = False
-            else:
-                flag_add = True
-            if flag_add:
-                img_list.append(img_path)
+    if exact_exclude_names is not None:
+        for img_path in sorted(glob.glob(os.path.join(folder, '*'))):
+            img_path = img_path.replace('\\', '/')
+            base, ext = os.path.splitext(os.path.basename(img_path))
+            if ext in FORMATS:
+                basename = f'{base}{ext}'
+                if basename not in exact_exclude_names:
+                    img_list.append(img_path)
+    else:
+        # deal with include and exclude names
+        for img_path in sorted(glob.glob(os.path.join(folder, '*'))):
+            img_path = img_path.replace('\\', '/')
+            base, ext = os.path.splitext(os.path.basename(img_path))
+            if ext in FORMATS:
+                if include_names is not None:
+                    flag_add = False
+                    for include_name in include_names:
+                        if include_name in base:
+                            flag_add = True
+                elif exclude_names is not None:
+                    flag_add = True
+                    for exclude_name in exclude_names:
+                        if exclude_name in base:
+                            flag_add = False
+                else:
+                    flag_add = True
+                if flag_add:
+                    img_list.append(img_path)
     # natural sort for numbers in names
     img_list.sort(
         key=lambda s:

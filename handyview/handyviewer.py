@@ -27,6 +27,7 @@ class MainWindow(QMainWindow):
         # initialize HVDB (handyview database), which stores the path info
         self.hvdb = HVDB(init_path)
 
+        self.full_screen = False
         self.canvas_type = 'main'
 
         # initialize UI
@@ -122,6 +123,14 @@ class MainWindow(QMainWindow):
     def init_central_window(self):
         self.canvas = Canvas(self, self.hvdb)
         self.setCentralWidget(self.canvas)
+
+    def switch_fullscreen(self):
+        if self.full_screen is False:
+            self.showFullScreen()
+            self.full_screen = True
+        else:
+            self.showMaximized()
+            self.full_screen = False
 
     def add_dock_window(self):
         # Info

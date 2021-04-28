@@ -22,6 +22,7 @@ class HVDB():
         self._pidx = 0  # path index
         self._include_names = None
         self._exclude_names = None
+        self._exact_exclude_names = None
         self._interval = 0  # for compare canvas
 
         # whether path lists in compare folders have the same length
@@ -55,7 +56,8 @@ class HVDB():
             self.folder_list[0] = folder
             # get path list
             self.path_list[0] = get_img_list(folder, self._include_names,
-                                             self._exclude_names)
+                                             self._exclude_names,
+                                             self._exact_exclude_names)
             self.file_size_list[0] = [None] * len(self.path_list[0])
             self.md5_list[0] = [None] * len(self.path_list[0])
             self.phash_list[0] = [None] * len(self.path_list[0])
@@ -112,7 +114,8 @@ class HVDB():
     def add_cmp_folder(self, cmp_path):
         folder = os.path.dirname(cmp_path)
         self.folder_list.append(folder)
-        paths = get_img_list(folder, self._include_names, self._exclude_names)
+        paths = get_img_list(folder, self._include_names, self._exclude_names,
+                             self._exact_exclude_names)
         self.path_list.append(paths)
         self.file_size_list.append([None] * len(paths))
         self.md5_list.append([None] * len(paths))
@@ -129,7 +132,8 @@ class HVDB():
     def update_path_list(self):
         for idx, folder in enumerate(self.folder_list):
             paths = get_img_list(folder, self._include_names,
-                                 self._exclude_names)
+                                 self._exclude_names,
+                                 self._exact_exclude_names)
             self.path_list[idx] = paths
             self.file_size_list[idx] = [None] * len(paths)
             self.md5_list[idx] = [None] * len(paths)
@@ -261,6 +265,14 @@ class HVDB():
     def exclude_names(self, value):
         self._exclude_names = value
         # TODO: move check from handyviewer.py here
+
+    @property
+    def exact_exclude_names(self):
+        return self._exact_exclude_names
+
+    @exact_exclude_names.setter
+    def exact_exclude_names(self, value):
+        self._exact_exclude_names = value
 
     @property
     def interval(self):
