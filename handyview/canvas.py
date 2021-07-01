@@ -36,8 +36,7 @@ class Canvas(QWidget):
             show_info = False
         for i in range(self.num_view):
             self.qscenes.append(HVScene(self, show_info=show_info))
-            self.qviews.append(
-                HVView(self.qscenes[i], self, show_info=show_info))
+            self.qviews.append(HVView(self.qscenes[i], self, show_info=show_info))
 
         # ---------------------------------------
         # Dock window widgets
@@ -46,22 +45,16 @@ class Canvas(QWidget):
             # zoom label showing zoom ratio
             self.zoom_label = HVLable('1.00', self, 'green', 'Times', 12)
             # mouse position and mouse rgb value
-            mouse_pos_text = ('Cursor position:\n (ignore zoom)\n'
-                              ' Height(y): 0.0\n Width(x):  0.0')
-            self.mouse_pos_label = HVLable(mouse_pos_text, self, 'black',
-                                           'Times', 12)
-            self.mouse_rgb_label = HVLable(' (255, 255, 255, 255)', self,
-                                           'black', 'Times', 12)
+            mouse_pos_text = ('Cursor position:\n (ignore zoom)\n' ' Height(y): 0.0\n Width(x):  0.0')
+            self.mouse_pos_label = HVLable(mouse_pos_text, self, 'black', 'Times', 12)
+            self.mouse_rgb_label = HVLable(' (255, 255, 255, 255)', self, 'black', 'Times', 12)
             # pixel color at the mouse position
-            self.mouse_color_title = HVLable('RGBA:', self, 'black', 'Times',
-                                             12)
+            self.mouse_color_title = HVLable('RGBA:', self, 'black', 'Times', 12)
             self.mouse_color_label = ColorLabel(color=(255, 255, 255))
 
             # selection rectangle position and length
-            selection_pos_text = ('Rect Pos: (H, W)\n Start: 0, 0\n'
-                                  ' End  : 0, 0\n Len  : 0, 0')
-            self.selection_pos_label = HVLable(selection_pos_text, self,
-                                               'black', 'Times', 12)
+            selection_pos_text = ('Rect Pos: (H, W)\n Start: 0, 0\n' ' End  : 0, 0\n Len  : 0, 0')
+            self.selection_pos_label = HVLable(selection_pos_text, self, 'black', 'Times', 12)
 
             # include and exclude names
             self.include_names_label = HVLable('', self, 'black', 'Times', 12)
@@ -167,23 +160,19 @@ class Canvas(QWidget):
 
     def add_cmp_folder(self, cmp_path):
         is_same_len, img_len_list = self.db.add_cmp_folder(cmp_path)
-        show_str = 'Number for each folder:\n\t' + '\n\t'.join(
-            map(str, img_len_list))
+        show_str = 'Number for each folder:\n\t' + '\n\t'.join(map(str, img_len_list))
         self.comparison_label.setText(show_str)
         if is_same_len is False:
-            msg = ('Comparison folders have differnet number of images.\n'
-                   f'{show_str}')
+            msg = ('Comparison folders have differnet number of images.\n' f'{show_str}')
             show_msg('Warning', 'Warning!', msg)
 
     def update_path_list(self):
         is_same_len, img_len_list = self.db.update_path_list()
         if len(img_len_list) > 1:
-            show_str = 'Comparison:\n # for each folder:\n\t' + '\n\t'.join(
-                map(str, img_len_list))
+            show_str = 'Comparison:\n # for each folder:\n\t' + '\n\t'.join(map(str, img_len_list))
             self.comparison_label.setText(show_str)
             if is_same_len is False:
-                msg = ('Comparison folders have differnet number of images.\n'
-                       f'{show_str}')
+                msg = ('Comparison folders have differnet number of images.\n' f'{show_str}')
                 show_msg('Warning', 'Warning!', msg)
 
     def compare_folders(self, step):
@@ -236,8 +225,8 @@ class Canvas(QWidget):
 
             # TODO: add zoom ratio
             shown_text = [
-                f'[{shown_idx:d} / {self.db.get_path_len():d}] {basename}',
-                f'{height:d} x {width:d}, {file_size}', f'{color_type}'
+                f'[{shown_idx:d} / {self.db.get_path_len():d}] {basename}', f'{height:d} x {width:d}, {file_size}',
+                f'{color_type}'
             ]
             # show fingerprint
             if self.show_fingerprint:
@@ -265,12 +254,10 @@ class Canvas(QWidget):
             # show include names in the information panel
             if isinstance(self.db.include_names, list):
                 show_str = 'Include:\n\t' + '\n\t'.join(self.db.include_names)
-                self.include_names_label.setStyleSheet(
-                    'QLabel {color : blue;}')
+                self.include_names_label.setStyleSheet('QLabel {color : blue;}')
             else:
                 show_str = 'Include: None'
-                self.include_names_label.setStyleSheet(
-                    'QLabel {color : black;}')
+                self.include_names_label.setStyleSheet('QLabel {color : black;}')
             self.include_names_label.setText(show_str)
             # show exclude names in the information panel
             if isinstance(self.db.exclude_names, list):
@@ -278,8 +265,7 @@ class Canvas(QWidget):
                 self.exclude_names_label.setStyleSheet('QLabel {color : red;}')
             else:
                 show_str = 'Exclude: None'
-                self.exclude_names_label.setStyleSheet(
-                    'QLabel {color : black;}')
+                self.exclude_names_label.setStyleSheet('QLabel {color : black;}')
             self.exclude_names_label.setText(show_str)
 
         if init:

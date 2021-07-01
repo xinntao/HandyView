@@ -28,8 +28,7 @@ def get_git_hash():
         env['LANGUAGE'] = 'C'
         env['LANG'] = 'C'
         env['LC_ALL'] = 'C'
-        out = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, env=env).communicate()[0]
+        out = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=env).communicate()[0]
         return out
 
     try:
@@ -66,11 +65,9 @@ version_info = ({})
     sha = get_hash()
     with open('VERSION', 'r') as f:
         SHORT_VERSION = f.read().strip()
-    VERSION_INFO = ', '.join(
-        [x if x.isdigit() else f'"{x}"' for x in SHORT_VERSION.split('.')])
+    VERSION_INFO = ', '.join([x if x.isdigit() else f'"{x}"' for x in SHORT_VERSION.split('.')])
 
-    version_file_str = content.format(time.asctime(), SHORT_VERSION, sha,
-                                      VERSION_INFO)
+    version_file_str = content.format(time.asctime(), SHORT_VERSION, sha, VERSION_INFO)
     with open(version_file, 'w') as f:
         f.write(version_file_str)
 

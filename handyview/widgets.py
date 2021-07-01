@@ -5,8 +5,7 @@ Include customized widgets used in HandyView.
 import os
 from PyQt5 import QtCore
 from PyQt5.QtGui import QColor, QFont, QIcon, QPixmap
-from PyQt5.QtWidgets import (QDialog, QFrame, QHBoxLayout, QLabel, QMessageBox,
-                             QPushButton, QVBoxLayout)
+from PyQt5.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QMessageBox, QPushButton, QVBoxLayout
 
 from handyview.utils import ROOT_DIR
 
@@ -83,12 +82,7 @@ class HLine(QFrame):
 class HVLable(QLabel):
     """QLabel with customized initializations."""
 
-    def __init__(self,
-                 text,
-                 parent,
-                 color='black',
-                 font='Times',
-                 font_size=12):
+    def __init__(self, text, parent, color='black', font='Times', font_size=12):
         super(HVLable, self).__init__(text, parent)
         self.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
         if isinstance(color, str):

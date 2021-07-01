@@ -43,10 +43,7 @@ class HVDB():
         # if init_path is a folder, try to get the first image
         if os.path.isdir(self.init_path):
             self.init_path = sorted(
-                list(
-                    itertools.chain(
-                        *(glob.glob(os.path.join(self.init_path, f'*{ext}'))
-                          for ext in FORMATS))))[0]
+                list(itertools.chain(*(glob.glob(os.path.join(self.init_path, f'*{ext}')) for ext in FORMATS))))[0]
 
         # fix the path pattern passed from windows system when double click
         self.init_path = self.init_path.replace('\\', '/')
@@ -55,8 +52,7 @@ class HVDB():
             folder = os.path.dirname(self.init_path)
             self.folder_list[0] = folder
             # get path list
-            self.path_list[0] = get_img_list(folder, self._include_names,
-                                             self._exclude_names,
+            self.path_list[0] = get_img_list(folder, self._include_names, self._exclude_names,
                                              self._exact_exclude_names)
             self.file_size_list[0] = [None] * len(self.path_list[0])
             self.md5_list[0] = [None] * len(self.path_list[0])
@@ -70,8 +66,7 @@ class HVDB():
             # save open file history
             self.save_open_history()
         else:
-            show_msg('Critical', 'Critical',
-                     f'Wrong init path! {self.init_path}')
+            show_msg('Critical', 'Critical', f'Wrong init path! {self.init_path}')
 
     def save_open_history(self):
         try:
@@ -83,8 +78,7 @@ class HVDB():
         except Exception:
             lines = []
         # add the new record to the first line
-        if self.init_path not in ['icon.png', './icon.png'] and (self.init_path
-                                                                 not in lines):
+        if self.init_path not in ['icon.png', './icon.png'] and (self.init_path not in lines):
             lines.insert(0, self.init_path)
         with open(os.path.join(ROOT_DIR, 'history.txt'), 'w') as f:
             for line in lines:
@@ -114,8 +108,7 @@ class HVDB():
     def add_cmp_folder(self, cmp_path):
         folder = os.path.dirname(cmp_path)
         self.folder_list.append(folder)
-        paths = get_img_list(folder, self._include_names, self._exclude_names,
-                             self._exact_exclude_names)
+        paths = get_img_list(folder, self._include_names, self._exclude_names, self._exact_exclude_names)
         self.path_list.append(paths)
         self.file_size_list.append([None] * len(paths))
         self.md5_list.append([None] * len(paths))
@@ -131,9 +124,7 @@ class HVDB():
 
     def update_path_list(self):
         for idx, folder in enumerate(self.folder_list):
-            paths = get_img_list(folder, self._include_names,
-                                 self._exclude_names,
-                                 self._exact_exclude_names)
+            paths = get_img_list(folder, self._include_names, self._exclude_names, self._exact_exclude_names)
             self.path_list[idx] = paths
             self.file_size_list[idx] = [None] * len(paths)
             self.md5_list[idx] = [None] * len(paths)

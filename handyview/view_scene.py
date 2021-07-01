@@ -5,8 +5,7 @@ for our HandyView.
 from PyQt5 import QtCore
 from PyQt5.QtCore import QPoint, QRect, QSize
 from PyQt5.QtGui import QColor, QFont, QFontMetrics, QTransform
-from PyQt5.QtWidgets import (QApplication, QGraphicsScene, QGraphicsView,
-                             QRubberBand)
+from PyQt5.QtWidgets import QApplication, QGraphicsScene, QGraphicsView, QRubberBand
 
 
 class HVView(QGraphicsView):
@@ -52,23 +51,20 @@ class HVView(QGraphicsView):
         painter.setPen(QColor(0, 128, 0))
         margin = 2
         for idx, text in enumerate(self.shown_text):
-            painter.drawText(margin, margin + self.text_height * (idx + 1),
-                             text)
+            painter.drawText(margin, margin + self.text_height * (idx + 1), text)
 
     def mousePressEvent(self, event):
         modifiers = QApplication.keyboardModifiers()
         if modifiers == QtCore.Qt.ShiftModifier:
             # Show rubber band
             self.rubber_band_origin = event.pos()
-            self.rubber_band.setGeometry(
-                QRect(self.rubber_band_origin, QSize()))
+            self.rubber_band.setGeometry(QRect(self.rubber_band_origin, QSize()))
             self.rubber_band.show()
             self.rubber_band_changable = True
 
             # Show selection rect position
             if self.show_info:
-                scene_pos = self.mapToScene(
-                    event.pos())  # convert to scene position
+                scene_pos = self.mapToScene(event.pos())  # convert to scene position
                 x_scene, y_scene = scene_pos.x(), scene_pos.y()
                 self.show_rect_position(x_scene, y_scene, x_scene, y_scene)
         else:
@@ -91,15 +87,11 @@ class HVView(QGraphicsView):
                 # Show selection rect position
                 if self.show_info:
                     ori_scene_pos = self.mapToScene(self.rubber_band_origin)
-                    ori_x_scene, ori_y_scene = ori_scene_pos.x(
-                    ), ori_scene_pos.y()
-                    self.show_rect_position(ori_x_scene, ori_y_scene, x_scene,
-                                            y_scene)
+                    ori_x_scene, ori_y_scene = ori_scene_pos.x(), ori_scene_pos.y()
+                    self.show_rect_position(ori_x_scene, ori_y_scene, x_scene, y_scene)
                 # Show rubber band
                 if self.rubber_band_changable:
-                    self.rubber_band.setGeometry(
-                        QRect(self.rubber_band_origin,
-                              event.pos()).normalized())
+                    self.rubber_band.setGeometry(QRect(self.rubber_band_origin, event.pos()).normalized())
         else:
             QGraphicsView.mouseMoveEvent(self, event)
 
@@ -119,8 +111,7 @@ class HVView(QGraphicsView):
                 self.zoom_in(emit_signal=True)
             elif mouse < 0:
                 self.zoom_out(emit_signal=True)
-        elif modifiers == (QtCore.Qt.ControlModifier
-                           | QtCore.Qt.ShiftModifier):
+        elif modifiers == (QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier):
             # only modify the current view zoom ration
             if mouse > 0:
                 self.zoom_in(emit_signal=False)
@@ -140,15 +131,12 @@ class HVView(QGraphicsView):
 
     def show_mouse_position(self, x_pos, y_pos):
         """Show mouse position under the scene position (ignore the zoom)."""
-        self.parent.mouse_pos_label.setText(
-            ('Cursor position:\n (ignore zoom)\n'
-             f' Height(y): {y_pos:.1f}\n Width(x):  {x_pos:.1f}'))
+        self.parent.mouse_pos_label.setText(('Cursor position:\n (ignore zoom)\n'
+                                             f' Height(y): {y_pos:.1f}\n Width(x):  {x_pos:.1f}'))
 
         # if cursor is out of image, the text will be red
-        if (0 < x_pos < self.scene().width
-                and 0 < y_pos < self.scene().height):
-            self.parent.mouse_pos_label.setStyleSheet(
-                'QLabel {color : black;}')
+        if (0 < x_pos < self.scene().width and 0 < y_pos < self.scene().height):
+            self.parent.mouse_pos_label.setStyleSheet('QLabel {color : black;}')
         else:
             self.parent.mouse_pos_label.setStyleSheet('QLabel {color : red;}')
 
@@ -158,27 +146,21 @@ class HVView(QGraphicsView):
         pixel_color = QColor(pixel)
         self.parent.mouse_color_label.fill(pixel_color)
         rgba = pixel_color.getRgb()  # 8 bit RGBA
-        self.parent.mouse_rgb_label.setText(
-            f' ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, '
-            f'{rgba[3]:3d})')
+        self.parent.mouse_rgb_label.setText(f' ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, ' f'{rgba[3]:3d})')
 
     def show_rect_position(self, x_start, y_start, x_end, y_end):
         """Show selection rect position."""
         x_len = x_end - x_start
         y_len = y_end - y_start
-        self.parent.selection_pos_label.setText(
-            'Rect Pos: (H, W)\n'
-            f' Start: {int(y_start)}, {int(x_start)}\n'
-            f' End  : {int(y_end)}, {int(x_end)}\n'
-            f' Len  : {int(y_len)}, {int(x_len)}')
+        self.parent.selection_pos_label.setText('Rect Pos: (H, W)\n'
+                                                f' Start: {int(y_start)}, {int(x_start)}\n'
+                                                f' End  : {int(y_end)}, {int(x_end)}\n'
+                                                f' Len  : {int(y_len)}, {int(x_len)}')
         width, height = self.scene().width, self.scene().height
-        if (0 < x_start < width and 0 < y_start < height and 0 < x_end < width
-                and 0 < y_end < height):
-            self.parent.selection_pos_label.setStyleSheet(
-                'QLabel {color : black;}')
+        if (0 < x_start < width and 0 < y_start < height and 0 < x_end < width and 0 < y_end < height):
+            self.parent.selection_pos_label.setStyleSheet('QLabel {color : black;}')
         else:
-            self.parent.selection_pos_label.setStyleSheet(
-                'QLabel {color : red;}')
+            self.parent.selection_pos_label.setStyleSheet('QLabel {color : red;}')
 
     def zoom_in(self, scale=1.05, emit_signal=False):
         self.zoom *= scale
@@ -203,8 +185,7 @@ class HVView(QGraphicsView):
         self.set_transform()
 
     def set_transform(self):
-        self.setTransform(QTransform().scale(self.zoom,
-                                             self.zoom).rotate(self.rotate))
+        self.setTransform(QTransform().scale(self.zoom, self.zoom).rotate(self.rotate))
 
 
 class HVScene(QGraphicsScene):
@@ -241,14 +222,12 @@ class HVScene(QGraphicsScene):
 
     def show_mouse_position(self, x_pos, y_pos):
         """Show mouse position under the scene position (ignore the zoom)."""
-        self.parent.mouse_pos_label.setText(
-            ('Cursor position:\n (ignore zoom)\n'
-             f' Height(y): {y_pos:.1f}\n Width(x):  {x_pos:.1f}'))
+        self.parent.mouse_pos_label.setText(('Cursor position:\n (ignore zoom)\n'
+                                             f' Height(y): {y_pos:.1f}\n Width(x):  {x_pos:.1f}'))
 
         # if cursor is out of image, the text will be red
         if (0 < x_pos < self.width and 0 < y_pos < self.height):
-            self.parent.mouse_pos_label.setStyleSheet(
-                'QLabel {color : black;}')
+            self.parent.mouse_pos_label.setStyleSheet('QLabel {color : black;}')
         else:
             self.parent.mouse_pos_label.setStyleSheet('QLabel {color : red;}')
 
@@ -258,6 +237,4 @@ class HVScene(QGraphicsScene):
         pixel_color = QColor(pixel)
         self.parent.mouse_color_label.fill(pixel_color)
         rgba = pixel_color.getRgb()  # 8 bit RGBA
-        self.parent.mouse_rgb_label.setText(
-            f' ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, '
-            f'{rgba[3]:3d})')
+        self.parent.mouse_rgb_label.setText(f' ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, ' f'{rgba[3]:3d})')

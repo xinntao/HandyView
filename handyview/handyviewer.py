@@ -2,8 +2,7 @@ import os
 import sys
 from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog,
-                             QGridLayout, QInputDialog, QLabel, QLineEdit,
+from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog, QGridLayout, QInputDialog, QLabel, QLineEdit,
                              QMainWindow, QToolBar, QWidget)
 
 import handyview.actions as actions
@@ -135,8 +134,7 @@ class MainWindow(QMainWindow):
     def add_dock_window(self):
         # Info
         self.dock_info = QDockWidget('Information Panel', self)
-        self.dock_info.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea
-                                       | QtCore.Qt.RightDockWidgetArea)
+        self.dock_info.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
         self.dock_info.setFeatures(QDockWidget.DockWidgetMovable
                                    | QDockWidget.DockWidgetFloatable
                                    | QDockWidget.DockWidgetClosable)
@@ -159,8 +157,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.canvas.comparison_label, 9, 0, 1, 3)
         # update comparison info (for a second open)
         _, img_len_list = self.hvdb.update_path_list()
-        show_str = 'Comparison:\n # for each folder:\n\t' + '\n\t'.join(
-            map(str, img_len_list))
+        show_str = 'Comparison:\n # for each folder:\n\t' + '\n\t'.join(map(str, img_len_list))
         if len(img_len_list) > 1:
             self.canvas.comparison_label.setText(show_str)
 
@@ -191,8 +188,7 @@ class MainWindow(QMainWindow):
         with open(os.path.join(ROOT_DIR, 'history.txt'), 'r') as f:
             lines = f.readlines()
             lines = [line.strip() for line in lines]
-        key, ok = QInputDialog().getItem(self, 'Open File History', 'History:',
-                                         lines, 0, True)
+        key, ok = QInputDialog().getItem(self, 'Open File History', 'History:', lines, 0, True)
         if ok:
             self.hvdb.init_path = key
             self.hvdb.get_init_path_list()
@@ -210,8 +206,7 @@ class MainWindow(QMainWindow):
         self.canvas.show_image(init=False)
 
     def goto_index(self):
-        index, ok = QInputDialog.getText(self, 'Go to index', 'Index:',
-                                         QLineEdit.Normal, '1')
+        index, ok = QInputDialog.getText(self, 'Go to index', 'Index:', QLineEdit.Normal, '1')
         if ok:
             if index == '':
                 index = 0
@@ -232,15 +227,11 @@ class MainWindow(QMainWindow):
         else:
             current_include_names = ', '.join(current_include_names)
 
-        include_names, ok = QInputDialog.getText(self, 'Include file name',
-                                                 'Key word (seprate by ,):',
-                                                 QLineEdit.Normal,
-                                                 current_include_names)
+        include_names, ok = QInputDialog.getText(self, 'Include file name', 'Key word (seprate by ,):',
+                                                 QLineEdit.Normal, current_include_names)
         if ok:
             if include_names != '':
-                self.hvdb.include_names = [
-                    v.strip() for v in include_names.split(',')
-                ]
+                self.hvdb.include_names = [v.strip() for v in include_names.split(',')]
                 self.hvdb.exclude_names = None
             else:
                 self.hvdb.include_names = None
@@ -254,15 +245,11 @@ class MainWindow(QMainWindow):
         else:
             current_exclude_names = ', '.join(current_exclude_names)
 
-        exclude_names, ok = QInputDialog.getText(self, 'Exclude file name',
-                                                 'Key word (seprate by ,):',
-                                                 QLineEdit.Normal,
-                                                 current_exclude_names)
+        exclude_names, ok = QInputDialog.getText(self, 'Exclude file name', 'Key word (seprate by ,):',
+                                                 QLineEdit.Normal, current_exclude_names)
         if ok:
             if exclude_names != '':
-                self.hvdb.exclude_names = [
-                    v.strip() for v in exclude_names.split(',')
-                ]
+                self.hvdb.exclude_names = [v.strip() for v in exclude_names.split(',')]
                 self.hvdb.include_names = None
             else:
                 self.hvdb.exclude_names = None
@@ -276,9 +263,7 @@ class MainWindow(QMainWindow):
         if self.canvas_type != 'main':
             self.switch_main_canvas()
 
-        key, ok = QFileDialog.getOpenFileName(
-            self, 'Select an image', os.path.join(self.hvdb.get_folder(),
-                                                  '../'))
+        key, ok = QFileDialog.getOpenFileName(self, 'Select an image', os.path.join(self.hvdb.get_folder(), '../'))
         if ok:
             self.canvas.add_cmp_folder(key)
 
@@ -307,39 +292,27 @@ class MainWindow(QMainWindow):
         if self.canvas_type != 'compare':
             num_compare = self.hvdb.get_folder_len()
             if num_compare == 1:
-                num_view, ok = QInputDialog.getText(
-                    self, 'Compare Canvas',
-                    '# Compare Columns: (options: 2, 3, 4)', QLineEdit.Normal,
-                    '2')
+                num_view, ok = QInputDialog.getText(self, 'Compare Canvas', '# Compare Columns: (options: 2, 3, 4)',
+                                                    QLineEdit.Normal, '2')
                 if ok:
                     try:
                         num_view = int(num_view)
                     except Exception:
-                        show_msg(
-                            icon='Warning',
-                            title='Warning',
-                            text='# Compare Columns should be int.')
+                        show_msg(icon='Warning', title='Warning', text='# Compare Columns should be int.')
                     if num_view > 4 or num_view < 2:
-                        show_msg(
-                            icon='Warning',
-                            title='Warning',
-                            text='# Compare Columns should be 2, 3, 4.')
+                        show_msg(icon='Warning', title='Warning', text='# Compare Columns should be 2, 3, 4.')
                     self.hvdb.interval = num_view - 1
                 else:  # default value
                     self.hvdb.interval = 1
                     num_view = 2
             else:
                 if not self.hvdb.is_same_len:
-                    show_msg('Critical', 'Error',
-                             ('Compare folders have different length, \n'
-                              'Cannot enter compare canvas.'))
+                    show_msg('Critical', 'Error', ('Compare folders have different length, \n'
+                                                   'Cannot enter compare canvas.'))
                     return
                 self.hvdb.fidx = 0
                 num_view = min(self.hvdb.get_folder_len(), 4)
-                show_msg(
-                    'Information', 'Compare Canvas',
-                    f'Comparsion folder mode.\n # Compare Columns: {num_view}.'
-                )
+                show_msg('Information', 'Compare Canvas', f'Comparsion folder mode.\n # Compare Columns: {num_view}.')
 
             self.dock_info.close()
             self.canvas = Canvas(self, self.hvdb, num_view=num_view)
@@ -347,12 +320,7 @@ class MainWindow(QMainWindow):
             self.canvas_type = 'compare'
 
     def switch_preview_canvas(self):
-        show_msg(
-            'Information',
-            '^_^',
-            text=('Has not implemented yet.\n'
-                  'Contributions are welcome!\n'
-                  '尚未实现, 欢迎贡献!'))
+        show_msg('Information', '^_^', text=('Has not implemented yet.\n' 'Contributions are welcome!\n' '尚未实现, 欢迎贡献!'))
 
     # ---------------------------------------
     # slots: help
@@ -378,8 +346,7 @@ if __name__ == '__main__':
     if platform.system() == 'Windows':
         # set the icon in the task bar
         import ctypes
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
-            'HandyView')
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('HandyView')
     print('Welcome to HandyView.')
 
     app = QApplication(sys.argv)
@@ -389,11 +356,9 @@ if __name__ == '__main__':
 
     main = MainWindow()
     main.setWindowIcon(QIcon(os.path.join(ROOT_DIR, 'icon.ico')))
-    main.setGeometry(0, 0, size.width(),
-                     size.height())  # (left, top, width, height)
+    main.setGeometry(0, 0, size.width(), size.height())  # (left, top, width, height)
     main.showMaximized()
 
     # change status bar info
-    main.set_statusbar(
-        f'Screen: {screen.name()} with size {size.width()} x {size.height()}.')
+    main.set_statusbar(f'Screen: {screen.name()} with size {size.width()} x {size.height()}.')
     sys.exit(app.exec_())

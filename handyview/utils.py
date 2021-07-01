@@ -3,8 +3,8 @@ import os
 import re
 import sys
 
-FORMATS = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM',
-           '.bmp', '.BMP', '.gif', '.GIF', '.tiff', '.TIFF')
+FORMATS = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP', '.gif', '.GIF', '.tiff',
+           '.TIFF')
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the PyInstaller bootloader
@@ -30,10 +30,7 @@ def sizeof_fmt(size, suffix='B'):
     return f'{size:3.1f} Y{suffix}'
 
 
-def get_img_list(folder,
-                 include_names=None,
-                 exclude_names=None,
-                 exact_exclude_names=None):
+def get_img_list(folder, include_names=None, exclude_names=None, exact_exclude_names=None):
     """Get the image list in a folder.
     It also considers 'include' and 'exclude' strings.
 
@@ -77,7 +74,5 @@ def get_img_list(folder,
                 if flag_add:
                     img_list.append(img_path)
     # natural sort for numbers in names
-    img_list.sort(
-        key=lambda s:
-        [int(t) if t.isdigit() else t.lower() for t in re.split(r'(\d+)', s)])
+    img_list.sort(key=lambda s: [int(t) if t.isdigit() else t.lower() for t in re.split(r'(\d+)', s)])
     return img_list
