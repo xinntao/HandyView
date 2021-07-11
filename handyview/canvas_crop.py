@@ -1,11 +1,11 @@
-import glob
 import os
-import shutil
-import time
+from glob import glob
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel, QLineEdit, QListWidget, QListWidgetItem,
                              QPushButton, QScrollArea, QVBoxLayout, QWidget)
+from shutil import rmtree
+from time import localtime, strftime
 
 from handyview.utils import ROOT_DIR, crop_images
 from handyview.widgets import HLine, HVLable, show_msg
@@ -203,10 +203,10 @@ class CanvasCrop(QWidget):
         self.crop_thumbnails.clear()
         self.rect_thumbnails.clear()
         # 2. add thumbnails
-        for path in sorted(glob.glob(os.path.join(self.patch_folder, '*'))):
+        for path in sorted(glob(os.path.join(self.patch_folder, '*'))):
             self.crop_thumbnails.addItem(QListWidgetItem(QIcon(path), os.path.basename(path)))
         if os.path.isdir(self.rect_folder):
-            for path in sorted(glob.glob(os.path.join(self.rect_folder, '*'))):
+            for path in sorted(glob(os.path.join(self.rect_folder, '*'))):
                 self.rect_thumbnails.addItem(QListWidgetItem(QIcon(path), os.path.basename(path)))
 
     def crop_images(self):
@@ -245,7 +245,7 @@ class CanvasCrop(QWidget):
 
     def record_crop_history(self, path, pos, ratio, mode):
         pos_str = ', '.join(map(str, pos))
-        content = f'{time.strftime("%Y%m%d-%H%M%S", time.localtime())} {path} ({pos_str}) {ratio} {mode}\n'
+        content = f'{strftime("%Y%m%d-%H%M%S", localtime())} {path} ({pos_str}) {ratio} {mode}\n'
         try:
             with open(os.path.join(ROOT_DIR, 'history_crop.txt'), 'a') as f:
                 f.write(content)
@@ -266,13 +266,13 @@ class CanvasCrop(QWidget):
 
     def delete_patch_folder(self):
         try:
-            shutil.rmtree(self.patch_folder)
+            rmtree(self.patch_folder)
         except Exception as error:
             show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
 
     def delete_rect_folder(self):
         try:
-            shutil.rmtree(self.rect_folder)
+            rmtree(self.rect_folder)
         except Exception as error:
             show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
 
