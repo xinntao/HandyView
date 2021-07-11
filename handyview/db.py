@@ -36,6 +36,9 @@ class HVDB():
         self.md5_list = [[]]
         self.phash_list = [[]]
 
+        # for selection pos in crop canvas
+        self.selection_pos = [0, 0, 0, 0]
+
         self.get_init_path_list()
 
     def get_init_path_list(self):

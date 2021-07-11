@@ -156,6 +156,7 @@ class HVView(QGraphicsView):
                                                 f' Start: {int(y_start)}, {int(x_start)}\n'
                                                 f' End  : {int(y_end)}, {int(x_end)}\n'
                                                 f' Len  : {int(y_len)}, {int(x_len)}')
+        self.parent.db.selection_pos = [int(y_start), int(x_start), int(y_len), int(x_len)]
         width, height = self.scene().width, self.scene().height
         if (0 < x_start < width and 0 < y_start < height and 0 < x_end < width and 0 < y_end < height):
             self.parent.selection_pos_label.setStyleSheet('QLabel {color : black;}')

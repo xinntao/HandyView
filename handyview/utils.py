@@ -1,3 +1,4 @@
+import cv2
 import glob
 import os
 import re
@@ -76,3 +77,59 @@ def get_img_list(folder, include_names=None, exclude_names=None, exact_exclude_n
     # natural sort for numbers in names
     img_list.sort(key=lambda s: [int(t) if t.isdigit() else t.lower() for t in re.split(r'(\d+)', s)])
     return img_list
+
+
+def crop_images(img_list,
+                rect_pos,
+                patch_folder,
+                enlarge_ratio=2,
+                interpolation='bicubic',
+                line_width=0,
+                color='yellow',
+                rect_folder=None):
+
+    color_tb = {}
+    color_tb['yellow'] = (0, 255, 255)
+    color_tb['green'] = (0, 255, 0)
+    color_tb['red'] = (0, 0, 255)
+    color_tb['magenta'] = (255, 0, 255)
+    color_tb['matlab_blue'] = (189, 114, 0)
+    color_tb['matlab_orange'] = (25, 83, 217)
+    color_tb['matlab_yellow'] = (32, 177, 237)
+    color_tb['matlab_purple'] = (142, 47, 126)
+    color_tb['matlab_green'] = (48, 172, 119)
+    color_tb['matlab_liblue'] = (238, 190, 77)
+    color_tb['matlab_brown'] = (47, 20, 162)
+    color = color_tb[color]
+
+    # make temp folder
+    os.makedirs(patch_folder, exist_ok=True)
+    if line_width > 0 and not os.path.exists(rect_folder):
+        os.makedirs(rect_folder)
+
+    start_h, start_w, len_h, len_w = rect_pos
+    for i, path in enumerate(img_list):
+        img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+        base_name = os.path.splitext(os.path.basename(path))[0]
+        # crop patch
+        if img.ndim == 2:
+            patch = img[start_h:start_h + len_h, start_w:start_w + len_w]
+        elif img.ndim == 3:
+            patch = img[start_h:start_h + len_h, start_w:start_w + len_w, :]
+
+        # enlarge patch if necessary
+        if enlarge_ratio > 1:
+            h, w, _ = patch.shape
+            if interpolation == 'bicubic':
+                interpolation = cv2.INTER_CUBIC
+            elif interpolation == 'bilinear':
+                interpolation = cv2.INTER_LINEAR
+            elif interpolation == 'nearest':
+                interpolation = cv2.INTER_NEAREST
+            patch = cv2.resize(patch, (w * enlarge_ratio, h * enlarge_ratio), interpolation=interpolation)
+        cv2.imwrite(os.path.join(patch_folder, base_name + '_patch.png'), patch)
+
+        # draw rectangle
+        if line_width > 0:
+            img_rect = cv2.rectangle(img, (start_w, start_h), (start_w + len_w, start_h + len_h), color, line_width)
+            cv2.imwrite(os.path.join(rect_folder, base_name + '_rect.png'), img_rect)
