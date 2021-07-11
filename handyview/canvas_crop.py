@@ -50,6 +50,14 @@ class CanvasCrop(QWidget):
         self.crop_thumbnails.setResizeMode(QListWidget.Adjust)
         self.crop_scrollArea.setWidget(self.crop_thumbnails)
 
+        # show thumbnails for images with rect
+        self.rect_scrollArea = QScrollArea(widgetResizable=True)
+        self.rect_thumbnails = QListWidget()
+        self.rect_thumbnails.setIconSize(QSize(200, 150))
+        self.rect_thumbnails.setViewMode(QListWidget.IconMode)
+        self.rect_thumbnails.setResizeMode(QListWidget.Adjust)
+        self.rect_scrollArea.setWidget(self.rect_thumbnails)
+
         # ---------------------------------------
         # layouts
         # ---------------------------------------
@@ -168,8 +176,9 @@ class CanvasCrop(QWidget):
         # int row, int column, int rowSpan, int columnSpan
         main_layout.addWidget(self.scrollArea, 0, 0, 20, 20)
         main_layout.addWidget(self.crop_scrollArea, 20, 0, 20, 20)
+        main_layout.addWidget(self.rect_scrollArea, 40, 0, 20, 20)
 
-        main_layout.addLayout(panel_grid, 0, 20, 40, 5)
+        main_layout.addLayout(panel_grid, 0, 20, 60, 5)
 
     def selectionChanged(self):
         print('Selected items: ', self.thumbnails.selectedItems())
@@ -189,12 +198,16 @@ class CanvasCrop(QWidget):
         for path in self.db.path_list[0]:
             self.thumbnails.addItem(QListWidgetItem(QIcon(path), os.path.basename(path)))
 
-    def update_crop_images(self, patch_folder):
+    def update_crop_rect_images(self):
         # 1. clear all the existing thumbnails
         self.crop_thumbnails.clear()
+        self.rect_thumbnails.clear()
         # 2. add thumbnails
-        for path in sorted(glob.glob(os.path.join(patch_folder, '*'))):
+        for path in sorted(glob.glob(os.path.join(self.patch_folder, '*'))):
             self.crop_thumbnails.addItem(QListWidgetItem(QIcon(path), os.path.basename(path)))
+        if os.path.isdir(self.rect_folder):
+            for path in sorted(glob.glob(os.path.join(self.rect_folder, '*'))):
+                self.rect_thumbnails.addItem(QListWidgetItem(QIcon(path), os.path.basename(path)))
 
     def crop_images(self):
         # 1. check all images has the same shape
@@ -228,7 +241,7 @@ class CanvasCrop(QWidget):
             # update crop info to txt
             self.record_crop_history(self.db.path_list[0][0], [start_h, start_w, len_h, len_w], ratio, mode)
             # show cropped image
-            self.update_crop_images(self.patch_folder)
+            self.update_crop_rect_images()
 
     def record_crop_history(self, path, pos, ratio, mode):
         pos_str = ', '.join(map(str, pos))
