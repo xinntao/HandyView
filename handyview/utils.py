@@ -1,8 +1,8 @@
-import cv2
 import glob
 import os
 import re
 import sys
+from PIL import Image
 
 FORMATS = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP', '.gif', '.GIF', '.tiff',
            '.TIFF')
@@ -109,27 +109,25 @@ def crop_images(img_list,
 
     start_h, start_w, len_h, len_w = rect_pos
     for i, path in enumerate(img_list):
-        img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+        img = Image.open(path)
         base_name = os.path.splitext(os.path.basename(path))[0]
         # crop patch
-        if img.ndim == 2:
-            patch = img[start_h:start_h + len_h, start_w:start_w + len_w]
-        elif img.ndim == 3:
-            patch = img[start_h:start_h + len_h, start_w:start_w + len_w, :]
+        patch = img.crop((start_w, start_h, start_w + len_w, start_h + len_h))
 
         # enlarge patch if necessary
         if enlarge_ratio > 1:
-            h, w, _ = patch.shape
+            w, h = patch.size
             if interpolation == 'bicubic':
-                interpolation = cv2.INTER_CUBIC
+                interpolation = Image.BICUBIC
             elif interpolation == 'bilinear':
-                interpolation = cv2.INTER_LINEAR
+                interpolation = Image.BILINEAR
             elif interpolation == 'nearest':
-                interpolation = cv2.INTER_NEAREST
-            patch = cv2.resize(patch, (w * enlarge_ratio, h * enlarge_ratio), interpolation=interpolation)
-        cv2.imwrite(os.path.join(patch_folder, base_name + '_patch.png'), patch)
+                interpolation = Image.NEAREST
+            patch = patch.resize((w * enlarge_ratio, h * enlarge_ratio), resample=interpolation)
+        patch.save(os.path.join(patch_folder, base_name + '_patch.png'))
 
         # draw rectangle
-        if line_width > 0:
-            img_rect = cv2.rectangle(img, (start_w, start_h), (start_w + len_w, start_h + len_h), color, line_width)
-            cv2.imwrite(os.path.join(rect_folder, base_name + '_rect.png'), img_rect)
+        # TODO
+        # if line_width > 0:
+        #     img_rect = cv2.rectangle(img, (start_w, start_h), (start_w + len_w, start_h + len_h), color, line_width)
+        #     cv2.imwrite(os.path.join(rect_folder, base_name + '_rect.png'), img_rect)
