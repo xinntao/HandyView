@@ -1,5 +1,6 @@
 import glob
 import os
+import shutil
 import time
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
@@ -26,6 +27,10 @@ class CanvasCrop(QWidget):
 
         # initialize widgets and layout
         self.init_widgets_layout()
+
+        # get patch and rect folder
+        self.patch_folder = os.path.join(os.path.dirname(self.db.path_list[0][0]), os.pardir, 'crop_patch')
+        self.rect_folder = os.path.join(os.path.dirname(self.db.path_list[0][0]), os.pardir, 'draw_rect')
 
     def init_widgets_layout(self):
         # show thumbnails
@@ -65,7 +70,15 @@ class CanvasCrop(QWidget):
         self.edit_ratio = QLineEdit('2')
         self.combo_mode = QComboBox()
         self.combo_mode.addItems(['bicubic', 'bilinear', 'nearest'])
-
+        # rect
+        label_line_width = HVLable('Rect: Line width', self, color='blue')
+        label_line_color = HVLable('Color', self, color='blue')
+        self.edit_line_width = QLineEdit('2')
+        self.combo_line_color = QComboBox()
+        self.combo_line_color.addItems([
+            'yellow', 'green', 'red', 'magenta', 'matlab_blue', 'matlab_orange', 'matlab_yellow', 'matlab_purple',
+            'matlab_green', 'matlab_liblue', 'matlab_brown'
+        ])
         # config grid
         config_grid = QGridLayout()
         # config_grid.setSpacing(10)
@@ -73,6 +86,8 @@ class CanvasCrop(QWidget):
         # -----  Start  Len   -----  Scale
         # Height [   ] [   ]  Ratio  [   ]
         # Width  [   ] [   ]  Mode   Combo
+        # --------------------------------
+        # Rect: Line Width [   ], Color Combo
         # row 0
         config_grid.addWidget(label_start, 0, 1, 1, 1)
         config_grid.addWidget(label_len, 0, 2, 1, 1)
@@ -83,14 +98,21 @@ class CanvasCrop(QWidget):
         config_grid.addWidget(self.edit_len_h, 1, 2, 1, 1)
         config_grid.addWidget(label_ratio, 1, 3, 1, 1)
         config_grid.addWidget(self.edit_ratio, 1, 4, 1, 1)
-        # row 1
+        # row 2
         config_grid.addWidget(label_width, 2, 0, 1, 1)
         config_grid.addWidget(self.edit_start_w, 2, 1, 1, 1)
         config_grid.addWidget(self.edit_len_w, 2, 2, 1, 1)
         config_grid.addWidget(label_mode, 2, 3, 1, 1)
         config_grid.addWidget(self.combo_mode, 2, 4, 1, 1)
+        # row 3: horizontal line
+        config_grid.addWidget(HLine(), 3, 0, 1, 5)
+        # row 4
+        config_grid.addWidget(label_line_width, 4, 0, 1, 1)
+        config_grid.addWidget(self.edit_line_width, 4, 1, 1, 1)
+        config_grid.addWidget(label_line_color, 4, 2, 1, 1)
+        config_grid.addWidget(self.combo_line_color, 4, 3, 1, 1)
         # blank
-        config_grid.addWidget(QLabel(), 3, 0, 5, 5)
+        config_grid.addWidget(QLabel(), 5, 0, 5, 5)
 
         # actions
         button_add = QPushButton('Add ALL', self)
@@ -99,18 +121,34 @@ class CanvasCrop(QWidget):
         button_selection_pos.clicked.connect(self.set_selection_pos)
         button_crop = QPushButton('Crop', self)
         button_crop.clicked.connect(self.crop_images)
-        button_open = QPushButton('Open Patch Folder', self)
-        button_open.clicked.connect(self.open_patch_folder)
+        button_open_patch = QPushButton('Open Patch Folder', self)
+        button_open_patch.clicked.connect(self.open_patch_folder)
+        button_open_rect = QPushButton('Open Rect Folder', self)
+        button_open_rect.clicked.connect(self.open_rect_folder)
         button_open_history = QPushButton('Open History Info', self)
         button_open_history.clicked.connect(self.open_history_file)
+
+        button_delete_patch = QPushButton('Delete Patch Folder', self)
+        button_delete_patch.clicked.connect(self.delete_patch_folder)
+        button_delete_rect = QPushButton('Delete Rect Folder', self)
+        button_delete_rect.clicked.connect(self.delete_rect_folder)
+
+        button_add.setStyleSheet('background-color : lightblue')
+        button_crop.setStyleSheet('background-color : lightblue')
+        button_open_patch.setStyleSheet('background-color : lightgreen')
+        button_open_rect.setStyleSheet('background-color : lightgreen')
 
         action_grid = QGridLayout()
         action_grid.addWidget(button_add, 0, 0, 1, 1)
         action_grid.addWidget(button_selection_pos, 1, 0, 1, 1)
         action_grid.addWidget(button_crop, 2, 0, 1, 1)
         action_grid.addWidget(HLine(), 3, 0, 1, 1)
-        action_grid.addWidget(button_open, 4, 0, 1, 1)
-        action_grid.addWidget(button_open_history, 5, 0, 1, 1)
+        action_grid.addWidget(button_open_patch, 4, 0, 1, 1)
+        action_grid.addWidget(button_open_rect, 5, 0, 1, 1)
+        action_grid.addWidget(button_open_history, 6, 0, 1, 1)
+        action_grid.addWidget(HLine(), 7, 0, 1, 1)
+        action_grid.addWidget(button_delete_patch, 8, 0, 1, 1)
+        action_grid.addWidget(button_delete_rect, 9, 0, 1, 1)
 
         config_box = QGroupBox('Config')
         config_box.setLayout(config_grid)
@@ -169,11 +207,11 @@ class CanvasCrop(QWidget):
             len_w = int(self.edit_len_w.text())
             ratio = int(self.edit_ratio.text())
             mode = self.combo_mode.currentText()
+            line_width = int(self.edit_line_width.text())
+            line_color = self.combo_line_color.currentText()
         except ValueError as error:
             show_msg(icon='Critical', title='Title', text=f'Wrong input: {error}', timeout=None)
             return 0
-        # get patch folder
-        self.patch_folder = os.path.join(os.path.dirname(self.db.path_list[0][0]), os.pardir, 'crop_patch')
 
         try:
             crop_images(
@@ -181,9 +219,9 @@ class CanvasCrop(QWidget):
                 self.patch_folder,
                 enlarge_ratio=ratio,
                 interpolation=mode,
-                line_width=0,
-                color='yellow',
-                rect_folder=None)
+                line_width=line_width,
+                color=line_color,
+                rect_folder=self.rect_folder)
         except Exception as error:
             show_msg(icon='Critical', title='Title', text=f'Crop error: {error}', timeout=None)
         else:
@@ -202,10 +240,34 @@ class CanvasCrop(QWidget):
             show_msg(icon='Warning', title='Title', text=f'Record crop history error: {error}', timeout=None)
 
     def open_patch_folder(self):
-        os.startfile(self.patch_folder)
+        try:
+            os.startfile(self.patch_folder)
+        except Exception as error:
+            show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
+
+    def open_rect_folder(self):
+        try:
+            os.startfile(self.rect_folder)
+        except Exception as error:
+            show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
+
+    def delete_patch_folder(self):
+        try:
+            shutil.rmtree(self.patch_folder)
+        except Exception as error:
+            show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
+
+    def delete_rect_folder(self):
+        try:
+            shutil.rmtree(self.rect_folder)
+        except Exception as error:
+            show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
 
     def open_history_file(self):
-        os.startfile(os.path.join(ROOT_DIR, 'history_crop.txt'))
+        try:
+            os.startfile(os.path.join(ROOT_DIR, 'history_crop.txt'))
+        except Exception as error:
+            show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
 
     def keyPressEvent(self, event):
         pass

@@ -2,7 +2,7 @@ import glob
 import os
 import re
 import sys
-from PIL import Image
+from PIL import Image, ImageDraw
 
 FORMATS = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP', '.gif', '.GIF', '.tiff',
            '.TIFF')
@@ -89,17 +89,30 @@ def crop_images(img_list,
                 rect_folder=None):
 
     color_tb = {}
-    color_tb['yellow'] = (0, 255, 255)
+    # in BGR
+    # color_tb['yellow'] = (0, 255, 255)
+    # color_tb['green'] = (0, 255, 0)
+    # color_tb['red'] = (0, 0, 255)
+    # color_tb['magenta'] = (255, 0, 255)
+    # color_tb['matlab_blue'] = (189, 114, 0)
+    # color_tb['matlab_orange'] = (25, 83, 217)
+    # color_tb['matlab_yellow'] = (32, 177, 237)
+    # color_tb['matlab_purple'] = (142, 47, 126)
+    # color_tb['matlab_green'] = (48, 172, 119)
+    # color_tb['matlab_liblue'] = (238, 190, 77)
+    # color_tb['matlab_brown'] = (47, 20, 162)
+    # in RGB
+    color_tb['yellow'] = (255, 255, 0)
     color_tb['green'] = (0, 255, 0)
-    color_tb['red'] = (0, 0, 255)
+    color_tb['red'] = (255, 0, 0)
     color_tb['magenta'] = (255, 0, 255)
-    color_tb['matlab_blue'] = (189, 114, 0)
-    color_tb['matlab_orange'] = (25, 83, 217)
-    color_tb['matlab_yellow'] = (32, 177, 237)
-    color_tb['matlab_purple'] = (142, 47, 126)
-    color_tb['matlab_green'] = (48, 172, 119)
-    color_tb['matlab_liblue'] = (238, 190, 77)
-    color_tb['matlab_brown'] = (47, 20, 162)
+    color_tb['matlab_blue'] = (0, 114, 189)
+    color_tb['matlab_orange'] = (217, 83, 25)
+    color_tb['matlab_yellow'] = (237, 177, 32)
+    color_tb['matlab_purple'] = (126, 47, 142)
+    color_tb['matlab_green'] = (119, 172, 48)
+    color_tb['matlab_liblue'] = (77, 190, 238)
+    color_tb['matlab_brown'] = (162, 20, 47)
     color = color_tb[color]
 
     # make temp folder
@@ -127,7 +140,7 @@ def crop_images(img_list,
         patch.save(os.path.join(patch_folder, base_name + '_patch.png'))
 
         # draw rectangle
-        # TODO
-        # if line_width > 0:
-        #     img_rect = cv2.rectangle(img, (start_w, start_h), (start_w + len_w, start_h + len_h), color, line_width)
-        #     cv2.imwrite(os.path.join(rect_folder, base_name + '_rect.png'), img_rect)
+        if line_width > 0:
+            draw = ImageDraw.Draw(img)
+            draw.rectangle(((start_w, start_h), (start_w + len_w, start_h + len_h)), outline=color, width=line_width)
+            img.save(os.path.join(rect_folder, base_name + '_rect.png'))
