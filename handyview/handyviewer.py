@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('HandyView')
         self.init_menubar()
         self.init_toolbar()
-        self.init_statusbar()
+        # self.init_statusbar()
         self.init_central_window()
         self.add_dock_window()
 
@@ -383,6 +383,6 @@ if __name__ == '__main__':
     mainwindow.setGeometry(0, 0, size.width(), size.height())  # (left, top, width, height)
     mainwindow.showMaximized()
     # change status bar info
-    mainwindow.set_statusbar(f'Screen: {screen.name()} with size {size.width()} x {size.height()}.')
+    # mainwindow.set_statusbar(f'Screen: {screen.name()} with size {size.width()} x {size.height()}.')
 
     sys.exit(app.exec_())

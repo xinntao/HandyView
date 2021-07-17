@@ -1,6 +1,6 @@
 import os
 from PyQt5 import QtCore
-from PyQt5.QtGui import QColor, QImage, QPixmap
+from PyQt5.QtGui import QColor, QImage, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import QApplication, QGridLayout, QSplitter, QWidget
 
 from handyview.view_scene import HVScene, HVView
@@ -165,6 +165,8 @@ class Canvas(QWidget):
         if is_same_len is False:
             msg = ('Comparison folders have differnet number of images.\n' f'{show_str}')
             show_msg('Warning', 'Warning!', msg)
+        # refresh
+        self.show_image()
 
     def update_path_list(self):
         is_same_len, img_len_list = self.db.update_path_list()
@@ -217,7 +219,16 @@ class Canvas(QWidget):
                 self.parent.set_statusbar(f'{img_path}')
 
             # shown text
-            basename = os.path.basename(img_path)
+            # basename = os.path.basename(img_path)
+
+            def get_parent_dir(path, levels=1):
+                common = path
+                for _ in range(levels + 1):
+                    common = os.path.dirname(common)
+                return os.path.relpath(path, common)
+
+            shown_path = get_parent_dir(img_path, 2).replace('\\', '/')
+
             if interval_mode:
                 shown_idx = self.db.pidx + 1 + idx
             else:
@@ -225,7 +236,7 @@ class Canvas(QWidget):
 
             # TODO: add zoom ratio
             shown_text = [
-                f'[{shown_idx:d} / {self.db.get_path_len():d}] {basename}', f'{height:d} x {width:d}, {file_size}',
+                f'[{shown_idx:d} / {self.db.get_path_len():d}] {shown_path}', f'{height:d} x {width:d}, {file_size}',
                 f'{color_type}'
             ]
             # show fingerprint
@@ -242,6 +253,15 @@ class Canvas(QWidget):
             self.qviews[idx].set_shown_text(shown_text)
             # self.qviews[idx].viewport().update()
             qpixmap = QPixmap.fromImage(qimg)
+
+            # draw border
+            if not interval_mode and len(self.qscenes) == 1 and self.db.fidx == 0:  # compare mode, the main image
+                painter = QPainter()
+                painter.begin(qpixmap)
+                pen = QPen(QColor(220, 0, 0), 5, QtCore.Qt.SolidLine)
+                painter.setPen(pen)
+                painter.drawRect(0, 0, qpixmap.width(), qpixmap.height())
+                painter.end()
 
             qscene.clear()
             qscene.addPixmap(qpixmap)
