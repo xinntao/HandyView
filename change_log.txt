@@ -1,0 +1,71 @@
+v0.4.3
+∙ refactored code in general for readability/scalability
+∙ created HAction class based on previous new_action function
+    - HAactions are populated in the MainWindow and actions.py is no longer needed/was removed
+∙ added:
+    - preview mode
+        - preview is filtered by default based on include files/exclude files etc.
+        - thumbnails can be cached or generated in memory
+        - alder32 checksum is computed on files before pulling cached thumbnails
+            - if file changed thumbnail will be recalculated
+        - during testing sometimes MemoryError would show up when memory is not full and sometimes MemoryError would show up when memory is actually full
+        - use small cached thumbnails if CPU memory is low and image count is high
+
+        thumbnails_in_memory=True
+        - thumbnails will be generated in memory each time preview mode is started
+        - images with transparent backgrounds will show the background in their thumbnails
+        - slower thumbnail generation for large number of file
+
+        thumbnails_in_memory=False:
+        - thumbnails will be saved to the drive
+        - thumbnails will not be re-generated unless thumbnail size is increased
+        - images with transparent backgrounds will show white  background in their thumbnails
+        - faster thumbnail generation for large number of file after initial thumbnail generation is complete
+        - thumbnails are automatically re-generated if the image files change/are edited (i.e. adler32 sum is different)
+∙ added
+    - fast zoom option
+        fast_zoom=True: same as in v0.4.2
+        - faster
+        - photos look good
+        - images with text/lines/vector graphics show artifacts upon zoom
+        - cursor position coordinates reflect actual image dimensions regardless of zoom state
+        - pressing CTRL+R will temporarily disable fast zoom
+
+        fast_zoom=False:
+        - slower
+        - both photos and images with text/lines/vector graphics look perfect
+        - cursor position coordinates reflect resized image dimensions unless Zoom is 1.0
+∙ added
+    - settings dialog
+∙ fixed:
+    - was: info panel could not be reopened by user if close
+    - now:
+        - info panel is not closeable by user
+        - is deleted programmaticaly opon programmatic close
+        - added show/hide info panel button
+∙ fixed:
+    - was: canvas.mouse_color_label was moving left/right, not staying fixed
+    - now: stays fixed
+∙ hvdb.get_folder ← removed folder keyword ← it wasn't used
+∙ added:
+    - mainWindow.open_file_dialog now filters images based on utils.FORMATS
+∙ fixed:
+    - was: opening a file would display the first file in the folder
+    - now: opening a file displays the opened file
+        - if you add a comparison folder, switching to comparison view will show that file
+∙ fixed:
+    - now: last open directory is automatically loaded into file open dialog
+∙ fixed:
+    - now: canvas.comparison_label is cleared from mainWindow.dockWidget when clearing comparison when in main view
+∙ fixed:
+    - was: IndexError was causing crash when all images were filtered based on given filter
+    - now: Message box is displayed, and the filter state remains unchanged
+∙ canvas:
+    - refactored canvas.show_image
+        - moved QT operations into HVScene.set_image(self, qImage, width, height)
+∙ HVScene:
+    - refactored
+    - changed: no need to feed PIL.image width and height into HVScene because QPixel and QImage .width() and .height() return the same dimensions
+        see disabled HVScene.set_image(self, qImage, width, height)
+        → HVScene.set_image(self, img_path) contains relevant QT code in the widget that uses it
+∙ disabled draw and edit in the menu bar ← they are blank
