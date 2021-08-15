@@ -13,11 +13,12 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
 
 ## :sparkles: Features
 
-- Switch among images **with fixed zoom ration**, which is useful when comparing image details. (Unfortunately, I cannot find such a image viewer and this is the initial motivation to develop HandyView).
+- Switch among images **with fixed zoom ratio**, which is useful when comparing image details. (Unfortunately, I cannot find such a image viewer and this is the initial motivation to develop HandyView).
 - Various comparison modes.
 - Show basic image information, *e.g.*, image path, shape, size, color type, zoom ration, etc.
 - Show the position and color in the current mouse cursor.
 - Draw rectangles on images and show the start and end position.
+- Accurate zoom rendering of images containing text and lines (PDF-like documents and schematics)
 
 ## :eyes: Screenshot
 
@@ -57,7 +58,7 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
   <img src="assets/hv_rect.gif" height="400">
 </p>
 
-- Accurate zoom rendering in QT/PyQt using QGraphicsView. Many QT applications show distorted text and lines upon zooming/resizing, which is an inherent limitation how QGraphicsView handles QGraphicsScene images. The solution is to have QGraphicsScene handle resizing. HandyView's 'Fast Zoom' feature is QGraphicsView handling zoom. With 'Fast Zoom' disabled HandyView performs accurate zoom rendering handled by QGraphicsScene. 'Fast Zoom' can be disabled in option dialog. Fast-zoomed images can be accurately rendered by clicking inside the scroll ara and hitting CTRL+R.
+- Accurate zoom rendering in QT/PyQt using QGraphicsView. Many QT applications show distorted text and lines upon zooming/resizing, which is an inherent limitation how QGraphicsView handles QGraphicsScene images. The solution is to have QGraphicsScene handle resizing. HandyView's 'Fast Zoom' feature has QGraphicsView handle zoom. With 'Fast Zoom' disabled HandyView performs accurate zoom rendering handled by QGraphicsScene. 'Fast Zoom' can be disabled in option dialog. Fast-zoomed images can be accurately rendered by clicking inside the scroll ara and hitting CTRL+R.
 
 <p align="center">
   <img src="assets/hv_fast_zoom.png">
