@@ -66,11 +66,11 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
 - Accurate Zoom rendering in QT/PyQt using QGraphicsView.
 
 <p align="center">
-  <img src="assets/hv_fast_zoom.png" height="400">
+  <img src="assets/hv_fast_zoom.png">
 </p>
 
 <p align="center">
-  <img src="assets/hv_fast_zoom_2.png" height="400">
+  <img src="assets/hv_fast_zoom_2.png">
 </p>
 
 ## :wrench: Usage
