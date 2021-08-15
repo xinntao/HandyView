@@ -6,12 +6,12 @@ import os
 from PyQt5 import QtCore
 from PyQt5.QtGui import QColor, QFont, QIcon, QPixmap
 from PyQt5.QtWidgets import (QDialog, QFrame, QHBoxLayout, QLabel, QMessageBox,
-                             QPushButton, QVBoxLayout)
+                             QPushButton, QVBoxLayout, QAction, QWidget)
 
 from handyview.utils import ROOT_DIR
 
 
-def show_msg(icon='Information', title='Title', text='Message', timeout=None):
+def show_msg(parent=None, icon='Information', title='Title', text='Message', timeout=None):
     """
     QMessageBox::NoIcon
     QMessageBox::Question
@@ -30,7 +30,10 @@ def show_msg(icon='Information', title='Title', text='Message', timeout=None):
     elif icon == 'Critical':
         icon = QMessageBox.Critical
 
-    msg = QMessageBox()
+    if isinstance(parent, QWidget):
+        msg = QMessageBox(parent)
+    else:
+        msg = QMessageBox()
     msg.setWindowIcon(QIcon(os.path.join(ROOT_DIR, 'icon.ico')))
     msg.setIcon(icon)
     msg.setWindowTitle(title)
@@ -60,7 +63,7 @@ class ColorLabel(QLabel):
         self.setPixmap(self.pixmap)
         if text is not None:
             self.setText(text)
-        if color is not None:
+        elif color is not None:
             self.fill(color)
 
     def fill(self, color):
@@ -140,3 +143,18 @@ class MessageDialog(QDialog):
 
     def setText(self, text):
         self.text_label.setText(text)
+
+
+class HAction(QAction):
+    def __init__(self, parent, text, icon_name=None, shortcut=None, checkable=False, connected=None):
+        super().__init__(text, parent)
+        if icon_name:
+            self.setIcon(QIcon(os.path.join(ROOT_DIR, f'icons/{icon_name}')))
+        if shortcut:
+            self.setShortcut(shortcut)
+        if checkable:
+            self.setCheckable(True)
+        if not connected:
+            QMessageBox.about(parent, "Message", f"!!! Action {text} is not connected !!!")
+        else:
+            self.triggered.connect(connected)
