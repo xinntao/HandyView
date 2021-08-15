@@ -155,7 +155,7 @@ This project is released under the [MIT license](./LICENSE).
 
 ### Icons
 
-I have used the icons from [flaticon](www.flaticon.com) and [pixabay](https://pixabay.com/). The following are the source links.
+I have used the icons from [flaticon](https://www.flaticon.com/) and [pixabay](https://pixabay.com/). The following are the source links.
 
 | Icon | Link | Icon | Link | Icon |Link|
 | :--- | :---:        |     :---      | :---: | :---        |     :---:      |
