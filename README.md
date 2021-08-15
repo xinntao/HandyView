@@ -57,6 +57,22 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
   <img src="assets/hv_rect.gif" height="400">
 </p>
 
+- Draw rectangles and show the start and end positions
+
+<p align="center">
+  <img src="assets/hv_rect.gif" height="400">
+</p>
+
+- Accurate Zoom rendering in QT/PyQt using QGraphicsView.
+
+<p align="center">
+  <img src="assets/hv_fast_zoom.png" height="400">
+</p>
+
+<p align="center">
+  <img src="assets/hv_fast_zoom_2.png" height="400">
+</p>
+
 ## :wrench: Usage
 
 I have now tested it on Windows. It should also work on Ubuntu (but may with some modifications).
