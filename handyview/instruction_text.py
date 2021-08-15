@@ -14,6 +14,7 @@ Shift +  ← →:       Fast previous/next image, step = 10
 
 F9:                 Change background color (white or light gray)
 R:                  Reset zoom ration to 1
+Ctrl + R            Temporarily turn off fast zoom
 C:                  (Compare): switch images under single-view compare mode
 V:                  Switch images under single-view compare mode
     C and V are a pair, similar to Direction key ← →, but switch among folders
@@ -36,6 +37,7 @@ Shift + 方向键 ← →:      快速图像切换, 步长为10
 
 F9:                      切换画布背景颜色, 白色/浅灰色
 R:                       (Reset) 重置图像缩放为1
+Ctrl + R                 Temporarily turn off fast zoom
 C:                       (Compare) 单视图比较模式下, 图像切换
 V:                       单视图比较模式下, 图像切换.
     C和V是一对, 类似左右方向键切换, 只是在多个folder间切换
