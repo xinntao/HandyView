@@ -21,10 +21,16 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
 
 ## :eyes: Screenshot
 
-- Current screenshot
+- Current screenshot: Main View
 
 <p align="center">
   <img src="assets/screenshot.png">
+</p>
+
+- Current screenshot: Preview
+
+<p align="center">
+  <img src="assets/hv_preview.png">
 </p>
 
 - Switch among images with **fixed zoom ratio**
@@ -33,7 +39,7 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
   <img src="assets/hv_switch.gif" height="400">
 </p>
 
-- Compare images in two-column or three-column modes
+- Comparison View: compare images in two-column or three-column modes (in the same folder or accross multiple folders with the same file count)
 
 <p align="center">
   <img src="assets/hv_cmp.gif" height="400">
