@@ -57,13 +57,7 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
   <img src="assets/hv_rect.gif" height="400">
 </p>
 
-- Draw rectangles and show the start and end positions
-
-<p align="center">
-  <img src="assets/hv_rect.gif" height="400">
-</p>
-
-- Accurate Zoom rendering in QT/PyQt using QGraphicsView.
+- Accurate zoom rendering in QT/PyQt using QGraphicsView. Many QT applications show distorted text and lines upon zooming/resizing, which is an inherent limitation how QGraphicsView handles QGraphicsScene images. The solution is to have QGraphicsScene handle resizing. HandyView's 'Fast Zoom' feature is QGraphicsView handling zoom. With 'Fast Zoom' disabled HandyView performs accurate zoom rendering handled by QGraphicsScene. 'Fast Zoom' can be disabled in option dialog. Fast-zoomed images can be accurately rendered by clicking inside the scroll ara and hitting CTRL+R.
 
 <p align="center">
   <img src="assets/hv_fast_zoom.png">
@@ -160,7 +154,7 @@ This project is released under the [MIT license](./LICENSE).
 
 ### Icons
 
-I have used the icons from [flaticon](www.flaticon.com). The following are the source links.
+I have used the icons from [flaticon](www.flaticon.com) and [pixabay](https://pixabay.com/). The following are the source links.
 
 | Icon | Link | Icon | Link | Icon |Link|
 | :--- | :---:        |     :---      | :---: | :---        |     :---:      |
