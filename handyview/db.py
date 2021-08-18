@@ -1,11 +1,9 @@
-import glob
 import hashlib
 import imagehash
-import itertools
 import os
 from PIL import Image
 
-from handyview.utils import FORMATS, ROOT_DIR, get_img_list, sizeof_fmt
+from handyview.utils import FORMATS, ROOT_DIR, get_img_list, scandir, sizeof_fmt
 from handyview.widgets import show_msg
 
 
@@ -39,14 +37,17 @@ class HVDB():
         # for selection pos in crop canvas
         self.selection_pos = [0, 0, 0, 0]
 
+        self.recursive_scan_folder = False
+
         self.get_init_path_list()
 
     def get_init_path_list(self):
         """get path list when first launch (double click or from cmd)"""
         # if init_path is a folder, try to get the first image
         if os.path.isdir(self.init_path):
-            self.init_path = sorted(
-                list(itertools.chain(*(glob.glob(os.path.join(self.init_path, f'*{ext}')) for ext in FORMATS))))[0]
+            self.recursive_scan_folder = True
+            self.path_list[0] = list(scandir(self.init_path, suffix=FORMATS, recursive=True, full_path=True))
+            self.init_path = self.path_list[0][0]
 
         # fix the path pattern passed from windows system when double click
         self.init_path = self.init_path.replace('\\', '/')
@@ -55,8 +56,9 @@ class HVDB():
             folder = os.path.dirname(self.init_path)
             self.folder_list[0] = folder
             # get path list
-            self.path_list[0] = get_img_list(folder, self._include_names, self._exclude_names,
-                                             self._exact_exclude_names)
+            if self.recursive_scan_folder is False:
+                self.path_list[0] = get_img_list(folder, self._include_names, self._exclude_names,
+                                                 self._exact_exclude_names)
             self.file_size_list[0] = [None] * len(self.path_list[0])
             self.md5_list[0] = [None] * len(self.path_list[0])
             self.phash_list[0] = [None] * len(self.path_list[0])
@@ -126,12 +128,13 @@ class HVDB():
         return self.is_same_len, img_len_list
 
     def update_path_list(self):
-        for idx, folder in enumerate(self.folder_list):
-            paths = get_img_list(folder, self._include_names, self._exclude_names, self._exact_exclude_names)
-            self.path_list[idx] = paths
-            self.file_size_list[idx] = [None] * len(paths)
-            self.md5_list[idx] = [None] * len(paths)
-            self.phash_list[idx] = [None] * len(paths)
+        if self.recursive_scan_folder is False:
+            for idx, folder in enumerate(self.folder_list):
+                paths = get_img_list(folder, self._include_names, self._exclude_names, self._exact_exclude_names)
+                self.path_list[idx] = paths
+                self.file_size_list[idx] = [None] * len(paths)
+                self.md5_list[idx] = [None] * len(paths)
+                self.phash_list[idx] = [None] * len(paths)
 
         # all the path list should have the same length
         self.is_same_len = True

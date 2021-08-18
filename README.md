@@ -149,6 +149,8 @@ I have used the icons from [flaticon](www.flaticon.com). The following are the s
 | <img src="icons/fingerprint.png" height="32" alt="Fingerprint">  | [Fingerprint](https://www.flaticon.com/free-icon/fingerprint_2313448?term=fingerprint&page=1&position=7) |  |  |  | |
 
 
+(pip install pyqt5 -i http://mirrors.xxx.com/pypi/simple/ --trusted-host mirrors.xxx.com)
+
 ## :e-mail: Contact
 
 If you have any question, please open an issue or email `xintao.wang@outlook.com`.

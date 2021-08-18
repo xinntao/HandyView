@@ -1,4 +1,5 @@
 import os
+import scipy  # noqa: F401 # used in imagehash.py -> import scipy.fftpack
 import sys
 from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon
