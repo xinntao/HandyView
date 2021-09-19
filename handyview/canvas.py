@@ -3,8 +3,8 @@ from PyQt5 import QtCore
 from PyQt5.QtGui import QColor, QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QGridLayout, QSplitter, QWidget
 
-from handyview.view_scene import HVScene, HVView
-from handyview.widgets import ColorLabel, HVLable, show_msg
+from view_scene import HVScene, HVView
+from widgets import ColorLabel, HVLable, show_msg
 
 
 class Canvas(QWidget):
