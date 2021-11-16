@@ -4,7 +4,7 @@ import re
 import sys
 
 FORMATS = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP', '.gif', '.GIF', '.tiff',
-           '.TIFF')
+           '.TIFF', '.webp', '.WEBP')
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the PyInstaller bootloader
