@@ -243,8 +243,9 @@ class Canvas(QWidget):
                 shown_idx = self.db.pidx + 1
 
             # TODO: add zoom ratio
+            head, tail = os.path.split(shown_path)
             shown_text = [
-                f'[{shown_idx:d} / {self.db.get_path_len():d}] {shown_path}', f'{height:d} x {width:d}, {file_size}',
+                f'[{shown_idx:d} / {self.db.get_path_len():d}] {tail}', head, f'{height:d} x {width:d}, {file_size}',
                 f'{color_type}'
             ]
             # show fingerprint
