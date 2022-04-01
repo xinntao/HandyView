@@ -174,12 +174,11 @@ class Canvas(QWidget):
 
     def update_path_list(self):
         is_same_len, img_len_list = self.db.update_path_list()
-        if len(img_len_list) > 1:
-            show_str = 'Comparison:\n # for each folder:\n\t' + '\n\t'.join(map(str, img_len_list))
-            self.comparison_label.setText(show_str)
-            if is_same_len is False:
-                msg = ('Comparison folders have differnet number of images.\n' f'{show_str}')
-                show_msg('Warning', 'Warning!', msg)
+        show_str = 'Comparison:\n # for each folder:\n\t' + '\n\t'.join(map(str, img_len_list))
+        self.comparison_label.setText(show_str)
+        if is_same_len is False:
+            msg = ('Comparison folders have differnet number of images.\n' f'{show_str}')
+            show_msg('Warning', 'Warning!', msg)
 
     def compare_folders(self, step):
         self.db.folder_browse(step)

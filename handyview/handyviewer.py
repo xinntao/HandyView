@@ -303,6 +303,8 @@ class MainWindow(QMainWindow):
         self.hvdb.folder_list = [self.hvdb.folder_list[0]]
         self.hvdb.path_list = [self.hvdb.path_list[0]]
         self.hvdb.fidx = 0
+        # clear the text description in the dock window
+        self.center_canvas.canvas.update_path_list()
 
     # ---------------------------------------
     # slots: canvas layouts
