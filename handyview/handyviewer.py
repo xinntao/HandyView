@@ -136,6 +136,9 @@ class MainWindow(QMainWindow):
         self.toolbar.addSeparator()
         self.toolbar.addAction(actions.show_instruction_msg(self))
 
+        # auto zoom
+        self.toolbar.addAction(actions.auto_zoom(self))
+
         self.toolbar.setIconSize(QtCore.QSize(45, 45))
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolbar)
 
@@ -364,6 +367,16 @@ class MainWindow(QMainWindow):
         else:
             self.center_canvas.canvas.show_fingerprint = True
         self.center_canvas.canvas.show_image()
+
+    # ---------------------------------------
+    # slots: auto zoom
+    # ---------------------------------------
+    def auto_zoom(self):
+        target_zoom_width = self.center_canvas.canvas.qimg.width() * self.center_canvas.canvas.qviews[0].zoom
+        target_zoom_width, ok = QInputDialog.getText(self, 'Auto Zoom', 'Fix image width: (0 for cancelling auto zoom)',
+                                                     QLineEdit.Normal, str(int(target_zoom_width)))
+        if ok:
+            self.center_canvas.canvas.target_zoom_width = int(target_zoom_width)
 
 
 if __name__ == '__main__':

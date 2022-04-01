@@ -20,11 +20,15 @@ class Canvas(QWidget):
         self.init_widgets_layout()
         self.qview_bg_color = 'white'
         self.show_fingerprint = False
-        self.show_image(init=True)
 
         # set bg color to light_gray when num_view > 1
         if self.num_view > 1:
             self.toggle_bg_color()
+
+        # for auto zoom ratio
+        self.target_zoom_width = 0
+
+        self.show_image(init=True)
 
     def init_widgets_layout(self):
         # QGraphicsView - QGraphicsScene - QPixmap
@@ -217,6 +221,11 @@ class Canvas(QWidget):
                 self.qimg = qimg
                 # show image path in the statusbar
                 self.parent.set_statusbar(f'{img_path}')
+
+            # --------------- auto zoom scale ratio -------------------
+            if self.target_zoom_width > 0:
+                self.qviews[idx].set_zoom(self.target_zoom_width / qimg.width())
+            # --------------- end of auto zoom scale ratio -------------------
 
             # shown text
             # basename = os.path.basename(img_path)
