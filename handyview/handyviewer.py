@@ -330,22 +330,22 @@ class MainWindow(QMainWindow):
                     if num_view > 4 or num_view < 2:
                         show_msg(icon='Warning', title='Warning', text='# Compare Columns should be 2, 3, 4.')
                     self.hvdb.interval = num_view - 1
-                else:  # default value
+                else:  # when press the 'Cancellation' button
                     self.hvdb.interval = 1
-                    num_view = 2
-            else:
+                    num_view = 1
+            else:  # for comparing mode
                 if not self.hvdb.is_same_len:
-                    show_msg('Critical', 'Error', ('Compare folders have different length, \n'
-                                                   'Cannot enter compare canvas.'))
-                    return
+                    show_msg('Critical', 'Warning', ('Compare folders have different length, \n'
+                                                     'It may introduce misalignment and errors.'))
                 self.hvdb.fidx = 0
                 num_view = min(self.hvdb.get_folder_len(), 4)
                 show_msg('Information', 'Compare Canvas', f'Comparsion folder mode.\n # Compare Columns: {num_view}.')
 
-            self.dock_info.close()
-            self.center_canvas.canvas = Canvas(self, self.hvdb, num_view=num_view)
-            self.setCentralWidget(self.center_canvas.canvas)
-            self.canvas_type = 'compare'
+            if num_view > 1:
+                self.dock_info.close()
+                self.center_canvas.canvas = Canvas(self, self.hvdb, num_view=num_view)
+                self.setCentralWidget(self.center_canvas.canvas)
+                self.canvas_type = 'compare'
 
     def switch_preview_canvas(self):
         show_msg('Information', '^_^', text=('Has not implemented yet.\n' 'Contributions are welcome!\n' '尚未实现, 欢迎贡献!'))
