@@ -123,3 +123,7 @@ def set_fingerprint(parent):
 # ---------------------------------------
 def auto_zoom(parent):
     return new_action(parent, 'Auto Zoom', icon_name='auto_zoom.png', slot=parent.auto_zoom)
+
+
+def auto_zoom_dialog(parent):
+    return new_action(parent, 'Auto Zoom', icon_name='auto_zoom.png', slot=parent.auto_zoom_dialog)

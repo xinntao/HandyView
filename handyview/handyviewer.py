@@ -96,6 +96,10 @@ class MainWindow(QMainWindow):
         layout_menu.addAction(actions.switch_compare_canvas(self))
         layout_menu.addAction(actions.switch_preview_canvas(self))
 
+        # View
+        layout_menu = menubar.addMenu('&View')
+        layout_menu.addAction(actions.auto_zoom_dialog(self))
+
         # Help
         help_menu = menubar.addMenu('&Help')
         help_menu.addAction(actions.show_instruction_msg(self))
@@ -374,6 +378,10 @@ class MainWindow(QMainWindow):
     # slots: auto zoom
     # ---------------------------------------
     def auto_zoom(self):
+        target_zoom_width = self.center_canvas.canvas.qimg.width() * self.center_canvas.canvas.qviews[0].zoom
+        self.center_canvas.canvas.target_zoom_width = int(target_zoom_width)
+
+    def auto_zoom_dialog(self):
         target_zoom_width = self.center_canvas.canvas.qimg.width() * self.center_canvas.canvas.qviews[0].zoom
         target_zoom_width, ok = QInputDialog.getText(self, 'Auto Zoom', 'Fix image width: (0 for cancelling auto zoom)',
                                                      QLineEdit.Normal, str(int(target_zoom_width)))
