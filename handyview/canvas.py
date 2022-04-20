@@ -49,7 +49,7 @@ class Canvas(QWidget):
             # zoom label showing zoom ratio
             self.zoom_label = HVLable('1.00', self, 'green', 'Times', 12)
             # mouse position and mouse rgb value
-            mouse_pos_text = ('Cursor position:\n (ignore zoom)\n' ' Height(y): 0.0\n Width(x):  0.0')
+            mouse_pos_text = ('Cursor position:\n (ignore zoom)\nHeight(y): 0.0\n Width(x):  0.0')
             self.mouse_pos_label = HVLable(mouse_pos_text, self, 'black', 'Times', 12)
             self.mouse_rgb_label = HVLable(' (255, 255, 255, 255)', self, 'black', 'Times', 12)
             # pixel color at the mouse position
@@ -57,7 +57,7 @@ class Canvas(QWidget):
             self.mouse_color_label = ColorLabel(color=(255, 255, 255))
 
             # selection rectangle position and length
-            selection_pos_text = ('Rect Pos: (H, W)\n Start: 0, 0\n' ' End  : 0, 0\n Len  : 0, 0')
+            selection_pos_text = ('Rect Pos: (H, W)\n Start: 0, 0\nEnd  : 0, 0\n Len  : 0, 0')
             self.selection_pos_label = HVLable(selection_pos_text, self, 'black', 'Times', 12)
 
             # include and exclude names
@@ -167,7 +167,7 @@ class Canvas(QWidget):
         show_str = 'Number for each folder:\n\t' + '\n\t'.join(map(str, img_len_list))
         self.comparison_label.setText(show_str)
         if is_same_len is False:
-            msg = ('Comparison folders have differnet number of images.\n' f'{show_str}')
+            msg = f'Comparison folders have differnet number of images.\n{show_str}'
             show_msg('Warning', 'Warning!', msg)
         # refresh
         self.show_image()
@@ -177,7 +177,7 @@ class Canvas(QWidget):
         show_str = 'Comparison:\n # for each folder:\n\t' + '\n\t'.join(map(str, img_len_list))
         self.comparison_label.setText(show_str)
         if is_same_len is False:
-            msg = ('Comparison folders have differnet number of images.\n' f'{show_str}')
+            msg = f'Comparison folders have differnet number of images.\n{show_str}'
             show_msg('Warning', 'Warning!', msg)
 
     def compare_folders(self, step):

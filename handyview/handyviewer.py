@@ -354,7 +354,7 @@ class MainWindow(QMainWindow):
                 self.canvas_type = 'compare'
 
     def switch_preview_canvas(self):
-        show_msg('Information', '^_^', text=('Has not implemented yet.\n' 'Contributions are welcome!\n' '尚未实现, 欢迎贡献!'))
+        show_msg('Information', '^_^', text=('Has not implemented yet.\nContributions are welcome!\n尚未实现, 欢迎贡献!'))
 
     # ---------------------------------------
     # slots: help
