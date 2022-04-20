@@ -1,6 +1,6 @@
 import os
 from PyQt5 import QtCore
-from PyQt5.QtGui import QColor, QImage, QPixmap
+from PyQt5.QtGui import QColor, QImage, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import QApplication, QGridLayout, QSplitter, QWidget
 
 from handyview.view_scene import HVScene, HVView
@@ -20,11 +20,15 @@ class Canvas(QWidget):
         self.init_widgets_layout()
         self.qview_bg_color = 'white'
         self.show_fingerprint = False
-        self.show_image(init=True)
 
         # set bg color to light_gray when num_view > 1
         if self.num_view > 1:
             self.toggle_bg_color()
+
+        # for auto zoom ratio
+        self.target_zoom_width = 0
+
+        self.show_image(init=True)
 
     def init_widgets_layout(self):
         # QGraphicsView - QGraphicsScene - QPixmap
@@ -45,7 +49,7 @@ class Canvas(QWidget):
             # zoom label showing zoom ratio
             self.zoom_label = HVLable('1.00', self, 'green', 'Times', 12)
             # mouse position and mouse rgb value
-            mouse_pos_text = ('Cursor position:\n (ignore zoom)\n' ' Height(y): 0.0\n Width(x):  0.0')
+            mouse_pos_text = ('Cursor position:\n (ignore zoom)\nHeight(y): 0.0\n Width(x):  0.0')
             self.mouse_pos_label = HVLable(mouse_pos_text, self, 'black', 'Times', 12)
             self.mouse_rgb_label = HVLable(' (255, 255, 255, 255)', self, 'black', 'Times', 12)
             # pixel color at the mouse position
@@ -53,7 +57,7 @@ class Canvas(QWidget):
             self.mouse_color_label = ColorLabel(color=(255, 255, 255))
 
             # selection rectangle position and length
-            selection_pos_text = ('Rect Pos: (H, W)\n Start: 0, 0\n' ' End  : 0, 0\n Len  : 0, 0')
+            selection_pos_text = ('Rect Pos: (H, W)\n Start: 0, 0\nEnd  : 0, 0\n Len  : 0, 0')
             self.selection_pos_label = HVLable(selection_pos_text, self, 'black', 'Times', 12)
 
             # include and exclude names
@@ -163,17 +167,18 @@ class Canvas(QWidget):
         show_str = 'Number for each folder:\n\t' + '\n\t'.join(map(str, img_len_list))
         self.comparison_label.setText(show_str)
         if is_same_len is False:
-            msg = ('Comparison folders have differnet number of images.\n' f'{show_str}')
+            msg = f'Comparison folders have differnet number of images.\n{show_str}'
             show_msg('Warning', 'Warning!', msg)
+        # refresh
+        self.show_image()
 
     def update_path_list(self):
         is_same_len, img_len_list = self.db.update_path_list()
-        if len(img_len_list) > 1:
-            show_str = 'Comparison:\n # for each folder:\n\t' + '\n\t'.join(map(str, img_len_list))
-            self.comparison_label.setText(show_str)
-            if is_same_len is False:
-                msg = ('Comparison folders have differnet number of images.\n' f'{show_str}')
-                show_msg('Warning', 'Warning!', msg)
+        show_str = 'Comparison:\n # for each folder:\n\t' + '\n\t'.join(map(str, img_len_list))
+        self.comparison_label.setText(show_str)
+        if is_same_len is False:
+            msg = f'Comparison folders have differnet number of images.\n{show_str}'
+            show_msg('Warning', 'Warning!', msg)
 
     def compare_folders(self, step):
         self.db.folder_browse(step)
@@ -216,16 +221,31 @@ class Canvas(QWidget):
                 # show image path in the statusbar
                 self.parent.set_statusbar(f'{img_path}')
 
+            # --------------- auto zoom scale ratio -------------------
+            if self.target_zoom_width > 0:
+                self.qviews[idx].set_zoom(self.target_zoom_width / qimg.width())
+            # --------------- end of auto zoom scale ratio -------------------
+
             # shown text
-            basename = os.path.basename(img_path)
+            # basename = os.path.basename(img_path)
+
+            def get_parent_dir(path, levels=1):
+                common = path
+                for _ in range(levels + 1):
+                    common = os.path.dirname(common)
+                return os.path.relpath(path, common)
+
+            shown_path = get_parent_dir(img_path, 2).replace('\\', '/')
+
             if interval_mode:
                 shown_idx = self.db.pidx + 1 + idx
             else:
                 shown_idx = self.db.pidx + 1
 
             # TODO: add zoom ratio
+            head, tail = os.path.split(shown_path)
             shown_text = [
-                f'[{shown_idx:d} / {self.db.get_path_len():d}] {basename}', f'{height:d} x {width:d}, {file_size}',
+                f'[{shown_idx:d} / {self.db.get_path_len():d}] {tail}', head, f'{height:d} x {width:d}, {file_size}',
                 f'{color_type}'
             ]
             # show fingerprint
@@ -242,6 +262,15 @@ class Canvas(QWidget):
             self.qviews[idx].set_shown_text(shown_text)
             # self.qviews[idx].viewport().update()
             qpixmap = QPixmap.fromImage(qimg)
+
+            # draw border
+            if not interval_mode and len(self.qscenes) == 1 and self.db.fidx == 0:  # compare mode, the main image
+                painter = QPainter()
+                painter.begin(qpixmap)
+                pen = QPen(QColor(220, 0, 0), 5, QtCore.Qt.SolidLine)
+                painter.setPen(pen)
+                painter.drawRect(0, 0, qpixmap.width(), qpixmap.height())
+                painter.end()
 
             qscene.clear()
             qscene.addPixmap(qpixmap)

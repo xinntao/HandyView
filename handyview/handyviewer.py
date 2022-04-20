@@ -1,15 +1,40 @@
 import os
+import scipy  # noqa: F401 # used in imagehash.py -> import scipy.fftpack
 import sys
 from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog, QGridLayout, QInputDialog, QLabel, QLineEdit,
-                             QMainWindow, QToolBar, QWidget)
+                             QMainWindow, QTabWidget, QToolBar, QVBoxLayout, QWidget)
 
 import handyview.actions as actions
 from handyview.canvas import Canvas
+from handyview.canvas_crop import CanvasCrop
 from handyview.db import HVDB
 from handyview.utils import ROOT_DIR
 from handyview.widgets import HLine, MessageDialog, show_msg
+
+
+class CenterWidget(QWidget):
+
+    def __init__(self, parent, hvdb):
+        super().__init__()
+        self.parent = parent
+        # create a top-level layout
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+        tabs = QTabWidget()
+
+        self.canvas = Canvas(self, hvdb)
+        self.canvas_crop = CanvasCrop(self, hvdb)
+        tabs.addTab(self.canvas, 'View')
+        tabs.addTab(self.canvas_crop, 'Crop')
+        layout.addWidget(tabs)
+
+    def switch_fullscreen(self):
+        self.parent.switch_fullscreen()
+
+    def set_statusbar(self, text):
+        self.parent.set_statusbar(text)
 
 
 class MainWindow(QMainWindow):
@@ -28,12 +53,13 @@ class MainWindow(QMainWindow):
 
         self.full_screen = False
         self.canvas_type = 'main'
+        self.center_canvas = CenterWidget(self, self.hvdb)
 
         # initialize UI
         self.setWindowTitle('HandyView')
         self.init_menubar()
         self.init_toolbar()
-        self.init_statusbar()
+        # self.init_statusbar()
         self.init_central_window()
         self.add_dock_window()
 
@@ -69,6 +95,10 @@ class MainWindow(QMainWindow):
         layout_menu.addAction(actions.switch_main_canvas(self))
         layout_menu.addAction(actions.switch_compare_canvas(self))
         layout_menu.addAction(actions.switch_preview_canvas(self))
+
+        # View
+        layout_menu = menubar.addMenu('&View')
+        layout_menu.addAction(actions.auto_zoom_dialog(self))
 
         # Help
         help_menu = menubar.addMenu('&Help')
@@ -110,6 +140,9 @@ class MainWindow(QMainWindow):
         self.toolbar.addSeparator()
         self.toolbar.addAction(actions.show_instruction_msg(self))
 
+        # auto zoom
+        self.toolbar.addAction(actions.auto_zoom(self))
+
         self.toolbar.setIconSize(QtCore.QSize(45, 45))
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolbar)
 
@@ -120,8 +153,7 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(text)
 
     def init_central_window(self):
-        self.canvas = Canvas(self, self.hvdb)
-        self.setCentralWidget(self.canvas)
+        self.setCentralWidget(self.center_canvas)
 
     def switch_fullscreen(self):
         if self.full_screen is False:
@@ -141,25 +173,25 @@ class MainWindow(QMainWindow):
         dockedWidget = QWidget()
         self.dock_info.setWidget(dockedWidget)
         layout = QGridLayout()
-        layout.addWidget(self.canvas.zoom_label, 0, 0, 1, 3)
-        layout.addWidget(self.canvas.mouse_pos_label, 1, 0, 1, 3)
+        layout.addWidget(self.center_canvas.canvas.zoom_label, 0, 0, 1, 3)
+        layout.addWidget(self.center_canvas.canvas.mouse_pos_label, 1, 0, 1, 3)
         color_grid = QGridLayout()
-        color_grid.addWidget(self.canvas.mouse_color_title, 0, 0, 1, 1)
-        color_grid.addWidget(self.canvas.mouse_color_label, 0, 1, 1, 3)
-        color_grid.addWidget(self.canvas.mouse_rgb_label, 1, 0, 1, 3)
+        color_grid.addWidget(self.center_canvas.canvas.mouse_color_title, 0, 0, 1, 1)
+        color_grid.addWidget(self.center_canvas.canvas.mouse_color_label, 0, 1, 1, 3)
+        color_grid.addWidget(self.center_canvas.canvas.mouse_rgb_label, 1, 0, 1, 3)
         layout.addLayout(color_grid, 2, 0, 1, 3)
         layout.addWidget(HLine(), 3, 0, 1, 3)
-        layout.addWidget(self.canvas.selection_pos_label, 4, 0, 1, 3)
+        layout.addWidget(self.center_canvas.canvas.selection_pos_label, 4, 0, 1, 3)
         layout.addWidget(HLine(), 5, 0, 1, 3)
-        layout.addWidget(self.canvas.include_names_label, 6, 0, 1, 3)
-        layout.addWidget(self.canvas.exclude_names_label, 7, 0, 1, 3)
+        layout.addWidget(self.center_canvas.canvas.include_names_label, 6, 0, 1, 3)
+        layout.addWidget(self.center_canvas.canvas.exclude_names_label, 7, 0, 1, 3)
         layout.addWidget(HLine(), 8, 0, 1, 3)
-        layout.addWidget(self.canvas.comparison_label, 9, 0, 1, 3)
+        layout.addWidget(self.center_canvas.canvas.comparison_label, 9, 0, 1, 3)
         # update comparison info (for a second open)
         _, img_len_list = self.hvdb.update_path_list()
         show_str = 'Comparison:\n # for each folder:\n\t' + '\n\t'.join(map(str, img_len_list))
         if len(img_len_list) > 1:
-            self.canvas.comparison_label.setText(show_str)
+            self.center_canvas.canvas.comparison_label.setText(show_str)
 
         # for compact space
         blank_qlabel = QLabel()
@@ -182,7 +214,7 @@ class MainWindow(QMainWindow):
         if ok:
             self.hvdb.init_path = key
             self.hvdb.get_init_path_list()
-            self.canvas.show_image(init=True)
+            self.center_canvas.canvas.show_image(init=True)
 
     def open_history(self):
         with open(os.path.join(ROOT_DIR, 'history.txt'), 'r') as f:
@@ -192,7 +224,7 @@ class MainWindow(QMainWindow):
         if ok:
             self.hvdb.init_path = key
             self.hvdb.get_init_path_list()
-            self.canvas.show_image(init=True)
+            self.center_canvas.canvas.show_image(init=True)
 
     # ---------------------------------------
     # slots: refresh and index
@@ -202,8 +234,8 @@ class MainWindow(QMainWindow):
         if self.canvas_type != 'main':
             self.switch_main_canvas()
 
-        self.canvas.update_path_list()
-        self.canvas.show_image(init=False)
+        self.center_canvas.canvas.update_path_list()
+        self.center_canvas.canvas.show_image(init=False)
 
     def goto_index(self):
         index, ok = QInputDialog.getText(self, 'Go to index', 'Index:', QLineEdit.Normal, '1')
@@ -214,7 +246,7 @@ class MainWindow(QMainWindow):
                 index = int(index) - 1
             else:
                 return
-            self.canvas.goto_index(index)
+            self.center_canvas.canvas.goto_index(index)
 
     # ---------------------------------------
     # slots: include and exclude names
@@ -265,7 +297,7 @@ class MainWindow(QMainWindow):
 
         key, ok = QFileDialog.getOpenFileName(self, 'Select an image', os.path.join(self.hvdb.get_folder(), '../'))
         if ok:
-            self.canvas.add_cmp_folder(key)
+            self.center_canvas.canvas.add_cmp_folder(key)
 
     def clear_compare(self):
         # Compare folder should be set in Main Cavans
@@ -275,6 +307,8 @@ class MainWindow(QMainWindow):
         self.hvdb.folder_list = [self.hvdb.folder_list[0]]
         self.hvdb.path_list = [self.hvdb.path_list[0]]
         self.hvdb.fidx = 0
+        # clear the text description in the dock window
+        self.center_canvas.canvas.update_path_list()
 
     # ---------------------------------------
     # slots: canvas layouts
@@ -283,8 +317,8 @@ class MainWindow(QMainWindow):
     def switch_main_canvas(self):
         if self.canvas_type != 'main':
             self.hvdb.interval = 0
-            self.canvas = Canvas(self, self.hvdb)
-            self.setCentralWidget(self.canvas)
+            self.center_canvas.canvas = Canvas(self, self.hvdb)
+            self.setCentralWidget(self.center_canvas.canvas)
             self.add_dock_window()
             self.canvas_type = 'main'
 
@@ -302,25 +336,25 @@ class MainWindow(QMainWindow):
                     if num_view > 4 or num_view < 2:
                         show_msg(icon='Warning', title='Warning', text='# Compare Columns should be 2, 3, 4.')
                     self.hvdb.interval = num_view - 1
-                else:  # default value
+                else:  # when press the 'Cancellation' button
                     self.hvdb.interval = 1
-                    num_view = 2
-            else:
+                    num_view = 1
+            else:  # for comparing mode
                 if not self.hvdb.is_same_len:
-                    show_msg('Critical', 'Error', ('Compare folders have different length, \n'
-                                                   'Cannot enter compare canvas.'))
-                    return
+                    show_msg('Critical', 'Warning', ('Compare folders have different length, \n'
+                                                     'It may introduce misalignment and errors.'))
                 self.hvdb.fidx = 0
                 num_view = min(self.hvdb.get_folder_len(), 4)
                 show_msg('Information', 'Compare Canvas', f'Comparsion folder mode.\n # Compare Columns: {num_view}.')
 
-            self.dock_info.close()
-            self.canvas = Canvas(self, self.hvdb, num_view=num_view)
-            self.setCentralWidget(self.canvas)
-            self.canvas_type = 'compare'
+            if num_view > 1:
+                self.dock_info.close()
+                self.center_canvas.canvas = Canvas(self, self.hvdb, num_view=num_view)
+                self.setCentralWidget(self.center_canvas.canvas)
+                self.canvas_type = 'compare'
 
     def switch_preview_canvas(self):
-        show_msg('Information', '^_^', text=('Has not implemented yet.\n' 'Contributions are welcome!\n' '尚未实现, 欢迎贡献!'))
+        show_msg('Information', '^_^', text=('Has not implemented yet.\nContributions are welcome!\n尚未实现, 欢迎贡献!'))
 
     # ---------------------------------------
     # slots: help
@@ -334,11 +368,25 @@ class MainWindow(QMainWindow):
         msg.exec_()
 
     def set_fingerprint(self):
-        if self.canvas.show_fingerprint:
-            self.canvas.show_fingerprint = False
+        if self.center_canvas.canvas.show_fingerprint:
+            self.center_canvas.canvas.show_fingerprint = False
         else:
-            self.canvas.show_fingerprint = True
-        self.canvas.show_image()
+            self.center_canvas.canvas.show_fingerprint = True
+        self.center_canvas.canvas.show_image()
+
+    # ---------------------------------------
+    # slots: auto zoom
+    # ---------------------------------------
+    def auto_zoom(self):
+        target_zoom_width = self.center_canvas.canvas.qimg.width() * self.center_canvas.canvas.qviews[0].zoom
+        self.center_canvas.canvas.target_zoom_width = int(target_zoom_width)
+
+    def auto_zoom_dialog(self):
+        target_zoom_width = self.center_canvas.canvas.qimg.width() * self.center_canvas.canvas.qviews[0].zoom
+        target_zoom_width, ok = QInputDialog.getText(self, 'Auto Zoom', 'Fix image width: (0 for cancelling auto zoom)',
+                                                     QLineEdit.Normal, str(int(target_zoom_width)))
+        if ok:
+            self.center_canvas.canvas.target_zoom_width = int(target_zoom_width)
 
 
 if __name__ == '__main__':
@@ -354,11 +402,11 @@ if __name__ == '__main__':
     size = screen.size()
     # rect = screen.availableGeometry()
 
-    main = MainWindow()
-    main.setWindowIcon(QIcon(os.path.join(ROOT_DIR, 'icon.ico')))
-    main.setGeometry(0, 0, size.width(), size.height())  # (left, top, width, height)
-    main.showMaximized()
-
+    mainwindow = MainWindow()
+    mainwindow.setWindowIcon(QIcon(os.path.join(ROOT_DIR, 'icon.ico')))
+    mainwindow.setGeometry(0, 0, size.width(), size.height())  # (left, top, width, height)
+    mainwindow.showMaximized()
     # change status bar info
-    main.set_statusbar(f'Screen: {screen.name()} with size {size.width()} x {size.height()}.')
+    # mainwindow.set_statusbar(f'Screen: {screen.name()} with size {size.width()} x {size.height()}.')
+
     sys.exit(app.exec_())
