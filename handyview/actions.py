@@ -116,3 +116,14 @@ def show_instruction_msg(parent):
 
 def set_fingerprint(parent):
     return new_action(parent, 'Fingerprint', icon_name='fingerprint.png', slot=parent.set_fingerprint)
+
+
+# ---------------------------------------
+# auto zoom
+# ---------------------------------------
+def auto_zoom(parent):
+    return new_action(parent, 'Auto Zoom', icon_name='auto_zoom.png', slot=parent.auto_zoom)
+
+
+def auto_zoom_dialog(parent):
+    return new_action(parent, 'Auto Zoom', icon_name='auto_zoom.png', slot=parent.auto_zoom_dialog)
