@@ -146,7 +146,7 @@ class HVView(QGraphicsView):
         pixel_color = QColor(pixel)
         self.parent.mouse_color_label.fill(pixel_color)
         rgba = pixel_color.getRgb()  # 8 bit RGBA
-        self.parent.mouse_rgb_label.setText(f' ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, {rgba[3]:3d})')
+        self.parent.mouse_rgb_label.setText(f' ({rgba[0]:03d}, {rgba[1]:03d}, {rgba[2]:03d}, {rgba[3]:03d})')
 
     def show_rect_position(self, x_start, y_start, x_end, y_end):
         """Show selection rect position."""
@@ -238,4 +238,4 @@ class HVScene(QGraphicsScene):
         pixel_color = QColor(pixel)
         self.parent.mouse_color_label.fill(pixel_color)
         rgba = pixel_color.getRgb()  # 8 bit RGBA
-        self.parent.mouse_rgb_label.setText(f' ({rgba[0]:3d}, {rgba[1]:3d}, {rgba[2]:3d}, {rgba[3]:3d})')
+        self.parent.mouse_rgb_label.setText(f' ({rgba[0]:03d}, {rgba[1]:03d}, {rgba[2]:03d}, {rgba[3]:03d})')
