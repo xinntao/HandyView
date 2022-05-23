@@ -1,6 +1,6 @@
 import os
-import sys
 import subprocess
+import sys
 from glob import glob
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
@@ -256,15 +256,21 @@ class CanvasCrop(QWidget):
 
     def open_patch_folder(self):
         try:
-            opener = "open" if sys.platform == "darwin" else "xdg-open"
-            subprocess.call([opener, self.patch_folder])
+            if sys.platform == "win32":
+                os.startfile(self.patch_folder)
+            else:
+                opener = "open" if sys.platform == "darwin" else "xdg-open"
+                subprocess.call([opener, self.patch_folder])
         except Exception as error:
             show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
 
     def open_rect_folder(self):
         try:
-            opener = "open" if sys.platform == "darwin" else "xdg-open"
-            subprocess.call([opener, self.rect_folder])
+            if sys.platform == "win32":
+                os.startfile(self.rect_folder)
+            else:
+                opener = "open" if sys.platform == "darwin" else "xdg-open"
+                subprocess.call([opener, self.rect_folder])
         except Exception as error:
             show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
 
@@ -282,8 +288,11 @@ class CanvasCrop(QWidget):
 
     def open_history_file(self):
         try:
-            opener = "open" if sys.platform == "darwin" else "xdg-open"
-            subprocess.call([opener, os.path.join(ROOT_DIR, 'history_crop.txt')])
+            if sys.platform == "win32":
+                os.startfile(os.path.join(ROOT_DIR, 'history_crop.txt'))
+            else:
+                opener = "open" if sys.platform == "darwin" else "xdg-open"
+                subprocess.call([opener, os.path.join(ROOT_DIR, 'history_crop.txt')])
         except Exception as error:
             show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
 
