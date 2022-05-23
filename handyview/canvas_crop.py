@@ -1,4 +1,6 @@
 import os
+import sys
+import subprocess
 from glob import glob
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
@@ -254,13 +256,15 @@ class CanvasCrop(QWidget):
 
     def open_patch_folder(self):
         try:
-            os.startfile(self.patch_folder)
+            opener = "open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.call([opener, self.patch_folder])
         except Exception as error:
             show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
 
     def open_rect_folder(self):
         try:
-            os.startfile(self.rect_folder)
+            opener = "open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.call([opener, self.rect_folder])
         except Exception as error:
             show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
 
@@ -278,7 +282,8 @@ class CanvasCrop(QWidget):
 
     def open_history_file(self):
         try:
-            os.startfile(os.path.join(ROOT_DIR, 'history_crop.txt'))
+            opener = "open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.call([opener, os.path.join(ROOT_DIR, 'history_crop.txt')])
         except Exception as error:
             show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
 
