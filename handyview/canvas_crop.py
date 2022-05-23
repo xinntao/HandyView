@@ -34,6 +34,13 @@ class CanvasCrop(QWidget):
         self.patch_folder = os.path.join(os.path.dirname(self.db.path_list[0][0]), os.pardir, 'crop_patch')
         self.rect_folder = os.path.join(os.path.dirname(self.db.path_list[0][0]), os.pardir, 'draw_rect')
 
+    def update_db(self, db):
+        # after the "open" action, the db also changes
+        self.db = db  # database
+        # get patch and rect folder
+        self.patch_folder = os.path.join(os.path.dirname(self.db.path_list[0][0]), os.pardir, 'crop_patch')
+        self.rect_folder = os.path.join(os.path.dirname(self.db.path_list[0][0]), os.pardir, 'draw_rect')
+
     def init_widgets_layout(self):
         # show thumbnails
         self.scrollArea = QScrollArea(widgetResizable=True)
