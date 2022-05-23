@@ -6,6 +6,10 @@
 
 [![download](https://img.shields.io/github/downloads/xinntao/HandyView/total)](https://github.com/xinntao/HandyView/releases)
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=xinntao/HandyView)
+[![PyPI](https://img.shields.io/pypi/v/handyview)](https://pypi.org/project/handyview/)
+[![license](https://img.shields.io/github/license/xinntao/HandyView)](https://github.com/xinntao/HandyView/blob/master/LICENSE)
+[![python lint](https://github.com/xinntao/HandyView/actions/workflows/pylint.yml/badge.svg)](https://github.com/xinntao/HandyView/blob/master/.github/workflows/pylint.yml)
+[![Publish-pip](https://github.com/xinntao/HandyView/actions/workflows/publish-pip.yml/badge.svg)](https://github.com/xinntao/HandyView/blob/master/.github/workflows/publish-pip.yml)
 
 ```Handy``` *Series*: &emsp;&emsp;
 <img src="https://github.com/xinntao/HandyView/blob/master/icon.png" alt="HandyView Icon" width="36" height="36"> [HandyView](https://github.com/xinntao/HandyView) &emsp; <img src="https://github.com/xinntao/HandyFigure/blob/master/icon.png" alt="HandyFigure Icon" width="36" height="36"> [HandyFigure](https://github.com/xinntao/HandyFigure) &emsp; <img src="https://github.com/xinntao/HandyCrawler/blob/master/icon.png" alt="HandyCrawler Icon" width="36" height="36"> [HandyCrawler](https://github.com/xinntao/HandyCrawler)
