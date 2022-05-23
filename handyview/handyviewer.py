@@ -215,6 +215,7 @@ class MainWindow(QMainWindow):
             self.hvdb.init_path = key
             self.hvdb.get_init_path_list()
             self.center_canvas.canvas.show_image(init=True)
+            self.center_canvas.canvas_crop.update_db(self.hvdb)
 
     def open_history(self):
         with open(os.path.join(ROOT_DIR, 'history.txt'), 'r') as f:
@@ -225,6 +226,7 @@ class MainWindow(QMainWindow):
             self.hvdb.init_path = key
             self.hvdb.get_init_path_list()
             self.center_canvas.canvas.show_image(init=True)
+            self.center_canvas.canvas_crop.update_db(self.hvdb)
 
     # ---------------------------------------
     # slots: refresh and index
