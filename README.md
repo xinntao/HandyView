@@ -1,9 +1,13 @@
-# ![icon](icon.png) HandyView
+<p align="center">
+  <img src="icon_text.png" height=100>
+</p>
 
-[English](README.md) **|** [简体中文](README_CN.md) &emsp; [GitHub](https://github.com/xinntao/HandyView) **|** [Gitee码云](https://gitee.com/xinntao/HandyView)
+#### <div align="center"><b><a href="README.md">English</a> | <a href="README_CN.md">简体中文</a></b></div>
+
+[![download](https://img.shields.io/github/downloads/xinntao/HandyView/total)](https://github.com/xinntao/HandyView/releases)
+![visitors](https://visitor-badge.glitch.me/badge?page_id=xinntao/HandyView)
 
 ```Handy``` *Series*:
-
 <img src="https://github.com/xinntao/HandyView/blob/master/icon.png" alt="HandyView Icon" width="36" height="36"> [HandyView](https://github.com/xinntao/HandyView) &emsp; <img src="https://github.com/xinntao/HandyFigure/blob/master/icon.png" alt="HandyFigure Icon" width="36" height="36"> [HandyFigure](https://github.com/xinntao/HandyFigure) &emsp; <img src="https://github.com/xinntao/HandyCrawler/blob/master/icon.png" alt="HandyCrawler Icon" width="36" height="36"> [HandyCrawler](https://github.com/xinntao/HandyCrawler)
 &emsp; <img src="https://github.com/xinntao/HandyWriting/blob/master/icon.png" alt="HandyWriting Icon" width="36" height="36"> [HandyWriting](https://github.com/xinntao/HandyWriting)
 
@@ -148,7 +152,7 @@ I have used the icons from [flaticon](www.flaticon.com). The following are the s
 | <img src="icons/main_canvas.png" height="32" alt="Main canvas">  | [Main canvas](https://www.flaticon.com/free-icon/image_3603103) | <img src="icons/compare_canvas.png" height="32" alt="Compare canvas"> |[Compare canvas](https://www.flaticon.com/free-icon/portraits_3603402) |  <img src="icons/preview_canvas.png" height="32" alt="Preview canvas">  |[Preview canvas](https://www.flaticon.com/free-icon/pieces_3603403)|
 | <img src="icons/fingerprint.png" height="32" alt="Fingerprint">  | [Fingerprint](https://www.flaticon.com/free-icon/fingerprint_2313448?term=fingerprint&page=1&position=7) | <img src="icons/auto_zoom.png" height="32" alt="auto zoom"> | [Auto Zoom](https://www.flaticon.com/premium-icon/target_4723850?term=target%20lens&page=1&position=5&page=1&position=5&related_id=4723850&origin=search)  |  | |
 
-(pip install pyqt5 -i http://mirrors.xxx.com/pypi/simple/ --trusted-host mirrors.xxx.com)
+(pip install pyqt5 -i <http://mirrors.xxx.com/pypi/simple/> --trusted-host mirrors.xxx.com)
 
 ## :e-mail: Contact
 
