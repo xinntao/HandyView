@@ -2,7 +2,7 @@
   <img src="icon_text.png" height=100>
 </p>
 
-#### <div align="center"><b><a href="README.md">English</a> | <a href="README_CN.md">简体中文</a></b></div>
+### <div align="center"><b><a href="README.md">English</a> | <a href="README_CN.md">简体中文</a></b></div>
 
 [![download](https://img.shields.io/github/downloads/xinntao/HandyView/total)](https://github.com/xinntao/HandyView/releases)
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=xinntao/HandyView)
