@@ -106,6 +106,23 @@ def switch_preview_canvas(parent):
 
 
 # ---------------------------------------
+# canvas tabs
+# ---------------------------------------
+
+
+def select_basic_tab(parent):
+    return new_action(parent, 'Basic', icon_name='main_canvas.png', slot=parent.select_basic_tab)
+
+
+def select_crop_tab(parent):
+    return new_action(parent, 'Crop', icon_name='compare_canvas.png', slot=parent.select_crop_tab)
+
+
+def select_video_tab(parent):
+    return new_action(parent, 'Video', icon_name='preview_canvas.png', slot=parent.select_video_tab)
+
+
+# ---------------------------------------
 # help
 # ---------------------------------------
 

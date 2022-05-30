@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog, QGridLayout
 import handyview.actions as actions
 from handyview.canvas import Canvas
 from handyview.canvas_crop import CanvasCrop
+from handyview.canvas_video import CanvasVideo
 from handyview.db import HVDB
 from handyview.utils import ROOT_DIR
 from handyview.widgets import HLine, MessageDialog, show_msg
@@ -22,13 +23,23 @@ class CenterWidget(QWidget):
         # create a top-level layout
         layout = QVBoxLayout()
         self.setLayout(layout)
-        tabs = QTabWidget()
+        self.tabs = QTabWidget()
 
         self.canvas = Canvas(self, hvdb)
         self.canvas_crop = CanvasCrop(self, hvdb)
-        tabs.addTab(self.canvas, 'View')
-        tabs.addTab(self.canvas_crop, 'Crop')
-        layout.addWidget(tabs)
+        self.canvas_video = CanvasVideo(self)
+        self.tabs.addTab(self.canvas, 'View')
+        self.tabs.addTab(self.canvas_crop, 'Crop')
+        self.tabs.addTab(self.canvas_video, 'Video')
+        layout.addWidget(self.tabs)
+
+        self.tabs.currentChanged.connect(self.tabsCurrentChanged)
+
+    def tabsCurrentChanged(self, index):
+        if index == 2:
+            self.parent.dock_info.hide()
+        else:
+            self.parent.dock_info.show()
 
     def switch_fullscreen(self):
         self.parent.switch_fullscreen()
@@ -68,7 +79,7 @@ class MainWindow(QMainWindow):
         menubar = self.menuBar()
 
         # File
-        file_menu = menubar.addMenu('&File')
+        file_menu = menubar.addMenu('&File(文件)')
         file_menu.addAction(actions.open(self))
         file_menu.addAction(actions.history(self))
         file_menu.addSeparator()
@@ -79,29 +90,35 @@ class MainWindow(QMainWindow):
         file_menu.addAction(actions.exclude_file_name(self))
 
         # Edit
-        edit_menu = menubar.addMenu('&Edit')  # noqa: F841
+        edit_menu = menubar.addMenu('&Edit(编辑)')  # noqa: F841
 
         # Draw
-        draw_menu = menubar.addMenu('&Draw')  # noqa: F841
+        draw_menu = menubar.addMenu('&Draw(画图)')  # noqa: F841
 
         # Compare
-        compare_menu = menubar.addMenu('&Compare')
+        compare_menu = menubar.addMenu('&Compare(比较)')
         compare_menu.addAction(actions.compare(self))
         compare_menu.addAction(actions.clear_compare(self))
         compare_menu.addAction(actions.set_fingerprint(self))
 
         # Layouts
-        layout_menu = menubar.addMenu('&Layout')
+        layout_menu = menubar.addMenu('&Layout(布局)')
         layout_menu.addAction(actions.switch_main_canvas(self))
         layout_menu.addAction(actions.switch_compare_canvas(self))
         layout_menu.addAction(actions.switch_preview_canvas(self))
 
+        # Tabs
+        layout_menu = menubar.addMenu('&Tabs(选项卡)')
+        layout_menu.addAction(actions.select_basic_tab(self))
+        layout_menu.addAction(actions.select_crop_tab(self))
+        layout_menu.addAction(actions.select_video_tab(self))
+
         # View
-        layout_menu = menubar.addMenu('&View')
+        layout_menu = menubar.addMenu('&View(查看)')
         layout_menu.addAction(actions.auto_zoom_dialog(self))
 
         # Help
-        help_menu = menubar.addMenu('&Help')
+        help_menu = menubar.addMenu('&Help(帮助)')
         help_menu.addAction(actions.show_instruction_msg(self))
 
     def init_toolbar(self):
@@ -204,18 +221,21 @@ class MainWindow(QMainWindow):
     # slots: open and history
     # ---------------------------------------
     def open_file_dialog(self):
-        try:
-            with open(os.path.join(ROOT_DIR, 'history.txt'), 'r') as f:
-                history = f.readlines()[0]
-                history = history.strip()
-        except Exception:
-            history = '.'
-        key, ok = QFileDialog.getOpenFileName(self, 'Select an image', history)
-        if ok:
-            self.hvdb.init_path = key
-            self.hvdb.get_init_path_list()
-            self.center_canvas.canvas.show_image(init=True)
-            self.center_canvas.canvas_crop.update_db(self.hvdb)
+        if self.center_canvas.tabs.currentIndex() == 2:  # video
+            self.center_canvas.canvas_video.open_files()
+        else:
+            try:
+                with open(os.path.join(ROOT_DIR, 'history.txt'), 'r') as f:
+                    history = f.readlines()[0]
+                    history = history.strip()
+            except Exception:
+                history = '.'
+            key, ok = QFileDialog.getOpenFileName(self, 'Select an image', history)
+            if ok:
+                self.hvdb.init_path = key
+                self.hvdb.get_init_path_list()
+                self.center_canvas.canvas.show_image(init=True)
+                self.center_canvas.canvas_crop.update_db(self.hvdb)
 
     def open_history(self):
         with open(os.path.join(ROOT_DIR, 'history.txt'), 'r') as f:
@@ -357,6 +377,19 @@ class MainWindow(QMainWindow):
 
     def switch_preview_canvas(self):
         show_msg('Information', '^_^', text=('Has not implemented yet.\nContributions are welcome!\n尚未实现, 欢迎贡献!'))
+
+    # ---------------------------------------
+    # slots: canvas tabs
+    # ---------------------------------------
+
+    def select_basic_tab(self):
+        self.center_canvas.tabs.setCurrentIndex(0)  # 0 for basic
+
+    def select_crop_tab(self):
+        self.center_canvas.tabs.setCurrentIndex(1)  # 1 for crop
+
+    def select_video_tab(self):
+        self.center_canvas.tabs.setCurrentIndex(2)  # 2 for video
 
     # ---------------------------------------
     # slots: help

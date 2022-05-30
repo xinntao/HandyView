@@ -27,6 +27,7 @@ class HVView(QGraphicsView):
 
         self.zoom = 1
         self.rotate = 0
+        self.shown_text = None
 
         self.font = QFont('times', 15)
         font_metrics = QFontMetrics(self.font)
@@ -50,8 +51,9 @@ class HVView(QGraphicsView):
         painter.setFont(self.font)
         painter.setPen(QColor(0, 128, 0))
         margin = 2
-        for idx, text in enumerate(self.shown_text):
-            painter.drawText(margin, margin + self.text_height * (idx + 1), text)
+        if self.shown_text is not None:
+            for idx, text in enumerate(self.shown_text):
+                painter.drawText(margin, margin + self.text_height * (idx + 1), text)
 
     def mousePressEvent(self, event):
         modifiers = QApplication.keyboardModifiers()
