@@ -15,6 +15,23 @@ from handyview.utils import ROOT_DIR
 from handyview.widgets import HLine, MessageDialog, show_msg
 
 
+class Application(QApplication):
+    """
+    handling for MacOS open image events
+    """
+    window_list = []
+
+    def event(self, event):
+        if event.type() == QtCore.QEvent.FileOpen:
+            if len(self.window_list) == 1 and self.window_list[0].empty:
+                self.window_list[0].close()
+                self.window_list[0] = create_new_window(event.file())
+            else:
+                self.window_list.append(create_new_window(event.file()))
+            return True
+        return super().event(event)
+
+
 class CenterWidget(QWidget):
 
     def __init__(self, parent, hvdb):
@@ -51,14 +68,17 @@ class CenterWidget(QWidget):
 class MainWindow(QMainWindow):
     """The main window."""
 
-    def __init__(self):
+    def __init__(self, init_path=None):
         super(MainWindow, self).__init__()
-        # get initial path
-        try:
-            init_path = sys.argv[1]
-        except IndexError:
-            # show the icon image
-            init_path = os.path.join(ROOT_DIR, 'icon.png')
+        self.empty = False
+        if init_path is None:
+            # get initial path
+            try:
+                init_path = sys.argv[1]
+            except IndexError:
+                # show the icon image
+                init_path = os.path.join(ROOT_DIR, 'icon.png')
+                self.empty = True
         # initialize HVDB (handyview database), which stores the path info
         self.hvdb = HVDB(init_path)
 
@@ -236,6 +256,7 @@ class MainWindow(QMainWindow):
                 self.hvdb.get_init_path_list()
                 self.center_canvas.canvas.show_image(init=True)
                 self.center_canvas.canvas_crop.update_db(self.hvdb)
+        self.empty = False
 
     def open_history(self):
         with open(os.path.join(ROOT_DIR, 'history.txt'), 'r') as f:
@@ -247,6 +268,7 @@ class MainWindow(QMainWindow):
             self.hvdb.get_init_path_list()
             self.center_canvas.canvas.show_image(init=True)
             self.center_canvas.canvas_crop.update_db(self.hvdb)
+        self.empty = False
 
     # ---------------------------------------
     # slots: refresh and index
@@ -424,6 +446,19 @@ class MainWindow(QMainWindow):
             self.center_canvas.canvas.target_zoom_width = int(target_zoom_width)
 
 
+def create_new_window(init_path=None):
+    screen = app.primaryScreen()
+    size = screen.size()
+    # rect = screen.availableGeometry()
+
+    mainwindow = MainWindow(init_path)
+    mainwindow.setWindowIcon(QIcon(os.path.join(ROOT_DIR, 'icon.ico')))
+    mainwindow.setGeometry(0, 0, size.width(), size.height())  # (left, top, width, height)
+    mainwindow.showMaximized()
+
+    return mainwindow
+
+
 if __name__ == '__main__':
     import platform
     if platform.system() == 'Windows':
@@ -432,15 +467,8 @@ if __name__ == '__main__':
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('HandyView')
     print('Welcome to HandyView.')
 
-    app = QApplication(sys.argv)
-    screen = app.primaryScreen()
-    size = screen.size()
-    # rect = screen.availableGeometry()
-
-    mainwindow = MainWindow()
-    mainwindow.setWindowIcon(QIcon(os.path.join(ROOT_DIR, 'icon.ico')))
-    mainwindow.setGeometry(0, 0, size.width(), size.height())  # (left, top, width, height)
-    mainwindow.showMaximized()
+    app = Application(sys.argv)
+    app.window_list.append(create_new_window())
     # change status bar info
     # mainwindow.set_statusbar(f'Screen: {screen.name()} with size {size.width()} x {size.height()}.')
 
