@@ -1,2 +1,4 @@
 Pillow
+scipy
+imagehash
 pyqt5
