@@ -50,7 +50,7 @@ jobs:
       run: |
         cd dist
         7z a -r ${{ env.PACKAGENAME }}.zip handyviewer
-        move -y ${{ env.PACKAGENAME }}.zip ..
+        move ${{ env.PACKAGENAME }}.zip ..
         cd ..
     - name: upload
       uses: actions/upload-artifact@v2
