@@ -1,10 +1,8 @@
 name: release
-# on:
-#   push:
-#     tags:
-#       - '*'
-# temporarily for debugging
-on: [push, pull_request]
+on:
+  push:
+    tags:
+      - '*'
 
 env:
   DEVELOPER_DIR: /Applications/Xcode_12.4.app/Contents/Developer
@@ -29,8 +27,7 @@ jobs:
     needs: [setup]
     runs-on: windows-latest
     env:
-      # PACKAGENAME: ${{ needs.setup.outputs.APPNAME }}-${{ needs.setup.outputs.VERSION }}-windows
-      PACKAGENAME: ${{ needs.setup.outputs.APPNAME }}-windows
+      PACKAGENAME: ${{ needs.setup.outputs.APPNAME }}-${{ needs.setup.outputs.VERSION }}-windows
     steps:
     - uses: actions/checkout@v2
       with:
