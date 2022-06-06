@@ -49,6 +49,7 @@ jobs:
     - name: package
       run: |
         cd dist
+        dir handyviewer
         7z a -r ${{ env.PACKAGENAME }}.zip handyviewer
         move ${{ env.PACKAGENAME }}.zip ..
         cd ..
