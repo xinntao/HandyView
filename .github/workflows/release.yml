@@ -29,7 +29,8 @@ jobs:
     needs: [setup]
     runs-on: windows-latest
     env:
-      PACKAGENAME: ${{ needs.setup.outputs.APPNAME }}-${{ needs.setup.outputs.VERSION }}-windows
+      # PACKAGENAME: ${{ needs.setup.outputs.APPNAME }}-${{ needs.setup.outputs.VERSION }}-windows
+      PACKAGENAME: ${{ needs.setup.outputs.APPNAME }}-windows
     steps:
     - uses: actions/checkout@v2
       with:
