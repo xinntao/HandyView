@@ -223,6 +223,11 @@ class CanvasVideo(QWidget):
     def show_video_info(self):
         if self.flag_show_info is True:
             # if not self.info_text:
+            if self.player1.metaData('Resolution') is not None:
+                resolution_str1 = (f"Resolution : {self.player1.metaData('Resolution').width()} "
+                                   f"x {self.player1.metaData('Resolution').height()}")
+            else:
+                resolution_str1 = ('Resolution : None')
             if self.player2.metaData('Resolution') is not None:
                 resolution_str2 = (f"Resolution : {self.player2.metaData('Resolution').width()} "
                                    f"x {self.player2.metaData('Resolution').height()}")
@@ -231,7 +236,7 @@ class CanvasVideo(QWidget):
 
             self.info_text = [
                 f'Title      : {os.path.basename(self.video_file)}',
-                f"Resolution : {self.player1.metaData('Resolution').width()} x {self.player1.metaData('Resolution').height()}",  # noqa
+                resolution_str1,
                 f"Duration   : {str(self.player1.metaData('Duration'))}",
                 f"FrameRate  : {str(self.player1.metaData('VideoFrameRate'))}",
                 f"BitRate    : {str(self.player1.metaData('VideoBitRate'))}",
