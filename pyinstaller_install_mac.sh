@@ -1,0 +1,12 @@
+pyinstaller -D handyview/handyviewer.py \
+  -i icon.icns \
+  --add-data="handyview:handyview" \
+  --add-data="icons:icons" \
+  --add-data="icon.png:." \
+  --windowed \
+  --noconfirm \
+  --hidden-import="PIL.Image" \
+  --hidden-import="PIL.ImageDraw" \
+  --hidden-import="PyQt5.QtMultimedia" \
+  --hidden-import="PyQt5.QtMultimediaWidgets" \
+  --hidden-import="imagehash"

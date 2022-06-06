@@ -32,7 +32,7 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
 - Current screenshot
 
 <p align="center">
-  <img src="assets/screenshot.png">
+  <img src="assets/screenshot.png" height="400">
 </p>
 
 - Switch among images with **fixed zoom ratio**
@@ -61,49 +61,19 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
 
 ## :wrench: Usage
 
-I have now tested it on Windows. It should also work on Ubuntu (but may with some modifications).
 
 ### <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg" alt="Windows" height="28">
 
-#### Option 1: Pre-compiled executable zip file
+1. Download the pre-compiled executable zip file from the release page ([Github](https://github.com/xinntao/HandyView/releases) | [Gitee](https://gitee.com/xinntao/HandyView/releases)).
+2. Unzip the file
+3. Set HandyView as the default image viewer, so that you can **double-click the image to open** HandyView.
 
-I have zipped an exe zip file with pyinstaller in the release page ([Github](https://github.com/xinntao/HandyView/releases) | [Gitee](https://gitee.com/xinntao/HandyView/releases)). You can first have a try on it.
 
-1. Unzip the file
-2. Set HandyView as the default image viewer, so that you can **double-click the image to open** HandyView.
 
-#### Option 2: Python environment
-
-- Anaconda (Python >= 3.5)
-
-1. Clone repo
-
-    ```bash
-    git clone https://github.com/xinntao/HandyView.git
-    ```
-
-1. Install dependent packages
-
-    ```bash
-    cd HandyView
-    pip install -r requirements.txt
-    ```
-
-In the command line, run:
-
-> python handyview/handyviewer.py [image_path]
-
-#### Option 3: Python environment + Compile to executable program
-
-Use `pyinstaller` to compile to executable program, so that you can **double-click the image to open** the HandyView.
-
-1. > pyinstaller -D handyview/handyview.py -i icon.ico --windowed
-1. You will see a `dist` folder containing the outputs (dll, exe, etc)
-1. Copy necessary files to the `dist` folder
-    > cp -r icons dist/handyviewer/ <br>
-    > cp icon.png dist/handyviewer/ <br>
-    > cp icon.ico dist/handyviewer/ <br>
-1. Choose the `dist/handyview/handyviewer.exe` as the default image viewer.
+### <img src="https://user-images.githubusercontent.com/11482921/171234862-5a54e430-7c07-4976-9ac8-ce8dbf520a17.png" alt="MacOS" height="24">
+1. Download the handyviewer.dmg from the release page ([Github](https://github.com/xinntao/HandyView/releases) | [Gitee](https://gitee.com/xinntao/HandyView/releases)) and install.
+2. If you fail to install the app, you may need to [disable gatekeeper](https://disable-gatekeeper.github.io/) first. However, you should be aware of the risk of [disabling gatekeeper](https://disable-gatekeeper.github.io/).
+3. Set handyviewer as the default image viewer (use `cmd+i), so that you can **double-click the image to open** handyviewer.
 
 ### <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Logo-ubuntu_no%28r%29-black_orange-hex.svg" alt="Ubuntu" height="24">
 
@@ -117,6 +87,32 @@ I used the early version of HandyView on Ubuntu. The current version is not test
     1. Right click an image
     1. Go to `Properties` -> `Open With`
     1. Choose *HandyView*
+
+### <img src="https://user-images.githubusercontent.com/11482921/171239036-858e2c00-835f-4278-afb4-5b8ac3fe2b65.png" alt="Ubuntu" height="38">
+For python user, you can also launch HandyView from command line:
+1. Clone repo and install dependent packages
+    ```bash
+    git clone https://github.com/xinntao/HandyView.git
+    cd HandyView
+    pip install -r requirements.txt
+    ```
+2. Run
+    ```bash
+    python -m handyview.handyviewer [image_path]
+    ```
+
+
+#### Option 1: Pre-compiled executable zip file
+
+I have zipped an exe zip file with pyinstaller in the release page ([Github](https://github.com/xinntao/HandyView/releases) | [Gitee](https://gitee.com/xinntao/HandyView/releases)). You can first have a try on it.
+
+1. Unzip the file
+2. Set HandyView as the default image viewer, so that you can **double-click the image to open** HandyView.
+
+
+## Compile to executable program
+For Windows and MacOS users, you can find the instructions of compiling the executable program from [how-to-build](how_to_build.md).
+
 
 ## :book: Document (On the way)
 
