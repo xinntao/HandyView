@@ -1,10 +1,8 @@
 name: release
-# on:
-#   push:
-#     tags:
-#       - '*'
-# temporarily for debugging
-on: [push, pull_request]
+on:
+  push:
+    tags:
+      - '*'
 
 env:
   DEVELOPER_DIR: /Applications/Xcode_12.4.app/Contents/Developer
@@ -48,7 +46,10 @@ jobs:
         pyinstaller -D handyview/handyviewer.py -i icon.ico --add-data="handyview;handyview" --add-data="icons;icons" --add-data="icon.png;." --add-data="icon.ico;." --windowed --noconfirm --hidden-import="PIL.Image" --hidden-import="PIL.ImageDraw" --hidden-import="PyQt5.QtMultimedia" --hidden-import="PyQt5.QtMultimediaWidgets" --hidden-import="imagehash"
     - name: package
       run: |
-        7z a -r ${{ env.PACKAGENAME }}.zip dist/handyviewer
+        cd dist
+        7z a -r ${{ env.PACKAGENAME }}.zip handyviewer
+        move -y ${{ env.PACKAGENAME }}.zip ..
+        cd ..
     - name: upload
       uses: actions/upload-artifact@v2
       with:
