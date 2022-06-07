@@ -98,6 +98,17 @@ jobs:
       with:
         path: artifacts
 
+    - name: create-release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ needs.setup.outputs.VERSION }}
+        release_name: Release ${{ needs.setup.outputs.VERSION }}
+        draft: false
+        prerelease: false
+
     - name: upload-windows
       uses: actions/upload-release-asset@v1
       env:
