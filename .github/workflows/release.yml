@@ -79,10 +79,8 @@ jobs:
     - name: create dmg
       run: |
         brew install create-dmg
-        cd dist
         sh create_dmg.sh
-        mv handyviewer.dmg ../
-        cd ..
+        mv dist/handyviewer.dmg .
     - name: upload
       uses: actions/upload-artifact@v2
       with:
