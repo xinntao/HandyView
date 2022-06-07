@@ -102,14 +102,6 @@ For python user, you can also launch HandyView from command line:
     ```
 
 
-#### Option 1: Pre-compiled executable zip file
-
-I have zipped an exe zip file with pyinstaller in the release page ([Github](https://github.com/xinntao/HandyView/releases) | [Gitee](https://gitee.com/xinntao/HandyView/releases)). You can first have a try on it.
-
-1. Unzip the file
-2. Set HandyView as the default image viewer, so that you can **double-click the image to open** HandyView.
-
-
 ## Compile to executable program
 For Windows and MacOS users, you can find the instructions of compiling the executable program from [how-to-build](how_to_build.md).
 

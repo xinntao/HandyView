@@ -56,8 +56,40 @@ jobs:
         name: ${{ env.PACKAGENAME }}
         path: ${{ env.PACKAGENAME }}.zip
 
+  macos:
+    needs: [setup]
+    runs-on: macos-11
+    env:
+      PACKAGENAME: ${{ needs.setup.outputs.APPNAME }}-${{ needs.setup.outputs.VERSION }}-macos
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+    - uses: actions/setup-python@v3
+      with:
+        python-version: '3.8'
+    - name: install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install Pillow imagehash pyqt5
+        pip install pyinstaller
+    - name: build
+      run: |
+        sh pyinstaller_install_mac.sh
+    - name: create dmg
+      run: |
+        npm install --global create-dmg
+        create-dmg dist/handyviewer.app
+    - name: upload
+      uses: actions/upload-artifact@v2
+      with:
+        name: handyviewer.dmg
+        path: ${{ env.PACKAGENAME }}.dmg
+
+
+
   release:
-    needs: [setup, windows]
+    needs: [setup, windows, macos]
     runs-on: ubuntu-latest
     steps:
     - name: download
