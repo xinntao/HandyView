@@ -80,11 +80,11 @@ jobs:
       run: |
         brew install create-dmg
         sh create_dmg.sh
-        mv dist/handyviewer.dmg .
+        mv dist/handyviewer.dmg ${{ env.PACKAGENAME }}.dmg
     - name: upload
       uses: actions/upload-artifact@v2
       with:
-        name: handyviewer.dmg
+        name: ${{ env.PACKAGENAME }}
         path: ${{ env.PACKAGENAME }}.dmg
 
 
@@ -97,3 +97,24 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         path: artifacts
+
+    - name: upload-windows
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PACKAGENAME: ${{ needs.setup.outputs.APPNAME }}-${{ needs.setup.outputs.VERSION }}-windows
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/${{ env.PACKAGENAME }}/${{ env.PACKAGENAME }}.zip
+        asset_name: ${{ env.PACKAGENAME }}.zip
+        asset_content_type: application/zip
+
+    - name: upload-macos
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PACKAGENAME: ${{ needs.setup.outputs.APPNAME }}-${{ needs.setup.outputs.VERSION }}-macos
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/${{ env.PACKAGENAME }}/${{ env.PACKAGENAME }}.dmg
+        asset_name: ${{ env.PACKAGENAME }}.dmg
