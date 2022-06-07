@@ -78,8 +78,11 @@ jobs:
         sh pyinstaller_install_mac.sh
     - name: create dmg
       run: |
-        npm install --global create-dmg
-        create-dmg dist/handyviewer.app
+        brew install create-dmg
+        cd dist
+        sh create_dmg.sh
+        mv handyviewer.dmg ../
+        cd ..
     - name: upload
       uses: actions/upload-artifact@v2
       with:
