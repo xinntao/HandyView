@@ -87,8 +87,6 @@ jobs:
         name: ${{ env.PACKAGENAME }}
         path: ${{ env.PACKAGENAME }}.dmg
 
-
-
   release:
     needs: [setup, windows, macos]
     runs-on: ubuntu-latest
@@ -106,7 +104,7 @@ jobs:
       with:
         tag_name: ${{ github.ref }}
         release_name: Release ${{ github.ref }}
-        draft: false
+        draft: true
         prerelease: false
 
     - name: upload-windows
