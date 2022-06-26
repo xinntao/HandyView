@@ -40,6 +40,8 @@ class CenterWidget(QWidget):
         layout = QVBoxLayout()
         self.setLayout(layout)
         self.tabs = QTabWidget()
+        # when first enter HandyView, keyboard focus should be on the qview rather than the tabs
+        self.tabs.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.canvas = Canvas(self, hvdb)
         self.canvas_crop = CanvasCrop(self, hvdb)

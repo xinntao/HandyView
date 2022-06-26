@@ -141,19 +141,29 @@ class Canvas(QWidget):
                 self.dir_browse(-1)
 
         elif event.key() == QtCore.Qt.Key_Up:
-            if modifiers == QtCore.Qt.ShiftModifier:
-                scale = 1.2
+            if modifiers == QtCore.Qt.ShiftModifier:  # quickly zoom in all qviews
+                for qview in self.qviews:
+                    qview.zoom_in(scale=1.2)
+            elif modifiers == (QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier):
+                # only modify the zoom ration for the current view
+                for qview in self.qviews:
+                    if qview.hasFocus():
+                        qview.zoom_in(scale=1.05, emit_signal=False)
             else:
-                scale = 1.05
-            for qview in self.qviews:
-                qview.zoom_in(scale=scale)
+                for qview in self.qviews:
+                    qview.zoom_in(scale=1.05)
         elif event.key() == QtCore.Qt.Key_Down:
-            if modifiers == QtCore.Qt.ShiftModifier:
-                scale = 1.2
+            if modifiers == QtCore.Qt.ShiftModifier:  # quickly zoom out all qviews
+                for qview in self.qviews:
+                    qview.zoom_out(scale=1.2)
+            elif modifiers == (QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier):
+                # only modify the zoom ration for the current view
+                for qview in self.qviews:
+                    if qview.hasFocus():
+                        qview.zoom_out(scale=1.05, emit_signal=False)
             else:
-                scale = 1.05
-            for qview in self.qviews:
-                qview.zoom_out(scale=scale)
+                for qview in self.qviews:
+                    qview.zoom_out(scale=1.05)
 
         elif event.key() == QtCore.Qt.Key_F11:
             self.parent.switch_fullscreen()
@@ -259,7 +269,11 @@ class Canvas(QWidget):
                     shown_text.append(f'md5: {md5}')
                     shown_text.append(f'phash: {phash}')
 
-            self.qviews[idx].set_shown_text(shown_text)
+            if self.qviews[idx].hasFocus():
+                color = 'red'
+            else:
+                color = 'green'
+            self.qviews[idx].set_shown_text(shown_text, color)
             # self.qviews[idx].viewport().update()
             qpixmap = QPixmap.fromImage(qimg)
 

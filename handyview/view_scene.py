@@ -12,7 +12,7 @@ class HVView(QGraphicsView):
     """A customized QGraphicsView for HandyView.
 
     Ref:
-    Selection Rect: https://stackoverflow.com/questions/47102224/pyqt-draw-selection-rectangle-over-picture  # noqa: E501
+    Selection Rect: https://stackoverflow.com/questions/47102224/pyqt-draw-selection-rectangle-over-picture
     """
     zoom_signal = QtCore.pyqtSignal(float)
 
@@ -42,14 +42,19 @@ class HVView(QGraphicsView):
         self.rect_top_left = (0, 0)
         self.setViewportUpdateMode(0)
 
-    def set_shown_text(self, text):
+    def set_shown_text(self, text, color='green'):
         # text is a list, each item will be shown in a line
-        self.shown_text = text
+        if text is not None:
+            self.shown_text = text
+        if color == 'green':
+            self.shwon_text_color = QColor(0, 128, 0)
+        elif color == 'red':
+            self.shwon_text_color = QColor(220, 0, 0)
 
     def drawForeground(self, painter, rect):
         painter.resetTransform()  # not scale shown text
         painter.setFont(self.font)
-        painter.setPen(QColor(0, 128, 0))
+        painter.setPen(self.shwon_text_color)
         margin = 2
         if self.shown_text is not None:
             for idx, text in enumerate(self.shown_text):
@@ -71,6 +76,14 @@ class HVView(QGraphicsView):
                 self.show_rect_position(x_scene, y_scene, x_scene, y_scene)
         else:
             QGraphicsView.mousePressEvent(self, event)
+
+    def focusInEvent(self, event):
+        self.set_shown_text(text=None, color='red')
+        self.scene().update()  # update the shown text
+
+    def focusOutEvent(self, event):
+        self.set_shown_text(text=None, color='green')
+        self.scene().update()  # update the shown text
 
     def mouseMoveEvent(self, event):
         """Only works when mouse button is pressed.
@@ -114,7 +127,7 @@ class HVView(QGraphicsView):
             elif mouse < 0:
                 self.zoom_out(emit_signal=True)
         elif modifiers == (QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier):
-            # only modify the current view zoom ration
+            # only modify the zoom ration for the current view
             if mouse > 0:
                 self.zoom_in(emit_signal=False)
             elif mouse < 0:
