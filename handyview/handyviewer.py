@@ -242,6 +242,10 @@ class MainWindow(QMainWindow):
     # slots: open and history
     # ---------------------------------------
     def open_file_dialog(self):
+        # Compare folder should be set in Main Cavans
+        if self.canvas_type != 'main':
+            self.switch_main_canvas()
+
         if self.center_canvas.tabs.currentIndex() == 2:  # video
             self.center_canvas.canvas_video.open_files()
         else:
@@ -362,8 +366,9 @@ class MainWindow(QMainWindow):
     def switch_main_canvas(self):
         if self.canvas_type != 'main':
             self.hvdb.interval = 0
-            self.center_canvas.canvas = Canvas(self, self.hvdb)
-            self.setCentralWidget(self.center_canvas.canvas)
+            # TODO: create a new one, which is ugly
+            self.center_canvas = CenterWidget(self, self.hvdb)
+            self.setCentralWidget(self.center_canvas)
             self.add_dock_window()
             self.canvas_type = 'main'
 
@@ -436,15 +441,15 @@ class MainWindow(QMainWindow):
     # slots: auto zoom
     # ---------------------------------------
     def auto_zoom(self):
-        target_zoom_width = self.center_canvas.canvas.qimg.width() * self.center_canvas.canvas.qviews[0].zoom
-        self.center_canvas.canvas.target_zoom_width = int(target_zoom_width)
+        self.center_canvas.canvas.auto_zoom()
 
     def auto_zoom_dialog(self):
-        target_zoom_width = self.center_canvas.canvas.qimg.width() * self.center_canvas.canvas.qviews[0].zoom
+        target_zoom_width = self.center_canvas.canvas.auto_zoom()
         target_zoom_width, ok = QInputDialog.getText(self, 'Auto Zoom', 'Fix image width: (0 for cancelling auto zoom)',
-                                                     QLineEdit.Normal, str(int(target_zoom_width)))
+                                                     QLineEdit.Normal, str(target_zoom_width))
         if ok:
             self.center_canvas.canvas.target_zoom_width = int(target_zoom_width)
+            self.center_canvas.canvas.show_image(init=False)
 
 
 def create_new_window(init_path=None):

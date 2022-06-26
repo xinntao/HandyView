@@ -21,8 +21,11 @@ R:                  Reset zoom ration to 1
 C:                  (Compare): switch images under single-view compare mode
 V:                  Switch images under single-view compare mode
     C and V are a pair, similar to Direction key ← →, but switch among folders
-Space :             Next image
+Z:                  Auto zoom
+Shift + Z:          Cancel auto zoom
+Space:              Next image
 Backspace:          Previous image
+Tab:                Switch the focused views
 '''
 instruct_text_cn = r'''
 ▶ 滚轮操作
@@ -47,6 +50,9 @@ R:                       (Reset) 重置图像缩放为1
 C:                       (Compare) 单视图比较模式下, 图像切换
 V:                       单视图比较模式下, 图像切换.
     C和V是一对, 类似左右方向键切换, 只是在多个folder间切换
+Z:                       自动缩放
+Shift + Z:               取消自动缩放
 Space:                   图像切换, 下一张图像
 Backspace:               图像切换, 上一张图像
+Tab:                     改变激活的图片查看窗口
 '''

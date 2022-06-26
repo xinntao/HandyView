@@ -119,6 +119,13 @@ class Canvas(QWidget):
         elif event.key() == QtCore.Qt.Key_V:
             self.compare_folders(-1)
 
+        elif event.key() == QtCore.Qt.Key_Z:
+            if modifiers == QtCore.Qt.ControlModifier:
+                # cancel auto zoom
+                self.target_zoom_width = 0
+            else:
+                self.auto_zoom()
+
         elif event.key() == QtCore.Qt.Key_Space:
             if modifiers == QtCore.Qt.ShiftModifier:
                 self.dir_browse(10)
@@ -332,3 +339,8 @@ class Canvas(QWidget):
             self.qview_bg_color = 'white'
             for qscene in self.qscenes:
                 qscene.setBackgroundBrush(QtCore.Qt.white)
+
+    def auto_zoom(self):
+        target_zoom_width = self.qimg.width() * self.qviews[0].zoom
+        self.target_zoom_width = int(target_zoom_width)
+        return self.target_zoom_width

@@ -48,6 +48,8 @@ class HVDB():
             self.recursive_scan_folder = True
             self.path_list[0] = list(scandir(self.init_path, suffix=FORMATS, recursive=True, full_path=True))
             self.init_path = self.path_list[0][0]
+        else:
+            self.recursive_scan_folder = False
 
         # fix the path pattern passed from windows system when double click
         self.init_path = self.init_path.replace('\\', '/')
