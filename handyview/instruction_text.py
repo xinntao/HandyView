@@ -26,6 +26,9 @@ Shift + Z:          Cancel auto zoom
 Space:              Next image
 Backspace:          Previous image
 Tab:                Switch the focused views
+
+▶ Draw
+Shift + Drag:       Draw rectangular
 '''
 instruct_text_cn = r'''
 ▶ 滚轮操作
@@ -55,4 +58,7 @@ Shift + Z:               取消自动缩放
 Space:                   图像切换, 下一张图像
 Backspace:               图像切换, 上一张图像
 Tab:                     改变激活的图片查看窗口
+
+▶ 画框
+Shift + Drag:            按住Shift, 同时鼠标单击拖拽
 '''

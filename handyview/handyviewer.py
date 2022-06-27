@@ -111,10 +111,10 @@ class MainWindow(QMainWindow):
         file_menu.addAction(actions.exclude_file_name(self))
 
         # Edit
-        edit_menu = menubar.addMenu('&Edit(编辑)')  # noqa: F841
+        # edit_menu = menubar.addMenu('&Edit(编辑)')  # noqa: F841
 
         # Draw
-        draw_menu = menubar.addMenu('&Draw(画图)')  # noqa: F841
+        # draw_menu = menubar.addMenu('&Draw(画图)')  # noqa: F841
 
         # Compare
         compare_menu = menubar.addMenu('&Compare(比较)')
