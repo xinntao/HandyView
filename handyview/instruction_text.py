@@ -23,6 +23,7 @@ V:                  Switch images under single-view compare mode
     C and V are a pair, similar to Direction key ← →, but switch among folders
 Z:                  Auto zoom
 Shift + Z:          Cancel auto zoom
+Ctrl + C:           Copy image, can be pasted in directory
 Space:              Next image
 Backspace:          Previous image
 Tab:                Switch the focused views
@@ -55,6 +56,7 @@ V:                       单视图比较模式下, 图像切换.
     C和V是一对, 类似左右方向键切换, 只是在多个folder间切换
 Z:                       自动缩放
 Shift + Z:               取消自动缩放
+Ctrl + C:                复制图像 (可在目录中直接粘贴)
 Space:                   图像切换, 下一张图像
 Backspace:               图像切换, 上一张图像
 Tab:                     改变激活的图片查看窗口

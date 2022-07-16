@@ -115,7 +115,15 @@ class Canvas(QWidget):
             for qview in self.qviews:
                 qview.set_zoom(1)
         elif event.key() == QtCore.Qt.Key_C:
-            self.compare_folders(1)
+            if modifiers == QtCore.Qt.ControlModifier:
+                # copy image to clipboard
+                clipboard = QApplication.clipboard()
+                mime_data = QtCore.QMimeData()
+                full_path = os.path.abspath(self.img_path)
+                mime_data.setUrls([QtCore.QUrl(f'file:///{full_path}')])
+                clipboard.setMimeData(mime_data)
+            else:
+                self.compare_folders(1)
         elif event.key() == QtCore.Qt.Key_V:
             self.compare_folders(-1)
 
@@ -231,6 +239,7 @@ class Canvas(QWidget):
                     md5_0, phash_0 = self.db.get_fingerprint(fidx=self.db.fidx)
 
             qimg = QImage(img_path)
+            self.img_path = img_path
             if idx == 0:
                 # for HVView, HVScene show_mouse_color.
                 # only work on the first qimg (main canvas mode)
