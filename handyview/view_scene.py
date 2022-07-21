@@ -29,6 +29,9 @@ class HVView(QGraphicsView):
         self.rotate = 0
         self.shown_text = None
 
+        self.vertical_scroll_value = 0
+        self.horizontal_scroll_value = 0
+
         self.font = QFont('times', 15)
         font_metrics = QFontMetrics(self.font)
         self.text_height = font_metrics.height()
@@ -116,6 +119,8 @@ class HVView(QGraphicsView):
             self.rubber_band_changable = False
         else:
             QGraphicsView.mouseReleaseEvent(self, event)
+            self.vertical_scroll_value = self.verticalScrollBar().value()
+            self.horizontal_scroll_value = self.horizontalScrollBar().value()
 
     def wheelEvent(self, event):
         mouse = event.angleDelta().y() / 120

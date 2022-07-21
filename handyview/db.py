@@ -1,10 +1,14 @@
 import hashlib
 import imagehash
 import os
-from PIL import Image
+from PIL import Image, ImageFile
 
 from handyview.utils import FORMATS, ROOT_DIR, get_img_list, scandir, sizeof_fmt
 from handyview.widgets import show_msg
+
+# for loading large image file
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+Image.MAX_IMAGE_PIXELS = None
 
 
 class HVDB():

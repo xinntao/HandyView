@@ -279,7 +279,7 @@ class MainWindow(QMainWindow):
     # slots: refresh and index
     # ---------------------------------------
     def refresh_img_list(self):
-        # should be used in Main Cavans
+        # should be used in Main Canvas
         if self.canvas_type != 'main':
             self.switch_main_canvas()
 

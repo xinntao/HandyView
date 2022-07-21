@@ -219,6 +219,7 @@ class Canvas(QWidget):
     def show_image(self, init=False):
         interval_mode = (self.db.get_folder_len() == 1)
         for idx, qscene in enumerate(self.qscenes):
+            qview = self.qviews[idx]
             if interval_mode:
                 pidx = self.db.pidx + idx
                 img_path = self.db.get_path(pidx=pidx)[0]
@@ -249,7 +250,7 @@ class Canvas(QWidget):
 
             # --------------- auto zoom scale ratio -------------------
             if self.target_zoom_width > 0:
-                self.qviews[idx].set_zoom(self.target_zoom_width / qimg.width())
+                qview.set_zoom(self.target_zoom_width / qimg.width())
             # --------------- end of auto zoom scale ratio -------------------
 
             # shown text
@@ -285,12 +286,12 @@ class Canvas(QWidget):
                     shown_text.append(f'md5: {md5}')
                     shown_text.append(f'phash: {phash}')
 
-            if self.qviews[idx].hasFocus():
+            if qview.hasFocus():
                 color = 'red'
             else:
                 color = 'green'
-            self.qviews[idx].set_shown_text(shown_text, color)
-            # self.qviews[idx].viewport().update()
+            qview.set_shown_text(shown_text, color)
+            # qview.viewport().update()
             qpixmap = QPixmap.fromImage(qimg)
 
             # draw border
@@ -307,6 +308,9 @@ class Canvas(QWidget):
             qscene.set_width_height(width, height)
             # put image always in the center of a QGraphicsView
             qscene.setSceneRect(0, 0, width, height)
+            # set the scroll bar position, so that it can keep the same position in auto_zoom
+            qview.verticalScrollBar().setSliderPosition(qview.vertical_scroll_value)
+            qview.horizontalScrollBar().setSliderPosition(qview.horizontal_scroll_value)
 
         # set include and exclude name info
         if self.num_view == 1:
