@@ -1,15 +1,73 @@
-# ![icon](icon.png) HandyView
+<p align="center">
+  <img src="icon_text.png" height=100>
+</p>
 
-[English](README.md) **|** [简体中文](README_CN.md) &emsp; [GitHub](https://github.com/xinntao/HandyView) **|** [Gitee码云](https://gitee.com/xinntao/HandyView)
+### <div align="center"><b><a href="README.md">English</a> | <a href="README_CN.md">简体中文</a></b></div>
 
-```Handy``` *Series*:
+---
 
+[![download](https://img.shields.io/github/downloads/xinntao/HandyView/total)](https://github.com/xinntao/HandyView/releases)
+![visitors](https://visitor-badge.glitch.me/badge?page_id=xinntao/HandyView)
+[![PyPI](https://img.shields.io/pypi/v/handyview)](https://pypi.org/project/handyview/)
+[![license](https://img.shields.io/github/license/xinntao/HandyView)](https://github.com/xinntao/HandyView/blob/master/LICENSE)
+[![python lint](https://github.com/xinntao/HandyView/actions/workflows/pylint.yml/badge.svg)](https://github.com/xinntao/HandyView/blob/master/.github/workflows/pylint.yml)
+[![Publish-pip](https://github.com/xinntao/HandyView/actions/workflows/publish-pip.yml/badge.svg)](https://github.com/xinntao/HandyView/blob/master/.github/workflows/publish-pip.yml)
+[![Release](https://github.com/xinntao/HandyView/actions/workflows/release.yml/badge.svg)](https://github.com/xinntao/HandyView/blob/master/.github/workflows/release.yml)
+
+ ⏬[**下载安装文件**](https://github.com/xinntao/HandyView/releases) **|** 🔧[**用法**](#-使用) **|**
+
+```Handy``` *Series*: &emsp;&emsp;
 <img src="https://gitee.com/xinntao/HandyView/raw/master/icon.png" alt="HandyView Icon" width="36" height="36"> [HandyView](https://gitee.com/xinntao/HandyView) &emsp; <img src="https://gitee.com/xinntao/HandyFigure/raw/master/icon.png" alt="HandyFigure Icon" width="36" height="36"> [HandyFigure](https://gitee.com/xinntao/HandyFigure) &emsp; <img src="https://gitee.com/xinntao/HandyCrawler/raw/master/icon.png" alt="HandyCrawler Icon" width="36" height="36"> [HandyCrawler](https://gitee.com/xinntao/HandyCrawler)
 &emsp; <img src="https://gitee.com/xinntao/HandyWriting/raw/master/icon.png" alt="HandyWriting Icon" width="36" height="36"> [HandyWriting](https://gitee.com/xinntao/HandyWriting)
 
 ---
 
 HandyView 是一款基于 PyQt5 开发的方便的图像查看和比对工具.
+
+## 🔧 使用
+
+### <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg" alt="Windows" height="28">
+
+1. Download the pre-compiled executable zip file from the release page ([Github](https://github.com/xinntao/HandyView/releases).
+2. Unzip the file
+3. Set HandyView as the default image viewer, so that you can **double-click the image to open** HandyView.
+
+### <img src="https://user-images.githubusercontent.com/11482921/171234862-5a54e430-7c07-4976-9ac8-ce8dbf520a17.png" alt="MacOS" height="24">
+
+1. Download the handyviewer.dmg from the release page ([Github](https://github.com/xinntao/HandyView/releases) and install.
+2. If you fail to install the app, you may first need to [disable gatekeeper](https://disable-gatekeeper.github.io/) first. You should be aware of the risk of [disabling gatekeeper](https://disable-gatekeeper.github.io/).
+3. Set HandyView as the default image viewer (use `cmd+i`), so that you can **double-click the image to open** HandyView.
+
+### <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Logo-ubuntu_no%28r%29-black_orange-hex.svg" alt="Ubuntu" height="24">
+
+I used the early version of HandyView on Ubuntu. The current version is not tested on Ubuntu and may be out-of-date.
+
+1. Clone this repo `git clone https://github.com/xinntao/HandyView.git`
+1. How to double click to open an image
+    1. Modify the HandyView.desktop file - *Exec & Icon*
+    1. Copy the .desktop file to `/usr/share/applications`
+1. How to change the default image viewer
+    1. Right click an image
+    1. Go to `Properties` -> `Open With`
+    1. Choose *HandyView*
+
+### <img src="https://user-images.githubusercontent.com/11482921/171239036-858e2c00-835f-4278-afb4-5b8ac3fe2b65.png" alt="Ubuntu" height="38">
+
+For python user, you can also launch HandyView from the command line:
+
+1. Clone repo and install dependent packages
+
+    ```bash
+    git clone https://github.com/xinntao/HandyView.git
+    cd HandyView
+    pip install -r requirements.txt
+    ```
+
+2. Run
+
+    ```bash
+    python -m handyview.handyviewer [image_path]
+    ```
 
 ## :sparkles: 特性
 
@@ -53,64 +111,9 @@ HandyView 是一款基于 PyQt5 开发的方便的图像查看和比对工具.
   <img src="assets/hv_rect.gif" height="400">
 </p>
 
-## :wrench: 使用
+## Compile to executable program
 
-HandyView 目前实在Windows上测试的. 应该也可以在 Ubuntu 上使用, 可能需要做些改动.
-
-### <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg" alt="Windows" height="28">
-
-#### Option 1: Pre-compiled executable zip file
-
-I have zipped an exe zip file with pyinstaller in the release page ([Github](https://github.com/xinntao/HandyView/releases) | [Gitee](https://gitee.com/xinntao/HandyView/releases)). You can first have a try on it.
-
-1. Unzip the file
-2. Set HandyView as the default image viewer, so that you can **double-click the image to open** HandyView.
-
-#### Option 2: Python environment
-
-- Anaconda (Python >= 3.5)
-
-1. Clone repo
-
-    ```bash
-    git clone https://github.com/xinntao/HandyView.git
-    ```
-
-1. Install dependent packages
-
-    ```bash
-    cd HandyView
-    pip install -r requirements.txt
-    ```
-
-In the command line, run:
-
-> python handyview/handyviewer.py [image_path]
-
-#### Option 3: Python environment + Compile to executable program
-
-Use `pyinstaller` to compile to executable program, so that you can **double-click the image to open** the HandyView.
-
-1. > pyinstaller -D handyview/handyview.py -i icon.ico --windowed
-1. You will see a `dist` folder containing the outputs (dll, exe, etc)
-1. Copy necessary files to the `dist` folder
-    > cp -r icons dist/handyviewer/ <br>
-    > cp icon.png dist/handyviewer/ <br>
-    > cp icon.ico dist/handyviewer/ <br>
-1. Choose the `dist/handyview/handyviewer.exe` as the default image viewer.
-
-### <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Logo-ubuntu_no%28r%29-black_orange-hex.svg" alt="Ubuntu" height="24">
-
-I used the early version of HandyView on Ubuntu. The current version is not tested on Ubuntu and may be out-of-date.
-
-1. Clone this repo `git clone git@github.com:xinntao/HandyView.git`
-1. How to double click to open an image
-    1. Modify the HandyView.desktop file - *Exec & Icon*
-    1. Copy the .desktop file to `/usr/share/applications`
-1. How to change the default image viewer
-    1. Right click an image
-    1. Go to `Properties` -> `Open With`
-    1. Choose *HandyView*
+For Windows and MacOS users, you can find the instructions of compiling the executable program from [how-to-build](how_to_build.md).
 
 ## :book: 文档 (还在路上...)
 
