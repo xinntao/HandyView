@@ -13,16 +13,18 @@
 [![Release](https://github.com/xinntao/HandyView/actions/workflows/release.yml/badge.svg)](https://github.com/xinntao/HandyView/blob/master/.github/workflows/release.yml)
 
 <div align="center">
+
   ⏬[**Executable files**](https://github.com/xinntao/HandyView/releases) **|** 🔧[**Usage**](#-Usage)
  </div>
+
+HandyView is a **handy image viewer** for convenient viewing and comparing. It is developed with PyQt5.
+
+---
 
 ```Handy``` *Series*: &emsp;&emsp;
 <img src="https://github.com/xinntao/HandyView/blob/master/icon.png" alt="HandyView Icon" width="36" height="36"> [HandyView](https://github.com/xinntao/HandyView) &emsp; <img src="https://github.com/xinntao/HandyFigure/blob/master/icon.png" alt="HandyFigure Icon" width="36" height="36"> [HandyFigure](https://github.com/xinntao/HandyFigure) &emsp; <img src="https://github.com/xinntao/HandyCrawler/blob/master/icon.png" alt="HandyCrawler Icon" width="36" height="36"> [HandyCrawler](https://github.com/xinntao/HandyCrawler)
 &emsp; <img src="https://github.com/xinntao/HandyWriting/blob/master/icon.png" alt="HandyWriting Icon" width="36" height="36"> [HandyWriting](https://github.com/xinntao/HandyWriting)
 
----
-
-HandyView is a **handy image viewer** for convenient viewing and comparing. It is developed with PyQt5.
 
 ## 🔧 Usage
 

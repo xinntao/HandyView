@@ -13,16 +13,18 @@
 [![Release](https://github.com/xinntao/HandyView/actions/workflows/release.yml/badge.svg)](https://github.com/xinntao/HandyView/blob/master/.github/workflows/release.yml)
 
 <div align="center">
+
   ⏬[**下载安装文件**](https://github.com/xinntao/HandyView/releases) **|** 🔧[**用法**](#-使用)
  </div>
+
+HandyView 是一款基于 PyQt5 开发的方便的图像查看和比对工具
+
+---
 
 ```Handy``` *Series*: &emsp;&emsp;
 <img src="https://gitee.com/xinntao/HandyView/raw/master/icon.png" alt="HandyView Icon" width="36" height="36"> [HandyView](https://gitee.com/xinntao/HandyView) &emsp; <img src="https://gitee.com/xinntao/HandyFigure/raw/master/icon.png" alt="HandyFigure Icon" width="36" height="36"> [HandyFigure](https://gitee.com/xinntao/HandyFigure) &emsp; <img src="https://gitee.com/xinntao/HandyCrawler/raw/master/icon.png" alt="HandyCrawler Icon" width="36" height="36"> [HandyCrawler](https://gitee.com/xinntao/HandyCrawler)
 &emsp; <img src="https://gitee.com/xinntao/HandyWriting/raw/master/icon.png" alt="HandyWriting Icon" width="36" height="36"> [HandyWriting](https://gitee.com/xinntao/HandyWriting)
 
----
-
-HandyView 是一款基于 PyQt5 开发的方便的图像查看和比对工具.
 
 ## 🔧 使用
 
