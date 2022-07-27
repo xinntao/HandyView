@@ -191,6 +191,10 @@ class HVView(QGraphicsView):
             self.parent.zoom_label.setText(f'Zoom: {self.zoom:.2f}')
         self.set_transform()
 
+        # update the scroller bar values when zoom in/out
+        self.vertical_scroll_value = self.verticalScrollBar().value()
+        self.horizontal_scroll_value = self.horizontalScrollBar().value()
+
     def zoom_out(self, scale=1.05, emit_signal=False):
         self.zoom /= scale
         if emit_signal:
@@ -198,6 +202,10 @@ class HVView(QGraphicsView):
         if self.show_info:
             self.parent.zoom_label.setText(f'Zoom: {self.zoom:.2f}')
         self.set_transform()
+
+        # update the scroller bar values when zoom in/out
+        self.vertical_scroll_value = self.verticalScrollBar().value()
+        self.horizontal_scroll_value = self.horizontalScrollBar().value()
 
     def set_zoom(self, ratio):
         self.zoom = ratio

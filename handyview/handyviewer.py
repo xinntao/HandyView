@@ -88,7 +88,10 @@ class MainWindow(QMainWindow):
         self.center_canvas = CenterWidget(self, self.hvdb)
 
         # initialize UI
-        self.setWindowTitle('HandyView')
+        # read version from file
+        with open(os.path.join(ROOT_DIR, 'VERSION')) as f:
+            title = 'HandyView @ V' + f.readline().strip()
+        self.setWindowTitle(title)
         self.init_menubar()
         self.init_toolbar()
         # self.init_statusbar()

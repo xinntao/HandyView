@@ -4,6 +4,7 @@ pyinstaller -D handyview/handyviewer.py \
   --add-data="icons;icons" \
   --add-data="icon.png;." \
   --add-data="icon.ico;." \
+  --add-data="VERSION;." \
   --windowed \
   --noconfirm \
   --hidden-import="PIL.Image" \

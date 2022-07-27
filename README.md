@@ -4,6 +4,8 @@
 
 ## <div align="center"><b><a href="README.md">English</a> | <a href="README_CN.md">简体中文</a></b></div>
 
+<div align="center">
+
 [![download](https://img.shields.io/github/downloads/xinntao/HandyView/total)](https://github.com/xinntao/HandyView/releases)
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=xinntao/HandyView)
 [![PyPI](https://img.shields.io/pypi/v/handyview)](https://pypi.org/project/handyview/)
@@ -12,9 +14,11 @@
 [![Publish-pip](https://github.com/xinntao/HandyView/actions/workflows/publish-pip.yml/badge.svg)](https://github.com/xinntao/HandyView/blob/master/.github/workflows/publish-pip.yml)
 [![Release](https://github.com/xinntao/HandyView/actions/workflows/release.yml/badge.svg)](https://github.com/xinntao/HandyView/blob/master/.github/workflows/release.yml)
 
+ </div>
+
 <div align="center">
 
-  ⏬[**Executable files**](https://github.com/xinntao/HandyView/releases) **|** 🔧[**Usage**](#-Usage)
+  🔻[**Executable files**](https://github.com/xinntao/HandyView/releases) **|** 🔧[**Usage**](#-Usage)
  </div>
 
 HandyView is a **handy image viewer** for convenient viewing and comparing. It is developed with PyQt5.
