@@ -203,6 +203,8 @@ class CanvasCrop(QWidget):
         self.set_selection_pos()
         # 1. clear all the existing thumbnails
         self.thumbnails.clear()
+        self.crop_thumbnails.clear()
+        self.rect_thumbnails.clear()
         # 2. add thumbnails
         for path in self.db.path_list[0]:
             self.thumbnails.addItem(QListWidgetItem(QIcon(path), os.path.basename(path)))
@@ -263,20 +265,20 @@ class CanvasCrop(QWidget):
 
     def open_patch_folder(self):
         try:
-            if sys.platform == "win32":
+            if sys.platform == 'win32':
                 os.startfile(self.patch_folder)
             else:
-                opener = "open" if sys.platform == "darwin" else "xdg-open"
+                opener = 'open' if sys.platform == 'darwin' else 'xdg-open'
                 subprocess.call([opener, self.patch_folder])
         except Exception as error:
             show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
 
     def open_rect_folder(self):
         try:
-            if sys.platform == "win32":
+            if sys.platform == 'win32':
                 os.startfile(self.rect_folder)
             else:
-                opener = "open" if sys.platform == "darwin" else "xdg-open"
+                opener = 'open' if sys.platform == 'darwin' else 'xdg-open'
                 subprocess.call([opener, self.rect_folder])
         except Exception as error:
             show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
@@ -295,10 +297,10 @@ class CanvasCrop(QWidget):
 
     def open_history_file(self):
         try:
-            if sys.platform == "win32":
+            if sys.platform == 'win32':
                 os.startfile(os.path.join(ROOT_DIR, 'history_crop.txt'))
             else:
-                opener = "open" if sys.platform == "darwin" else "xdg-open"
+                opener = 'open' if sys.platform == 'darwin' else 'xdg-open'
                 subprocess.call([opener, os.path.join(ROOT_DIR, 'history_crop.txt')])
         except Exception as error:
             show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
