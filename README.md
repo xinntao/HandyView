@@ -18,7 +18,7 @@
 
 <div align="center">
 
-  🔻[**Executable files**](https://github.com/xinntao/HandyView/releases) **|** 🔧[**Usage**](#-Usage)
+  🔻[**Executable files**](https://github.com/xinntao/HandyView/releases) **|** 🔧[**Installation**](#-Installation)  **|** 📕[**使用说明**](docs)
  </div>
 
 HandyView is a **handy image viewer** for convenient viewing and comparing. It is developed with PyQt5.
@@ -30,7 +30,7 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
 &emsp; <img src="https://github.com/xinntao/HandyWriting/blob/master/icon.png" alt="HandyWriting Icon" width="36" height="36"> [HandyWriting](https://github.com/xinntao/HandyWriting)
 
 
-## 🔧 Usage
+## 🔧 Installation
 
 ### <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg" alt="Windows" height="28">
 

@@ -18,7 +18,7 @@
 
 <div align="center">
 
-  🔻[**下载安装文件**](https://github.com/xinntao/HandyView/releases) **|** 🔧[**用法**](#-使用)
+  🔻[**下载安装文件**](https://github.com/xinntao/HandyView/releases) **|** 🔧[**安装**](#-安装) **|** 📕[**使用说明**](docs)
 
 
 HandyView 是一款基于 PyQt5 开发的方便的图像查看和比对工具
@@ -30,7 +30,7 @@ HandyView 是一款基于 PyQt5 开发的方便的图像查看和比对工具
 &emsp; <img src="https://gitee.com/xinntao/HandyWriting/raw/master/icon.png" alt="HandyWriting Icon" width="36" height="36"> [HandyWriting](https://gitee.com/xinntao/HandyWriting)
 
 
-## 🔧 使用
+## 🔧 安装
 
 ### <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg" alt="Windows" height="28">
 
