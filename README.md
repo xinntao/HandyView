@@ -34,13 +34,13 @@ HandyView is a **handy image viewer** for convenient viewing and comparing. It i
 
 ### <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg" alt="Windows" height="28">
 
-1. Download the pre-compiled executable zip file from the release page ([Github](https://github.com/xinntao/HandyView/releases).
+1. Download the pre-compiled executable zip file from the [release page](https://github.com/xinntao/HandyView/releases).
 2. Unzip the file
 3. Set HandyView as the default image viewer, so that you can **double-click the image to open** HandyView.
 
 ### <img src="https://user-images.githubusercontent.com/11482921/171234862-5a54e430-7c07-4976-9ac8-ce8dbf520a17.png" alt="MacOS" height="24">
 
-1. Download the handyviewer.dmg from the release page ([Github](https://github.com/xinntao/HandyView/releases) and install.
+1. Download the handyviewer.dmg from the [release page](https://github.com/xinntao/HandyView/releases) and install.
 2. If you fail to install the app, you may first need to [disable gatekeeper](https://disable-gatekeeper.github.io/) first. You should be aware of the risk of [disabling gatekeeper](https://disable-gatekeeper.github.io/).
 3. Set HandyView as the default image viewer (use `cmd+i`), so that you can **double-click the image to open** HandyView.
 
