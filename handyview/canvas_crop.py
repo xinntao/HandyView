@@ -1,7 +1,6 @@
 import os
 import subprocess
 import sys
-from glob import glob
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel, QLineEdit, QListWidget, QListWidgetItem,
@@ -9,7 +8,7 @@ from PyQt5.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel, QLineEdi
 from shutil import rmtree
 from time import localtime, strftime
 
-from handyview.utils import ROOT_DIR, crop_images
+from handyview.utils import ROOT_DIR, crop_images, scandir
 from handyview.widgets import HLine, HVLable, show_msg
 
 
@@ -214,10 +213,10 @@ class CanvasCrop(QWidget):
         self.crop_thumbnails.clear()
         self.rect_thumbnails.clear()
         # 2. add thumbnails
-        for path in sorted(glob(os.path.join(self.patch_folder, '*'))):
+        for path in sorted(scandir(self.patch_folder, suffix=None, recursive=False, full_path=True)):
             self.crop_thumbnails.addItem(QListWidgetItem(QIcon(path), os.path.basename(path)))
         if os.path.isdir(self.rect_folder):
-            for path in sorted(glob(os.path.join(self.rect_folder, '*'))):
+            for path in sorted(scandir(self.rect_folder, suffix=None, recursive=False, full_path=True)):
                 self.rect_thumbnails.addItem(QListWidgetItem(QIcon(path), os.path.basename(path)))
 
     def crop_images(self):

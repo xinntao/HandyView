@@ -1,4 +1,3 @@
-import glob
 import os
 import re
 import sys
@@ -89,7 +88,7 @@ def get_img_list(folder, include_names=None, exclude_names=None, exact_exclude_n
     if folder == '':
         folder = './'
     if exact_exclude_names is not None:
-        for img_path in sorted(glob.glob(os.path.join(folder, '*'))):
+        for img_path in sorted(scandir(folder, suffix=None, recursive=False, full_path=True)):
             img_path = img_path.replace('\\', '/')
             base, ext = os.path.splitext(os.path.basename(img_path))
             if ext in FORMATS:
@@ -98,7 +97,7 @@ def get_img_list(folder, include_names=None, exclude_names=None, exact_exclude_n
                     img_list.append(img_path)
     else:
         # deal with include and exclude names
-        for img_path in sorted(glob.glob(os.path.join(folder, '*'))):
+        for img_path in sorted(scandir(folder, suffix=None, recursive=False, full_path=True)):
             img_path = img_path.replace('\\', '/')
             base, ext = os.path.splitext(os.path.basename(img_path))
             if ext in FORMATS:
