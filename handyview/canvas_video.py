@@ -166,7 +166,7 @@ class CanvasVideo(QWidget):
         main_layout.addWidget(self.infoButton, 58, 0, 1, 1)
         main_layout.addLayout(controlLayout, 60, 0, -1, 49)
 
-        self.qviews[0].set_shown_text(['Click Open to open ·two· videos for comparison!'])
+        self.qviews[0].set_shown_text(['Click Open to open ·two· videos for comparison!', 'bug 出没 - 还在测试中'])
 
     def keyPressEvent(self, event):
         modifiers = QApplication.keyboardModifiers()
