@@ -182,6 +182,7 @@ def crop_images(img_list,
 
         # draw rectangle
         if line_width > 0:
-            draw = ImageDraw.Draw(img)
+            img_rect = img.convert('RGB')
+            draw = ImageDraw.Draw(img_rect)
             draw.rectangle(((start_w, start_h), (start_w + len_w, start_h + len_h)), outline=color, width=line_width)
-            img.save(os.path.join(rect_folder, base_name + '_rect.png'))
+            img_rect.save(os.path.join(rect_folder, base_name + '_rect.png'))
