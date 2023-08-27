@@ -143,7 +143,6 @@ class CanvasCrop(QWidget):
         button_open_rect.clicked.connect(self.open_rect_folder)
         button_open_history = QPushButton('Open History Info', self)
         button_open_history.clicked.connect(self.open_history_file)
-
         button_delete_patch = QPushButton('Delete Patch Folder', self)
         button_delete_patch.clicked.connect(self.delete_patch_folder)
         button_delete_rect = QPushButton('Delete Rect Folder', self)
@@ -162,9 +161,9 @@ class CanvasCrop(QWidget):
         action_grid.addWidget(button_open_patch, 4, 0, 1, 1)
         action_grid.addWidget(button_open_rect, 5, 0, 1, 1)
         action_grid.addWidget(button_open_history, 6, 0, 1, 1)
-        action_grid.addWidget(HLine(), 7, 0, 1, 1)
-        action_grid.addWidget(button_delete_patch, 8, 0, 1, 1)
-        action_grid.addWidget(button_delete_rect, 9, 0, 1, 1)
+        action_grid.addWidget(HLine(), 8, 0, 1, 1)
+        action_grid.addWidget(button_delete_patch, 9, 0, 1, 1)
+        action_grid.addWidget(button_delete_rect, 10, 0, 1, 1)
 
         config_box = QGroupBox('Config')
         config_box.setLayout(config_grid)
@@ -301,6 +300,14 @@ class CanvasCrop(QWidget):
             else:
                 opener = 'open' if sys.platform == 'darwin' else 'xdg-open'
                 subprocess.call([opener, os.path.join(ROOT_DIR, 'history_crop.txt')])
+        except Exception as error:
+            show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
+
+    def open_LUT(selfself):
+        try:
+            # TODO
+            show_msg(icon='Info', title='LUT', text='LUT', timeout=None)
+
         except Exception as error:
             show_msg(icon='Critical', title='Title', text=f'Open error: {error}', timeout=None)
 

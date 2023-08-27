@@ -21,7 +21,7 @@ Using Anaconda for building will produce app with a very large file size, so we 
    ```bash
    pip3 install virtualenv
    virtualenv venv
-   source venv/bin/activate
+   source venv/bin/activat
    pip install -r requirements.txt
    ```
 3. Use pyinstaller to build
