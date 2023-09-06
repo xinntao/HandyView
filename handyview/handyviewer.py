@@ -1,9 +1,11 @@
 import os
+import locale
 import sys
 from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QApplication, QDockWidget, QFileDialog, QGridLayout, QInputDialog, QLabel, QLineEdit,
-                             QMainWindow, QTabWidget, QToolBar, QVBoxLayout, QWidget)
+                             QMainWindow, QTabWidget, QToolBar, QVBoxLayout, QWidget,
+                             QDialog, QDialogButtonBox, QComboBox)
 
 import handyview.actions as actions
 from handyview.canvas import Canvas
@@ -46,9 +48,20 @@ class CenterWidget(QWidget):
         self.canvas = Canvas(self, hvdb)
         self.canvas_crop = CanvasCrop(self, hvdb)
         self.canvas_video = CanvasVideo(self)
-        self.tabs.addTab(self.canvas, 'View 图像')
-        self.tabs.addTab(self.canvas_crop, 'Crop 裁剪')
-        self.tabs.addTab(self.canvas_video, 'Video 视频')
+
+        # find the local language setting
+        windll = ctypes.windll.kernel32
+        lng = locale.windows_locale[windll.GetUserDefaultUILanguage()]
+        if lng == "cn_CN":
+            tabText = [" 图像", " 裁剪", " 视频"]
+            self.lng = "CN"
+        else:
+            tabText = ["", "", ""]
+            self.lng = "EN"
+
+        self.tabs.addTab(self.canvas, 'View' + tabText[0])
+        self.tabs.addTab(self.canvas_crop, 'Crop' + tabText[1])
+        self.tabs.addTab(self.canvas_video, 'Video' + tabText[2])
         self.tabs.setTabIcon(0, QIcon(os.path.join(ROOT_DIR, 'icons/image.png')))
         self.tabs.setTabIcon(1, QIcon(os.path.join(ROOT_DIR, 'icons/crop.png')))
         self.tabs.setTabIcon(2, QIcon(os.path.join(ROOT_DIR, 'icons/video.png')))
@@ -110,10 +123,19 @@ class MainWindow(QMainWindow):
         # create menubar
         menubar = self.menuBar()
 
-        # File
-        file_menu = menubar.addMenu('&File(文件)')
+        # find the local language setting
+        windll = ctypes.windll.kernel32
+        lng = locale.windows_locale[windll.GetUserDefaultUILanguage()]
+        if lng == "cn_CN":
+            tabText = ["(比较)", "(布局)", "(选项卡)", "(查看)", "(帮助)", "(文件)"]
+        else:
+            tabText = ["", "", "", "", "", "", ""]
+
+        # File Menu
+        file_menu = menubar.addMenu('&File' + tabText[5])
         file_menu.addAction(actions.open(self))
         file_menu.addAction(actions.history(self))
+        file_menu.addAction(actions.LUT(self))
         file_menu.addSeparator()
         file_menu.addAction(actions.refresh(self))
         file_menu.addAction(actions.goto_index(self))
@@ -128,29 +150,29 @@ class MainWindow(QMainWindow):
         # draw_menu = menubar.addMenu('&Draw(画图)')  # noqa: F841
 
         # Compare
-        compare_menu = menubar.addMenu('&Compare(比较)')
+        compare_menu = menubar.addMenu('&Compare' + tabText[0])
         compare_menu.addAction(actions.compare(self))
         compare_menu.addAction(actions.clear_compare(self))
         compare_menu.addAction(actions.set_fingerprint(self))
 
         # Layouts
-        layout_menu = menubar.addMenu('&Layout(布局)')
+        layout_menu = menubar.addMenu('&Layout' + tabText[1])
         layout_menu.addAction(actions.switch_main_canvas(self))
         layout_menu.addAction(actions.switch_compare_canvas(self))
-        layout_menu.addAction(actions.switch_preview_canvas(self))
+        # layout_menu.addAction(actions.switch_preview_canvas(self))
 
         # Tabs
-        layout_menu = menubar.addMenu('&Tabs(选项卡)')
+        layout_menu = menubar.addMenu('&Tabs' + tabText[2])
         layout_menu.addAction(actions.select_basic_tab(self))
         layout_menu.addAction(actions.select_crop_tab(self))
         layout_menu.addAction(actions.select_video_tab(self))
 
         # View
-        layout_menu = menubar.addMenu('&View(查看)')
+        layout_menu = menubar.addMenu('&View' + tabText[3])
         layout_menu.addAction(actions.auto_zoom_dialog(self))
 
         # Help
-        help_menu = menubar.addMenu('&Help(帮助)')
+        help_menu = menubar.addMenu('&Help' + tabText[4])
         help_menu.addAction(actions.show_instruction_msg(self))
 
     def init_toolbar(self):
@@ -160,6 +182,7 @@ class MainWindow(QMainWindow):
         # open and history
         self.toolbar.addAction(actions.open(self))
         self.toolbar.addAction(actions.history(self))
+        self.toolbar.addAction(actions.LUT(self))
         self.toolbar.addSeparator()
         # refresh and index
         self.toolbar.addAction(actions.refresh(self))
@@ -173,12 +196,16 @@ class MainWindow(QMainWindow):
         self.toolbar.addAction(actions.compare(self))
         self.toolbar.addAction(actions.clear_compare(self))
 
+        # exit
+        # self.toolbar.addSeparator()
+        # self.toolbar.addAction(actions.exit_UI(self))
+
         # canvas layout
         self.toolbar.addSeparator()
         self.toolbar.addSeparator()
         self.toolbar.addAction(actions.switch_main_canvas(self))
         self.toolbar.addAction(actions.switch_compare_canvas(self))
-        self.toolbar.addAction(actions.switch_preview_canvas(self))
+        # self.toolbar.addAction(actions.switch_preview_canvas(self))
 
         # others
         self.toolbar.addSeparator()
@@ -282,6 +309,19 @@ class MainWindow(QMainWindow):
         if ok:
             self.hvdb.init_path = key
             self.hvdb.get_init_path_list()
+            self.center_canvas.canvas.show_image(init=True)
+            self.center_canvas.canvas_crop.update_db(self.hvdb)
+        self.empty = False
+
+    def open_LUT(self):
+        # open LUT and processing dialog
+        use_LUT, useprocessing, ok = LUTDialog.getLUTProcessing()
+
+        if ok:
+            # set processing parameters
+            self.hvdb.use_LUT = use_LUT
+            self.hvdb.useprocessing = useprocessing
+            # Update UI
             self.center_canvas.canvas.show_image(init=True)
             self.center_canvas.canvas_crop.update_db(self.hvdb)
         self.empty = False
@@ -415,7 +455,8 @@ class MainWindow(QMainWindow):
                 self.canvas_type = 'compare'
 
     def switch_preview_canvas(self):
-        show_msg('Information', '^_^', text=('Has not implemented yet.\nContributions are welcome!\n尚未实现, 欢迎贡献!'))
+        show_msg('Information', '^_^',
+                 text=('Has not implemented yet.\nContributions are welcome!\n尚未实现, 欢迎贡献!'))
 
     # ---------------------------------------
     # slots: canvas tabs
@@ -463,6 +504,38 @@ class MainWindow(QMainWindow):
             self.center_canvas.canvas.show_image(init=False)
 
 
+class LUTDialog(QDialog):
+    def __init__(self, parent=None):
+        super(LUTDialog, self).__init__(parent)
+
+        self.LUTs = HVDB.get_all_LUTs(self)
+        self.processings = HVDB.get_all_processings(self)
+
+        layout = QVBoxLayout(self)
+        self.comboboxLUT = QComboBox()
+        self.comboboxLUT.addItems(self.LUTs)
+        layout.addWidget(self.comboboxLUT)
+
+        self.comboboxProcessing = QComboBox()
+        self.comboboxProcessing.addItems(self.processings)
+        layout.addWidget(self.comboboxProcessing)
+
+        # OK and Cancel buttons
+        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
+        layout.addWidget(self.buttons)
+        self.buttons.accepted.connect(self.accept)
+        self.buttons.rejected.connect(self.reject)
+
+    # static method to create the dialog and return values
+    @staticmethod
+    def getLUTProcessing(parent=None):
+        dialog = LUTDialog(parent)
+        result = dialog.exec_()
+        useLUT = dialog.comboboxLUT.currentText()
+        useprocessing = dialog.comboboxProcessing.currentText()
+        return useLUT, useprocessing, result == QDialog.Accepted
+
+
 def create_new_window(init_path=None):
     screen = app.primaryScreen()
     size = screen.size()
@@ -478,9 +551,11 @@ def create_new_window(init_path=None):
 
 if __name__ == '__main__':
     import platform
+
     if platform.system() == 'Windows':
         # set the icon in the task bar
         import ctypes
+
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('HandyView')
     print('Welcome to HandyView.')
 

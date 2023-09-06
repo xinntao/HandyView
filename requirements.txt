@@ -1,3 +1,6 @@
-Pillow
-imagehash
-pyqt5
+Pillow~=8.4.0
+imagehash~=4.3.1
+pyqt5~=5.15.6
+setuptools~=59.6.0
+numpy~=1.19.5
+opencv-python==4.1.2.30

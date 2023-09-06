@@ -43,6 +43,11 @@ def history(parent):
     return new_action(parent, 'History', icon_name='history.png', slot=parent.open_history)
 
 
+def LUT(parent):
+    """Show open LUT."""
+    return new_action(parent, 'LUT', icon_name='LUT.png', slot=parent.open_LUT)
+
+
 # ---------------------------------------
 # refresh and index
 # ---------------------------------------
@@ -138,6 +143,7 @@ def set_fingerprint(parent):
 # ---------------------------------------
 # auto zoom
 # ---------------------------------------
+
 def auto_zoom(parent):
     return new_action(parent, 'Auto Zoom', icon_name='auto_zoom.png', slot=parent.auto_zoom)
 

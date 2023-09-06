@@ -1,11 +1,14 @@
 import os
+
+import numpy as np
 from PyQt5 import QtCore
-from PyQt5.QtGui import QColor, QImage, QPainter, QPen, QPixmap
+from PyQt5.QtGui import QColor, QImage, QPainter, QPen, QPixmap, qRgb
 from PyQt5.QtWidgets import QApplication, QGridLayout, QSplitter, QWidget
 
 from handyview.view_scene import HVScene, HVView
 from handyview.widgets import ColorLabel, HVLable, show_msg
-
+# For LUT
+import cv2
 
 class Canvas(QWidget):
     """Main canvas"""
@@ -192,7 +195,7 @@ class Canvas(QWidget):
         show_str = 'Number for each folder:\n\t' + '\n\t'.join(map(str, img_len_list))
         self.comparison_label.setText(show_str)
         if is_same_len is False:
-            msg = f'Comparison folders have differnet number of images.\n{show_str}'
+            msg = f'Comparison folders have different number of images.\n{show_str}'
             show_msg('Warning', 'Warning!', msg)
         # refresh
         self.show_image()
@@ -202,7 +205,7 @@ class Canvas(QWidget):
         show_str = 'Comparison:\n # for each folder:\n\t' + '\n\t'.join(map(str, img_len_list))
         self.comparison_label.setText(show_str)
         if is_same_len is False:
-            msg = f'Comparison folders have differnet number of images.\n{show_str}'
+            msg = f'Comparison folders have different number of images.\n{show_str}'
             show_msg('Warning', 'Warning!', msg)
 
     def compare_folders(self, step):
@@ -239,12 +242,62 @@ class Canvas(QWidget):
                     md5, phash = self.db.get_fingerprint(fidx=fidx)
                     md5_0, phash_0 = self.db.get_fingerprint(fidx=self.db.fidx)
 
-            qimg = QImage(img_path)
+            # get LUT and processing
+            cv2_lut, cv2_lut_name = self.db.get_LUT()
+            processing = self.db.get_processing()
+
+            # None use directly Qt
+            if cv2_lut == 0 and processing == "None":
+                # no LUT --> use QImage function
+                qimg = QImage(img_path)  # using Qt to load the image
+            else:
+                # Using OpenCV for image processing w/o LUT
+                if cv2_lut == 0 and processing != "None":
+                    # No LUT but processing (on RGB)
+                    cvimg = cv2.imread(img_path, flags=cv2.IMREAD_COLOR)
+
+                    # Apply the different processing params
+                    if processing == "Shift 2 Bit":
+                        cvimgproc = cvimg * 4
+                    elif processing == "Histogram equalization":
+                        cvimgyuv = cv2.cvtColor(cvimg, cv2.COLOR_BGR2YUV)
+                        # equalize the histogram of the Y channel
+                        cvimgyuv[:, :, 0] = cv2.equalizeHist(cvimgyuv[:, :, 0])
+
+                        # convert the YUV image back to RGB format
+                        cvimgproc = cv2.cvtColor(cvimgyuv, cv2.COLOR_YUV2BGR)
+                    else:
+                        cvimgproc = cvimg
+
+                # Using OpenCV for image processing w LUT
+                if cv2_lut != 0:
+                    # using OpenCV to load the image in gray and apply the LUT
+                    cvimg = cv2.imread(img_path, flags=cv2.IMREAD_GRAYSCALE)
+
+                    # Apply the different processing params
+                    if processing == "Shift 2 Bit":
+                        cvimgproc = cvimg * 4
+                    elif processing == "Histogram equalization":
+                        cvimgproc = cv2.equalizeHist(cvimg)
+                    else:
+                        cvimgproc = cvimg
+
+                # Apply LUT
+                if cv2_lut != 0:
+                    # Apply LUT
+                    lutImg = cv2.applyColorMap(cvimgproc, cv2_lut)
+                else:
+                    lutImg = cvimgproc
+
+                # finally set image for Qt
+                qimg = QImage(lutImg.data, lutImg.shape[1], lutImg.shape[0], lutImg.strides[0], QImage.Format_RGB888)
+
             self.img_path = img_path
             if idx == 0:
                 # for HVView, HVScene show_mouse_color.
                 # only work on the first qimg (main canvas mode)
                 self.qimg = qimg
+
                 # show image path in the statusbar
                 self.parent.set_statusbar(f'{img_path}')
 
@@ -275,6 +328,13 @@ class Canvas(QWidget):
                 f'[{shown_idx:d} / {self.db.get_path_len():d}] {tail}', head, f'{height:d} x {width:d}, {file_size}',
                 f'{color_type}'
             ]
+
+            # Add processing and LUT
+            if processing != "None":
+                shown_text.append(" Processing:" + processing)
+            if cv2_lut != 0:
+                shown_text.append(" LUT:" + cv2_lut_name)
+
             # show fingerprint
             if self.show_fingerprint:
                 if idx > 0:
@@ -287,10 +347,11 @@ class Canvas(QWidget):
                     shown_text.append(f'phash: {phash}')
 
             if qview.hasFocus():
-                color = 'red'
-            else:
                 color = 'green'
+            else:
+                color = 'red'
             qview.set_shown_text(shown_text, color)
+
             # qview.viewport().update()
             qpixmap = QPixmap.fromImage(qimg)
 

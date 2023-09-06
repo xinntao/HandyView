@@ -2,6 +2,7 @@ import hashlib
 import imagehash
 import os
 from PIL import Image, ImageFile
+import cv2
 
 from handyview.utils import FORMATS, ROOT_DIR, get_img_list, scandir, sizeof_fmt
 from handyview.widgets import show_msg
@@ -9,6 +10,11 @@ from handyview.widgets import show_msg
 # for loading large image file
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 Image.MAX_IMAGE_PIXELS = None
+
+LUT_Names = ["None", "Jet", "Cool", "Hot", "HSV"]
+LUT_Values = [0, cv2.COLORMAP_JET, cv2.COLORMAP_COOL, cv2.COLORMAP_HOT, cv2.COLORMAP_HSV]
+
+processing_names = ["None", "Shift 2 Bit", "Histogram equalization"]
 
 
 class HVDB():
@@ -44,6 +50,10 @@ class HVDB():
         self.recursive_scan_folder = False
 
         self.get_init_path_list()
+
+        # LUT
+        self.use_LUT = "None"
+        self.useprocessing = "None"
 
     def get_init_path_list(self):
         """get path list when first launch (double click or from cmd)"""
@@ -157,6 +167,24 @@ class HVDB():
                 fidx = self._fidx
             folder = self.folder_list[fidx]
         return folder
+
+    def get_LUT(self):
+        if self.use_LUT is None:
+            self.use_LUT = "None"
+        cv_lut_name = LUT_Names.index(self.use_LUT)
+        cv_lut_id = LUT_Values[cv_lut_name]
+        return cv_lut_id, self.use_LUT
+
+    def get_processing(self):
+        if self.useprocessing is None:
+            self.useprocessing = "None"
+        return self.useprocessing
+
+    def get_all_LUTs(self):
+        return LUT_Names
+
+    def get_all_processings(self):
+        return processing_names
 
     def get_path(self, fidx=None, pidx=None):
         if fidx is None:
